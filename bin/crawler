@@ -1,0 +1,11 @@
+#!/usr/bin/php
+<?php
+
+use FabioCicerchia\WebCrawler\Crawler;
+
+ini_set('xdebug.max_nesting_level', 200);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$baseUrl = 'http://www.google.it/';
+Crawler::run($baseUrl, $baseUrl);

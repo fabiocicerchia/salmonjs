@@ -1,0 +1,14 @@
+A file for each form in the page
+* with empty data
+* with fake data
+* skeleton for new test
+
+A file for each querystring
+* with default data
+* with empty data
+* skeleton for new test
+
+How to test javascript?
+How to test upload?
+How to get the coverage?
+Methods: get or post
