@@ -1,0 +1,42 @@
+{
+  "name": "web-crawler",
+  "preferGlobal": true,
+  "version": "0.1.0",
+  "author": "Fabio Cicerchia <info@fabiocicerchia.it>",
+  "description": "Web Crawler to spider dinamycally whole websites",
+  "contributors": [
+    {
+      "name": "Fabio Cicerchia",
+      "email": "info@fabiocicerchia.it"
+    }
+  ],
+  "bin": {
+    "mapper": "./bin/crawler"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabiocicerchia/web-crawler.git"
+  },
+  "keywords": [
+    "cli",
+    "web",
+    "crawler"
+  ],
+  "dependencies" : {
+    "optimist" : "0.6.0",
+    "prompt"   : "0.2.11",
+    "path"     : "0.4.9",
+    "colors"   : "0.6.2",
+    "redis"    : "0.8.6",
+    "winston"  : "0.7.2",
+    "glob"     : "3.2.6",
+    "zombie"   : "*"
+  },
+  "analyze": false,
+  "devDependencies": {
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10"
+  }
+}
