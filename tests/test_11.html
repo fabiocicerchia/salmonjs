@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <link href="http://meyerweb.com/eric/tools/css/reset/reset.css" />
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+    </head>
+    <body>
+        <div>test</div>
+        <script>
+            $(document).ready(function() {
+                $('body').css('background-color', 'red');
+                $('a').on('mouseover', function () {
+                    $('body').css('background-color', 'green');
+                });
+                $('div').click(function() {
+                    document.body.id = 'aaa';
+                    $('body').append('<a href="#whatever1" onclick="alert(\'test\');">test</a>');
+                });
+            });
+        </script>
+    </body>
+</html>
