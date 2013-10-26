@@ -5,7 +5,7 @@
  * |________|_____||_____| |____|__| |___._|________||__||_____|__|
  *
  * WEB CRAWLER v0.1.0
- * 
+ *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,7 +17,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,16 +39,18 @@ module.exports = function Parser() {
      * Parse the URL.
      *
      * @method parse
-     * @param {String} url  The URL to crawl.
-     * @param {String} type The request type: GET or POST.
-     * @param {Object} data The data to send for the request.
+     * @param {String} url   The URL to crawl.
+     * @param {String} type  The request type: GET or POST.
+     * @param {Object} data  The data to send for the request.
+     * @param {String} event The event to fire (optional).
+     * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.parse = function (url, type, data) {
+    this.parse = function (url, type, data, event, xPath) {
         if (type === 'GET') {
-            this.parseGet(url, data);
+            this.parseGet(url, data, event, xPath);
         } else {
-            this.parsePost(url, data);
+            this.parsePost(url, data, event, xPath);
         }
     };
 
@@ -56,22 +58,26 @@ module.exports = function Parser() {
      * Parse the URL as GET request.
      *
      * @method parseGet
-     * @param {String} url  The URL to crawl.
-     * @param {Object} data The data to send for the request.
+     * @param {String} url   The URL to crawl.
+     * @param {Object} data  The data to send for the request.
+     * @param {String} event The event to fire (optional).
+     * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.parseGet = function (url, data) {
+    this.parseGet = function (url, data, event, xPath) {
     };
 
     /**
      * Parse the URL as POST request.
      *
      * @method parsePost
-     * @param {String} url  The URL to crawl.
-     * @param {Object} data The data to send for the request.
+     * @param {String} url   The URL to crawl.
+     * @param {Object} data  The data to send for the request.
+     * @param {String} event The event to fire (optional).
+     * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.parsePost = function (url, data) {
+    this.parsePost = function (url, data, event, xPath) {
     };
 
     /**

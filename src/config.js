@@ -5,7 +5,7 @@
  * |________|_____||_____| |____|__| |___._|________||__||_____|__|
  *
  * WEB CRAWLER v0.1.0
- * 
+ *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,7 +17,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,19 +30,20 @@
 var config = {
     redis: {
         port: 16379,
-        hostname: '127.0.0.1' // '127.3.148.129'
+        hostname: '127.0.0.1'
     },
     logging: {
         level: 'info', // Possible values: info, warn, error.
         silent: false
     },
     parser: {
-    	interface: 'phantom', // Only this at the moment.
-    	timeout: 5000 // Resource timeout in milliseconds.
+        interface: 'phantom', // Only this at the moment.
+        cmd: 'phantomjs',
+        timeout: 5000 // Resource timeout in milliseconds.
     },
     crawler: {
-    	attempts: 3, // Number of tries before stop to execute the request.
-    	delay: 5000 // Delay between an attempt and another one in milliseconds.
+        attempts: 5, // Number of tries before stop to execute the request.
+        delay: 5000 // Delay between an attempt and another one in milliseconds.
     }
 };
 

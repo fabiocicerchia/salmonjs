@@ -5,7 +5,7 @@
  * |________|_____||_____| |____|__| |___._|________||__||_____|__|
  *
  * WEB CRAWLER v0.1.0
- * 
+ *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,7 +17,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,13 +29,13 @@
 
 var config  = require('./config');
 var spawn   = require('child_process').spawn;
-var colors  = require('colors');
 var crypto  = require('crypto');
-var path    = require('path');
 var Test    = require('../src/test');
 var redis   = require("redis");
 var client  = redis.createClient(config.redis.port, config.redis.hostname);
 var winston = require('winston');
+require('colors');
+require('path');
 
 /**
  * TBW
@@ -57,7 +57,7 @@ var waitingRetry    = false;
 module.exports = function Crawler() {
     /**
      * Number of tries before stop to execute the same request.
-     * 
+     *
      * @property tries
      * @type {Integer}
      * @default 0
@@ -66,7 +66,7 @@ module.exports = function Crawler() {
 
     /**
      * URL.
-     * 
+     *
      * @property url
      * @type {String}
      * @default ""
@@ -75,7 +75,7 @@ module.exports = function Crawler() {
 
     /**
      * Request type (GET or POST).
-     * 
+     *
      * @property type
      * @type {String}
      * @default ""
@@ -84,7 +84,7 @@ module.exports = function Crawler() {
 
     /**
      * Data to be sent.
-     * 
+     *
      * @property data
      * @type {Object}
      * @default {}
@@ -93,7 +93,7 @@ module.exports = function Crawler() {
 
     /**
      * Crawler ID.
-     * 
+     *
      * @property idCrawler
      * @type {String}
      * @default ""
@@ -102,7 +102,7 @@ module.exports = function Crawler() {
 
     /**
      * Current instance.
-     * 
+     *
      * @property currentCrawler
      * @type {Object}
      * @default this
@@ -126,22 +126,51 @@ module.exports = function Crawler() {
         return str.join('&');
     };
 
+    this.execPhantomjs = function () {
+        var params  = [
+            //'--debug=true',
+            './src/parser/' + config.parser.interface + '.js',
+            this.idCrawler,
+            this.url,
+            this.type,
+            this.serialise(this.data),
+            this.evt,
+            this.xPath
+        ];
+
+        try {
+            var phantom = spawn(config.parser.cmd, params);
+
+            phantom.stdout.on('data', this.onStdOut);
+            phantom.stderr.on('data', this.onStdErr);
+            phantom.on('exit', this.onExit);
+        } catch (err) {
+            winston.error(err.message.red);
+            currentCrawler.handleError(); // TODO: CONVERT TO THIS?
+        }
+    };
+
     /**
      * TBW
      *
      * @method run
-     * @param {String} url  The URL to crawl.
-     * @param {String} type The request type: GET or POST.
-     * @param {Object} data The data to send for the request.
+     * @param {String} url   The URL to crawl.
+     * @param {String} type  The request type: GET or POST.
+     * @param {Object} data  The data to send for the request.
+     * @param {String} evt   The event to fire (optional).
+     * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.run = function (url, type, data) {
+    this.run = function (url, type, data, evt, xPath) {
         waitingRetry = false;
 
-        this.url  = url.action || url;
-        this.type = type || 'GET';
-        this.data = data || {};
-        winston.info('Parsing ' + this.type.blue + ' "' + this.url.green + '"...');
+        this.url   = url.action || url;
+        this.type  = type || 'GET';
+        this.data  = data || {};
+        this.evt   = evt || '';
+        this.xPath = xPath || '';
+
+        winston.info('Parsing ' + currentCrawler.type.blue + ' "' + currentCrawler.url.green + '"...');
 
         runningCrawlers++;
 
@@ -151,58 +180,53 @@ module.exports = function Crawler() {
 
         winston.info('Launching crawler #%s  to parse "%s"...', this.idCrawler.cyan, this.url.green);
 
-        //if (config.parser.interface === 'phantom') {
-            var params  = [
-                './src/parser/' + config.parser.interface + '.js',
-                this.idCrawler,
-                this.url,
-                this.type,
-                this.serialise(data)
-                ];
-            var phantom = spawn('phantomjs', params);
-            phantom.stdout.on('data', this.onStdOut);
-            phantom.stderr.on('data', this.onStdErr);
-            phantom.on('exit', this.onExit);
-        //} else {
-        //    var ZombieParser = require('../src/parser/zombie');
-        //    new ZombieParser().parse(this.url, this.type, this.data);
-        //}
+        if (config.parser.interface === 'phantom') {
+            this.execPhantomjs();
+        }
     };
+
+    this.analiseRedisResponse = function (err, reply, id) {
+        if (err) {
+            throw err;
+        }
+
+        // reply is null when the key is missing
+        if (reply === null) {
+            winston.info('Match not found in Redis. Continue'.grey);
+            client.hset(id, 'url', currentCrawler.url);
+
+            var crawler = new Crawler();
+            crawler.run(currentCrawler.url, currentCrawler.type, currentCrawler.data, currentCrawler.evt, currentCrawler.xPath);
+        } else {
+            winston.info(('Match found in Redis for "' + currentCrawler.url + '" (event: "' + currentCrawler.evt + '" - XPath: "' + currentCrawler.xPath + '"). Skip').yellow);
+        }
+    }
 
     /**
      * TBW
      *
      * @method checkAndRun
-     * @param {String} url  The URL to crawl.
-     * @param {String} type The request type: GET or POST.
-     * @param {Object} data The data to send for the request.
+     * @param {String} url   The URL to crawl.
+     * @param {String} type  The request type: GET or POST.
+     * @param {Object} data  The data to send for the request.
+     * @param {String} evt   The event to fire (optional).
+     * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.checkAndRun = function (url, type, data) {
-        url  = url.action || url;
-        data = data || [];
+    this.checkAndRun = function (url, type, data, evt, xPath) {
+        this.url   = url.action || url;
+        this.type  = type || 'GET';
+        this.data  = data || [];
+        this.evt   = evt || null;
+        this.xPath = xPath || null;
 
-        //winston.info('Looping results: "' + url + '".');
         var sha1      = crypto.createHash('sha1');
-        var plainText = type + url.toString().replace(/[^a-zA-Z0-9_]/g, '') + '-' + data.toString();
+        var plainText = this.url.toString() + this.type + this.data.toString() + this.evt + this.xPath;
         var id        = sha1.update(plainText).digest('hex');
+        winston.info('Current identifier: ' + id.cyan);
 
-        client.hgetall(id, function (err, reply) {
-            if (err) {
-                throw err;
-            }
-
-            // reply is null when the key is missing
-            //console.log(reply);
-            if (reply === null) {
-                winston.info('Match not found in Redis. Continue'.grey);
-                client.hset(id, 'url', url);
-
-                var crawler = new Crawler();
-                crawler.run(url, type, data);
-            } else {
-                winston.info('Match found in Redis. Skip'.yellow);
-            }
+        client.hgetall(id, function(err, reply) {
+            return currentCrawler.analiseRedisResponse(err, reply, id);
         });
     };
 
@@ -215,12 +239,27 @@ module.exports = function Crawler() {
      */
     this.onStdOut = function (data) {
         //console.log(data.toString());
+        //return;
         var result = JSON.parse(data.toString()),
-            links  = result.links;
+            links  = result.links,
+            event, signature, element;
 
         winston.info('Retrieved response for the crawler #' + result.idCrawler.cyan);
 
-        links.anchors.plain.forEach(function (element) {
+        for (event in links.events) {
+            for (signature in links.events[event]) {
+                for (element in links.events[event][signature]) {
+                    if (element !== undefined) {
+                        winston.info('Firing ' + event.toUpperCase().blue + ' on "' + links.events[event][signature][element].green + '"...');
+                        currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
+                    }
+                }
+            }
+            //currentCrawler.checkAndRun(element, 'GET');
+            //currentCrawler.checkAndRun(element, 'GET', data);
+        }
+
+        links.anchors.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
@@ -282,7 +321,17 @@ module.exports = function Crawler() {
     this.onStdErr = function (data) {
         winston.info('Retrieved response for the crawler #' + currentCrawler.idCrawler.cyan);
         winston.error(data.toString().red);
-        
+
+        currentCrawler.handleError(); // TODO: CONVERT TO THIS?
+    };
+
+    /**
+     * TBW
+     *
+     * @method handleError
+     * @return undefined
+     */
+    this.handleError = function () {
         if (currentCrawler.tries < config.crawler.attempts) {
             waitingRetry = true;
             winston.info(('Trying again in %s msec').grey, config.crawler.delay);
@@ -295,7 +344,9 @@ module.exports = function Crawler() {
                 return currentCrawler.run(
                     currentCrawler.url,
                     currentCrawler.type,
-                    currentCrawler.data
+                    currentCrawler.data,
+                    currentCrawler.event,
+                    currentCrawler.xPath
                 );
             }), config.crawler.delay);
         }
