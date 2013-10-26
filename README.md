@@ -15,9 +15,13 @@ Few suggestion about its usage:
  * Testing
    * Process forms (it'll create easy test cases to be manually compiled)
    * Process automatically JS events attached to DOM nodes
+ * Scraping
+   * Get the page content for each URL
+   * Get the screenshot for each URL
  * Enumeration
    * URLs list
    * Execution times
+   * Page output
    * Page load
  * ...
 
@@ -27,17 +31,27 @@ Few suggestion about its usage:
  * PhantomJS
  * Redis
 
+## Configuration
+
+Change the file `src/config.js` accordingly with your needs.
+
 ## Example
 
 ```
-./bin/crawler "http://www.google.com"
+./bin/crawler --url "http://www.google.com"
 ```
+
+## BUGS
+
+ * jQuery is working within PhantomJS only if the version <= 1.8.3.
+ * Not processing $.on().
 
 ## TODO
 
+ * Add authentication (http://stackoverflow.com/questions/10114925/http-authentication-in-phantomjs)
+ * Add screenshot creation, with an option to be enabled
+ * Store the page details is a report directory, with an option to be enabled
  * Create test files for GET (???)
- * Add authentication
- * Retrieve events bound to DOM elements, fire them and parse the page again
  * Store execution time for each URL
  * Store the params for each scrape
  * Aggregate everything in reports (URLs parsed, execution time, http headers
