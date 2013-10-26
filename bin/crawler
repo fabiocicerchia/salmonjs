@@ -6,7 +6,7 @@
  * |________|_____||_____| |____|__| |___._|________||__||_____|__|
  *
  * WEB CRAWLER v0.1.0
- * 
+ *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,6 +48,16 @@ winston.add(
         timestamp: true
     }
 );
+
+console.log('                  __    '.bold.yellow + '                            __'.bold.green);
+console.log(' .--.--.--.-----.|  |--.'.bold.yellow + ' .----.----.---.-.--.--.--.|  |.-----.----.'.bold.green);
+console.log(' |  |  |  |  -__||  _  |'.bold.yellow + ' |  __|   _|  _  |  |  |  ||  ||  -__|   _|'.bold.green);
+console.log(' |________|_____||_____|'.bold.yellow + ' |____|__| |___._|________||__||_____|__|'.bold.green);
+console.log('');
+console.log(' WEB CRAWLER v0.1.0'.bold.grey);
+console.log('');
+console.log(' Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.bold.grey);
+console.log('');
 
 if (typeof argv.url === 'undefined') {
 	winston.error('Please use the --url "..." param to define the URL you want to crawl.');
