@@ -92,13 +92,13 @@ module.exports = function Crawler() {
     this.data = {};
 
     /**
-     * Crawler ID.
+     * URI ID.
      *
-     * @property idCrawler
+     * @property idUri
      * @type {String}
      * @default ""
      */
-    this.idCrawler = '';
+    this.idUri = '';
 
     /**
      * Current instance.
@@ -108,6 +108,11 @@ module.exports = function Crawler() {
      * @default this
      */
     var currentCrawler = this;
+
+    var sha1      = crypto.createHash('sha1');
+    var plainText = JSON.stringify(this) + Date.now() + runningCrawlers;
+    this.idCrawler    = sha1.update(plainText).digest('hex').substr(0, 4);
+    console.log(('Started new crawler: ' + this.idCrawler).magenta);
 
     /**
      * Serialise an object as questring.
@@ -130,7 +135,7 @@ module.exports = function Crawler() {
         var params  = [
             //'--debug=true',
             './src/parser/' + config.parser.interface + '.js',
-            this.idCrawler,
+            this.idUri,
             this.url,
             this.type,
             this.serialise(this.data),
@@ -170,35 +175,44 @@ module.exports = function Crawler() {
         this.evt   = evt || '';
         this.xPath = xPath || '';
 
-        winston.info('Parsing ' + currentCrawler.type.blue + ' "' + currentCrawler.url.green + '"...');
-
         runningCrawlers++;
 
         var sha1       = crypto.createHash('sha1');
-        var plainText  = runningCrawlers.toString() + Date.now();
-        this.idCrawler = sha1.update(plainText).digest('hex').substr(0, 8);
+        var plainText  = this.url.toString() + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
+        this.idUri = sha1.update(plainText).digest('hex').substr(0, 8);
 
-        winston.info('Launching crawler #%s  to parse "%s"...', this.idCrawler.cyan, this.url.green);
+        var winstonCrawlerId = '[' + this.idUri.toString().cyan + '-' + this.idCrawler.magenta + '] ';
+
+        winston.info(
+            winstonCrawlerId + 'Launching crawler to parse "' + this.url.green +
+            '" - ' + (this.evt === '' ? 'N/A'.grey : this.evt.blue) + ' on ' + (this.xPath === '' ? 'N/A'.grey : this.xPath.green) + ' ...');
 
         if (config.parser.interface === 'phantom') {
             this.execPhantomjs();
         }
     };
 
-    this.analiseRedisResponse = function (err, reply, id) {
+    this.analiseRedisResponse = function (err, reply, redisId, container) {
+        var id = redisId.substr(0, 8);
+        var winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+
         if (err) {
             throw err;
         }
 
         // reply is null when the key is missing
         if (reply === null) {
-            winston.info('Match not found in Redis. Continue'.grey);
-            client.hset(id, 'url', currentCrawler.url);
+            var sha1      = crypto.createHash('sha1');
+            var plainText = container.url.toString() + container.type + JSON.stringify(container.data) + container.evt + container.xPath;
+            var newId     = sha1.update(plainText).digest('hex').substr(0, 8);
+
+            winston.info(winstonCrawlerId + ('Match not found in Redis. Continue (' + newId + ')').grey);
+            client.hset(redisId, 'url', currentCrawler.url);
 
             var crawler = new Crawler();
-            crawler.run(currentCrawler.url, currentCrawler.type, currentCrawler.data, currentCrawler.evt, currentCrawler.xPath);
+            crawler.run(container.url, container.type, container.container, container.evt, container.xPath);
         } else {
-            winston.info(('Match found in Redis for "' + currentCrawler.url + '" (event: "' + currentCrawler.evt + '" - XPath: "' + currentCrawler.xPath + '"). Skip').yellow);
+            winston.info(winstonCrawlerId + ('Match found in Redis for "' + container.url + '" (event: "' + container.evt + '" - XPath: "' + container.xPath + '"). Skip').yellow);
         }
     }
 
@@ -214,19 +228,25 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.checkAndRun = function (url, type, data, evt, xPath) {
-        this.url   = url.action || url;
-        this.type  = type || 'GET';
-        this.data  = data || [];
-        this.evt   = evt || null;
-        this.xPath = xPath || null;
+        var container   = {};
+        container.url   = url.action || url;
+        container.type  = type || 'GET';
+        container.data  = data || {};
+        container.evt   = evt || '';
+        container.xPath = xPath || '';
 
         var sha1      = crypto.createHash('sha1');
-        var plainText = this.url.toString() + this.type + this.data.toString() + this.evt + this.xPath;
-        var id        = sha1.update(plainText).digest('hex');
-        winston.info('Current identifier: ' + id.cyan);
+        var plainText = container.url.toString() + container.type + JSON.stringify(container.data) + container.evt + container.xPath;
+        var redisId   = sha1.update(plainText).digest('hex');
+        var id        = redisId.substr(0, 8);
 
-        client.hgetall(id, function(err, reply) {
-            return currentCrawler.analiseRedisResponse(err, reply, id);
+        var winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+        winston.info(
+            winstonCrawlerId + 'Checking ' + container.type.blue + ' "' + container.url.green +
+            '" - ' + (container.evt === '' ? 'N/A'.grey : container.evt.blue) + ' on ' + (container.xPath === '' ? 'N/A'.grey : container.xPath.green) + ' ...');
+
+        client.hgetall(redisId, function(err, reply) {
+            return currentCrawler.analiseRedisResponse(err, reply, redisId, container);
         });
     };
 
@@ -238,19 +258,24 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.onStdOut = function (data) {
-        //console.log(data.toString());
         //return;
         var result = JSON.parse(data.toString()),
             links  = result.links,
             event, signature, element;
 
-        winston.info('Retrieved response for the crawler #' + result.idCrawler.cyan);
+        var winstonCrawlerId = '[' + result.idUri.toString().cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+
+        winston.info(winstonCrawlerId + 'Retrieved response');
 
         for (event in links.events) {
             for (signature in links.events[event]) {
                 for (element in links.events[event][signature]) {
                     if (element !== undefined) {
-                        winston.info('Firing ' + event.toUpperCase().blue + ' on "' + links.events[event][signature][element].green + '"...');
+                        var sha1      = crypto.createHash('sha1');
+                        var plainText = currentCrawler.url.toString() + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element];
+                        var newId     = sha1.update(plainText).digest('hex').substr(0, 8);
+
+                        winston.info(winstonCrawlerId + 'Firing ' + event.toUpperCase().blue + ' on "' + links.events[event][signature][element].green + '" (' + newId.cyan + ')...');
                         currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
                     }
                 }
@@ -319,7 +344,8 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.onStdErr = function (data) {
-        winston.info('Retrieved response for the crawler #' + currentCrawler.idCrawler.cyan);
+        var winstonCrawlerId = '[' + currentCrawler.idUri.toString().cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+        winston.info(winstonCrawlerId + 'Retrieved response');
         winston.error(data.toString().red);
 
         currentCrawler.handleError(); // TODO: CONVERT TO THIS?
@@ -332,13 +358,14 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.handleError = function () {
+        var winstonCrawlerId = '[' + currentCrawler.idUri.toString().cyan + '-' + this.idCrawler.magenta + '] ';
         if (currentCrawler.tries < config.crawler.attempts) {
             waitingRetry = true;
-            winston.info(('Trying again in %s msec').grey, config.crawler.delay);
+            winston.info(winstonCrawlerId + ('Trying again in %s msec').grey, config.crawler.delay);
             setTimeout((function () {
                 currentCrawler.tries++;
                 winston.warn(
-                    'Trying again (%d) to get a response...'.yellow,
+                    winstonCrawlerId + 'Trying again (%d) to get a response...'.yellow,
                     config.crawler.attempts - currentCrawler.tries
                 );
                 return currentCrawler.run(
