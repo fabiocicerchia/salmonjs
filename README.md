@@ -9,20 +9,20 @@ objects. In this way is possible to check effectively the whole website.
 Few suggestion about its usage:
 
  * Improve the legacy code
-   * Check the dead code (enabling the code coverage server-side)
-   * Discover 500 Internal Server Errors
-   * Discover notices and warnings
+  * Check the dead code (enabling the code coverage server-side)
+  * Discover 500 Internal Server Errors
+  * Discover notices and warnings
  * Testing
-   * Process forms (it'll create easy test cases to be manually compiled)
-   * Process automatically JS events attached to DOM nodes
+  * Process forms (it'll create easy test cases to be manually compiled)
+  * Process automatically JS events attached to DOM nodes
  * Scraping
-   * Get the page content for each URL
-   * Get the screenshot for each URL
+  * Get the page content for each URL
+  * Get the screenshot for each URL
  * Enumeration
-   * URLs list
-   * Execution times
-   * Page output
-   * Page load
+  * URLs list
+  * Execution times
+  * Page output
+  * Page load
  * ...
 
 ## Dependencies
