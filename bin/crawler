@@ -34,6 +34,8 @@ var colors  = require('colors');
 var config  = require('../src/config');
 var Crawler = require('../src/crawler');
 var winston = require('winston');
+var fs      = require('fs');
+var path    = require('path');
 var redis   = require('redis');
 var client  = redis.createClient(config.redis.port, config.redis.hostname);
 
@@ -63,10 +65,19 @@ if (typeof argv.url === 'undefined') {
 	winston.error('Please use the --url "..." param to define the URL you want to crawl.');
 	process.exit(1);
 } else {
-	winston.info('Start mapper.parse(' + argv.url + ')');
+    var uri = 'file://' + encodeURI(path.resolve(argv.url));
+    if (!fs.existsSync(uri)) {
+        uri = argv.url;
+
+        if (uri.indexOf('://') < 0) {
+            uri = 'http://' + uri;
+        }
+    }
+
+	winston.info('Start mapper.parse(' + uri + ')');
 
 	client.send_command('FLUSHDB', []);
 
 	var crawler = new Crawler();
-	crawler.run(argv.url, 'GET');
+	crawler.run(uri, 'GET');
 }
