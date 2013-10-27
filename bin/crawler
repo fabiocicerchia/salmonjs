@@ -65,8 +65,10 @@ if (typeof argv.url === 'undefined') {
 	winston.error('Please use the --url "..." param to define the URL you want to crawl.');
 	process.exit(1);
 } else {
-    var uri = 'file://' + encodeURI(path.resolve(argv.url));
-    if (!fs.existsSync(uri)) {
+    var uri = path.resolve(argv.url);
+    if (fs.existsSync(uri)) {
+        uri = 'file://' + encodeURI(uri);
+    } else {
         uri = argv.url;
 
         if (uri.indexOf('://') < 0) {

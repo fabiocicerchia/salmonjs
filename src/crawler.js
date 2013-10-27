@@ -263,7 +263,7 @@ module.exports = function Crawler() {
             links  = result.links,
             event, signature, element;
 
-        var winstonCrawlerId = '[' + result.idUri.toString().cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+        var winstonCrawlerId = '[' + result.idCrawler.toString().cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
 
         winston.info(winstonCrawlerId + 'Retrieved response');
 
