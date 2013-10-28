@@ -28,16 +28,16 @@
  * SOFTWARE.
  */
 
-var argv    = require('optimist').argv;
-var prompt  = require('prompt');
-var colors  = require('colors');
-var config  = require('../src/config');
-var Crawler = require('../src/crawler');
-var winston = require('winston');
-var fs      = require('fs');
-var path    = require('path');
-var redis   = require('redis');
-var client  = redis.createClient(config.redis.port, config.redis.hostname);
+var prompt  = require('prompt'),
+    colors  = require('colors'),
+    config  = require('../src/config'),
+    Crawler = require('../src/crawler'),
+    winston = require('winston'),
+    fs      = require('fs'),
+    path    = require('path'),
+    redis   = require('redis'),
+    client  = redis.createClient(config.redis.port, config.redis.hostname),
+    argv;
 
 winston.cli();
 winston.remove(winston.transports.Console);
@@ -51,25 +51,45 @@ winston.add(
     }
 );
 
-console.log('                  __    '.bold.yellow + '                            __'.bold.green);
-console.log(' .--.--.--.-----.|  |--.'.bold.yellow + ' .----.----.---.-.--.--.--.|  |.-----.----.'.bold.green);
-console.log(' |  |  |  |  -__||  _  |'.bold.yellow + ' |  __|   _|  _  |  |  |  ||  ||  -__|   _|'.bold.green);
-console.log(' |________|_____||_____|'.bold.yellow + ' |____|__| |___._|________||__||_____|__|'.bold.green);
+console.log('                 __    '.bold.yellow + '                            __'.bold.green);
+console.log('.--.--.--.-----.|  |--.'.bold.yellow + ' .----.----.---.-.--.--.--.|  |.-----.----.'.bold.green);
+console.log('|  |  |  |  -__||  _  |'.bold.yellow + ' |  __|   _|  _  |  |  |  ||  ||  -__|   _|'.bold.green);
+console.log('|________|_____||_____|'.bold.yellow + ' |____|__| |___._|________||__||_____|__|'.bold.green);
 console.log('');
-console.log(' WEB CRAWLER v0.1.0'.bold.grey);
+console.log('WEB CRAWLER v0.1.0'.bold.grey);
 console.log('');
-console.log(' Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.bold.grey);
+console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.bold.grey);
 console.log('');
 
-if (typeof argv.url === 'undefined') {
-	winston.error('Please use the --url "..." param to define the URL you want to crawl.');
-	process.exit(1);
+argv = require('optimist')
+    .usage('Web Crawler in Node.js to spider dynamically whole websites.\nUsage: $0')
+    .demand('uri')
+    .alias('u', 'user')
+    .alias('p', 'password')
+    .alias('s', 'screenshots')
+    .alias('d', 'details')
+    .describe('uri', 'The URI to be crawled')
+    .describe('u', 'Username for HTTP authentication')
+    .describe('p', 'Password for HTTP authentication')
+    .describe('s', 'Store screenshots for each page')
+    .describe('d', 'Store details for each page')
+    .describe('help', 'Show the help')
+    .string('uri')
+    .boolean('s')
+    .boolean('d')
+    .default('s', false)
+    .default('d', false)
+    .argv;
+
+if (argv.help !== undefined || argv.uri === undefined) {
+    argv.showHelp();
 } else {
-    var uri = path.resolve(argv.url);
-    if (fs.existsSync(uri)) {
+    var uri = path.resolve(argv.uri);
+    if (path.existsSync(uri)) {
+    //if (fs.existsSync(uri)) {
         uri = 'file://' + encodeURI(uri);
     } else {
-        uri = argv.url;
+        uri = argv.uri;
 
         if (uri.indexOf('://') < 0) {
             uri = 'http://' + uri;
