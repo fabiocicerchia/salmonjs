@@ -102,7 +102,7 @@ module.exports = function Parser() {
      * @return {Object}
      */
     this.normaliseData = function (data) {
-        var query = data.replace(/.+?/, ''),
+        var query = data.replace(/.+\?/, ''),
             dataContainer = {},
             keys = [],
             vars = query.split('&'),
@@ -170,7 +170,7 @@ module.exports = function Parser() {
             normalised = baseUrl.replace(/#.*$/, '') + url;
         }
 
-        if (normalised.indexOf('?') === 0) {
+        if (normalised.indexOf('?') > 0) {
             normalised = normalised.replace(/\?.+/, '?' + this.arrayToQuery(this.normaliseData(normalised)));
         }
 
