@@ -154,7 +154,7 @@ module.exports = function Parser() {
      * @return {String} The normalised URL.
      */
     this.normaliseUrl = function (url, baseUrl) {
-        var normalised = '';
+        var normalised;
 
         if (url.substr(0, 2) === '//') {
             url = baseUrl.split(':')[0] + ':' + url;
@@ -170,7 +170,7 @@ module.exports = function Parser() {
             normalised = baseUrl.replace(/#.*$/, '') + url;
         }
 
-        if (normalised.indexOf('?') > 0) {
+        if (normalised !== undefined && normalised.indexOf('?') > 0) {
             normalised = normalised.replace(/\?.+/, '?' + this.arrayToQuery(this.normaliseData(normalised)));
         }
 
