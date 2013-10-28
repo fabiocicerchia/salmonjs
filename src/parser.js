@@ -102,22 +102,26 @@ module.exports = function Parser() {
      * @return {Object}
      */
     this.normaliseData = function (data) {
-        var query = data.replace(/.+?/, '');
+        var query = data.replace(/.+?/, ''),
+            dataContainer = {},
+            keys = [],
+            vars = query.split('&'),
+            i,
+            k,
+            pair,
+            sorted = {};
 
-        var dataContainer = {};
-        var keys = [];
-
-        var vars = query.split('&');
-        for (var i = 0; i < vars.length; i++) {
-            var pair = vars[i].split('=');
+        for (i = 0; i < vars.length; i++) {
+            pair = vars[i].split('=');
             keys.push(decodeURIComponent(pair[0]));
             dataContainer[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
         }
         keys = keys.sort();
 
-        var sorted = {};
-        for (var k in keys) {
-            sorted[keys[k]] = dataContainer[keys[k]];
+        for (k in keys) {
+            if (keys.hasOwnProperty(k)) {
+                sorted[keys[k]] = dataContainer[keys[k]];
+            }
         }
 
         return sorted;
@@ -131,9 +135,12 @@ module.exports = function Parser() {
      * @return {String}
      */
     this.arrayToQuery = function (arr) {
-        var string = [];
-        for (var k in arr) {
-            string.push(k + '=' + arr[k]);
+        var k,
+            string = [];
+        for (k in arr) {
+            if (arr.hasOwnProperty(k)) {
+                string.push(k + '=' + arr[k]);
+            }
         }
         return string.join('&');
     };
@@ -164,8 +171,7 @@ module.exports = function Parser() {
         }
 
         if (normalised.indexOf('?') === 0) {
-            var querystring = this.normaliseData(normalised);
-            normalised = normalised.replace(/\?.+/, '?' + this.arrayToQuery(querystring));
+            normalised = normalised.replace(/\?.+/, '?' + this.arrayToQuery(this.normaliseData(normalised)));
         }
 
         return normalised;

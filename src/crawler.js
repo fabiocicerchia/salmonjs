@@ -107,10 +107,10 @@ module.exports = function Crawler() {
      * @type {Object}
      * @default this
      */
-    var currentCrawler = this;
+    var currentCrawler = this,
+        sha1          = crypto.createHash('sha1'),
+        plainText     = JSON.stringify(this) + Date.now() + runningCrawlers;
 
-    var sha1      = crypto.createHash('sha1');
-    var plainText = JSON.stringify(this) + Date.now() + runningCrawlers;
     this.idCrawler    = sha1.update(plainText).digest('hex').substr(0, 4);
     console.log(('Started new crawler: ' + this.idCrawler).magenta);
 
@@ -125,7 +125,9 @@ module.exports = function Crawler() {
         var str = [], p;
 
         for (p in obj) {
-            str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+            if (obj.hasOwnProperty(p)) {
+                str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+            }
         }
 
         return str.join('&');
@@ -138,19 +140,20 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.execPhantomjs = function () {
-        var params  = [
-            //'--debug=true',
-            './src/parser/' + config.parser.interface + '.js',
-            this.idUri,
-            this.url,
-            this.type,
-            this.serialise(this.data),
-            this.evt,
-            this.xPath
-        ];
+        var phantom,
+            params  = [
+                //'--debug=true',
+                './src/parser/' + config.parser.interface + '.js',
+                this.idUri,
+                this.url,
+                this.type,
+                this.serialise(this.data),
+                this.evt,
+                this.xPath
+            ];
 
         try {
-            var phantom = spawn(config.parser.cmd, params);
+            phantom = spawn(config.parser.cmd, params);
 
             phantom.stdout.on('data', this.onStdOut);
             phantom.stderr.on('data', this.onStdErr);
@@ -183,15 +186,16 @@ module.exports = function Crawler() {
 
         runningCrawlers++;
 
-        var sha1      = crypto.createHash('sha1');
-        var plainText = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
-        this.idUri    = sha1.update(plainText).digest('hex').substr(0, 8);
+        sha1       = crypto.createHash('sha1');
+        plainText  = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
+        this.idUri = sha1.update(plainText).digest('hex').substr(0, 8);
 
         var winstonCrawlerId = '[' + this.idUri.cyan + '-' + this.idCrawler.magenta + '] ';
 
         winston.info(
             winstonCrawlerId + 'Launching crawler to parse "' + this.url.green +
-            '" - ' + (this.evt === '' ? 'N/A'.grey : this.evt.blue) + ' on ' + (this.xPath === '' ? 'N/A'.grey : this.xPath.green) + ' ...');
+            '" - ' + (this.evt === '' ? 'N/A'.grey : this.evt.blue) + ' on ' + (this.xPath === '' ? 'N/A'.grey : this.xPath.green) + ' ...'
+        );
 
         if (config.parser.interface === 'phantom') {
             this.execPhantomjs();
@@ -209,8 +213,10 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.analiseRedisResponse = function (err, reply, redisId, container) {
-        var id = redisId.substr(0, 8);
-        var winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+        var id               = redisId.substr(0, 8),
+            winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + '] ',
+            newId,
+            crawler;
 
         if (err) {
             throw err;
@@ -218,19 +224,19 @@ module.exports = function Crawler() {
 
         // reply is null when the key is missing
         if (reply === null) {
-            var sha1      = crypto.createHash('sha1');
-            var plainText = container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath;
-            var newId     = sha1.update(plainText).digest('hex').substr(0, 8);
+            sha1      = crypto.createHash('sha1');
+            plainText = container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath;
+            newId     = sha1.update(plainText).digest('hex').substr(0, 8);
 
             winston.info(winstonCrawlerId + ('Match not found in Redis. Continue (' + newId + ')').grey);
             client.hset(redisId, 'url', currentCrawler.url);
 
-            var crawler = new Crawler();
+            crawler = new Crawler();
             crawler.run(container.url, container.type, container.container, container.evt, container.xPath);
         } else {
             winston.info(winstonCrawlerId + ('Match found in Redis for "' + container.url + '" (event: "' + container.evt + '" - XPath: "' + container.xPath + '"). Skip').yellow);
         }
-    }
+    };
 
     /**
      * TBW
@@ -244,24 +250,27 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.checkAndRun = function (url, type, data, evt, xPath) {
-        var container   = {};
+        var container   = {},
+            redisId,
+            id,
+            winstonCrawlerId;
         container.url   = url.action || url;
         container.type  = type || 'GET';
         container.data  = data || {};
         container.evt   = evt || '';
         container.xPath = xPath || '';
 
-        var sha1      = crypto.createHash('sha1');
-        var plainText = container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath;
-        var redisId   = sha1.update(plainText).digest('hex');
-        var id        = redisId.substr(0, 8);
+        sha1      = crypto.createHash('sha1');
+        plainText = container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath;
+        redisId   = sha1.update(plainText).digest('hex');
+        id        = redisId.substr(0, 8);
 
-        var winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+        winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
         winston.info(
             winstonCrawlerId + 'Checking ' + container.type.blue + ' "' + container.url.green +
             '" - ' + (container.evt === '' ? 'N/A'.grey : container.evt.blue) + ' on ' + (container.xPath === '' ? 'N/A'.grey : container.xPath.green) + ' ...');
 
-        client.hgetall(redisId, function(err, reply) {
+        client.hgetall(redisId, function (err, reply) {
             return currentCrawler.analiseRedisResponse(err, reply, redisId, container);
         });
     };
@@ -278,22 +287,30 @@ module.exports = function Crawler() {
         //return;
         var result = JSON.parse(data.toString()),
             links  = result.links,
-            event, signature, element;
+            event,
+            signature,
+            element,
+            newId,
+            winstonCrawlerId;
 
-        var winstonCrawlerId = '[' + result.idCrawler.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+        winstonCrawlerId = '[' + result.idCrawler.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
 
         winston.info(winstonCrawlerId + 'Retrieved response');
 
         for (event in links.events) {
-            for (signature in links.events[event]) {
-                for (element in links.events[event][signature]) {
-                    if (element !== undefined) {
-                        var sha1      = crypto.createHash('sha1');
-                        var plainText = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element];
-                        var newId     = sha1.update(plainText).digest('hex').substr(0, 8);
+            if (links.events.hasOwnProperty(event)) {
+                for (signature in links.events[event]) {
+                    if (links.events[event].hasOwnProperty(signature)) {
+                        for (element in links.events[event][signature]) {
+                            if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
+                                sha1      = crypto.createHash('sha1');
+                                plainText = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element];
+                                newId     = sha1.update(plainText).digest('hex').substr(0, 8);
 
-                        winston.info(winstonCrawlerId + 'Firing ' + event.toUpperCase().blue + ' on "' + links.events[event][signature][element].green + '" (' + newId.cyan + ')...');
-                        currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
+                                winston.info(winstonCrawlerId + 'Firing ' + event.toUpperCase().blue + ' on "' + links.events[event][signature][element].green + '" (' + newId.cyan + ')...');
+                                currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
+                            }
+                        }
                     }
                 }
             }
@@ -326,7 +343,9 @@ module.exports = function Crawler() {
 
             // TODO: Sort this fields?
             for (i in element.fields) {
-                fieldData[element.fields[i]] = '';
+                if (element.fields.hasOwnProperty(i)) {
+                    fieldData[element.fields[i]] = '';
+                }
             }
             test.create(id + '-' + element.type, fieldData);
             //test.create(id + '-' + 'get', fieldData);
@@ -334,8 +353,10 @@ module.exports = function Crawler() {
 
             cases = test.getCases(id + '-' + element.type);
             for (j in cases) {
-                currentCrawler.checkAndRun(element, element.type.toUpperCase(), []);
-                currentCrawler.checkAndRun(element, element.type.toUpperCase(), cases[j]);
+                if (cases.hasOwnProperty(j)) {
+                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), []);
+                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), cases[j]);
+                }
             }
 
             /*

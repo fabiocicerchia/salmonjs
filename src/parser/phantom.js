@@ -102,7 +102,7 @@ var PhantomParser = function () {
 
         t = Date.now();
 
-        if (data === 'undefined' || typeof data === 'undefined') {
+        if (data === 'undefined' || data === undefined) {
             data = '';
         }
 
@@ -151,10 +151,11 @@ var PhantomParser = function () {
      * @return undefined
      */
     this.fireEventObject = function () {
-        var obj;
+        var obj,
+            evt;
         eval('obj = ' + arguments[0].xPath);
-        if (typeof obj !== 'undefined') {
-            var evt = document.createEvent('CustomEvent');  // MUST be 'CustomEvent'
+        if (obj !== undefined) {
+            evt = document.createEvent('CustomEvent');  // MUST be 'CustomEvent'
             evt.initCustomEvent(arguments[0].event, false, false, null);
             obj.dispatchEvent(evt);
         }
@@ -169,10 +170,11 @@ var PhantomParser = function () {
     this.fireEventDOM = function () {
         // 1 - Identify the element in the page
         // 2 - Retrieve the element
-        var element = document.getElementByXpath(arguments[0].xPath);
-        if (typeof element !== 'undefined') {
+        var element = document.getElementByXpath(arguments[0].xPath),
+            evt;
+        if (element !== undefined) {
             // 3 - Fire the event
-            var evt = document.createEvent('CustomEvent');  // MUST be 'CustomEvent'
+            evt = document.createEvent('CustomEvent');  // MUST be 'CustomEvent'
             evt.initCustomEvent(arguments[0].event, false, false, null);
             element.dispatchEvent(evt);
 
@@ -194,7 +196,7 @@ var PhantomParser = function () {
             if (currentParser.xPath[0] !== '/') {
                 page.evaluate(currentParser.fireEventObject, currentParser);
             } else {
-                page.evaluate(currentParser.fireEventDOM, currentParser)
+                page.evaluate(currentParser.fireEventDOM, currentParser);
             }
         }
 

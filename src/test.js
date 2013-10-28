@@ -71,7 +71,9 @@ module.exports = function Test() {
             k;
 
         for (k in data) {
-            content += k + '=' + data[k] + "\n";
+            if (data.hasOwnProperty(k)) {
+                content += k + '=' + data[k] + "\n";
+            }
         }
 
         fs.mkdir(__dirname + this.TEST_CASE_DIRECTORY, '0777', function () {

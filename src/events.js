@@ -42,18 +42,20 @@ function getXPath(element) {
     return xpath;
 }
 
-document.getElementByXpath = function(path) {
+document.getElementByXpath = function (path) {
     return document.evaluate(path, document, null, 9, null).singleNodeValue;
 };
 
-document.getElementsByAttribute = Element.prototype.getElementsByAttribute = function(attr) {
+document.getElementsByAttribute = Element.prototype.getElementsByAttribute = function (attr) {
     var i,
         elem,
         nodeArray = [],
         nodeList = this.getElementsByTagName('*');
 
-    for (i = 0, elem; elem = nodeList[i]; i++) {
-        if (elem.getAttribute(attr)) nodeArray.push(elem);
+    for (i = 0; elem = nodeList[i]; i++) {
+        if (elem.getAttribute(attr)) {
+            nodeArray.push(elem);
+        }
     }
 
     return nodeArray;
@@ -62,18 +64,19 @@ document.getElementsByAttribute = Element.prototype.getElementsByAttribute = fun
 window.eventContainer = {
     container: {},
 
-    customAddEventListener: function (type, listener, useCapture, wantsUntrusted)
-    {
-        if (typeof window.eventContainer.container[type] === 'undefined') {
+    customAddEventListener: function (type, listener, useCapture, wantsUntrusted) {
+        var signature, identifier;
+
+        if (window.eventContainer.container[type] === undefined) {
             window.eventContainer.container[type] = {};
         }
 
-        var signature = hex_sha1(listener.toString());
-        if (typeof window.eventContainer.container[type][signature] === 'undefined') {
+        signature = hex_sha1(listener.toString());
+        if (window.eventContainer.container[type][signature] === undefined) {
             window.eventContainer.container[type][signature] = [];
         }
 
-        var identifier = getXPath(this);
+        identifier = getXPath(this);
         if (identifier === '') {
             identifier = this.identifier; // TODO: FIX THIS HACK
         }
@@ -86,7 +89,7 @@ window.eventContainer = {
     customRemoveEventListener: function (type, listener, useCapture)
     {
         var signature = hex_sha1(listener.toString());
-        if (typeof window.eventContainer.container[type][signature] !== 'undefined') {
+        if (window.eventContainer.container[type][signature] !== undefined) {
             window.eventContainer.container[type][signature] = undefined;
         }
 
@@ -94,18 +97,21 @@ window.eventContainer = {
     },
 
     customSetAttribute: function (name, value) {
+        var type,
+            signature,
+            identifier;
         if (name.indexOf('on') === 0) {
-            var type = name.substr(2);
-            if (typeof window.eventContainer.container[type] === 'undefined') {
+            type = name.substr(2);
+            if (window.eventContainer.container[type] === undefined) {
                 window.eventContainer.container[type] = {};
             }
 
-            var signature = hex_sha1(value.toString());
-            if (typeof window.eventContainer.container[type][signature] === 'undefined') {
+            signature = hex_sha1(value.toString());
+            if (window.eventContainer.container[type][signature] === undefined) {
                 window.eventContainer.container[type][signature] = [];
             }
 
-            var identifier = getXPath(this);
+            identifier = getXPath(this);
             if (identifier === '') {
                 identifier = this.identifier; // TODO: FIX THIS HACK
             }
@@ -117,16 +123,18 @@ window.eventContainer = {
     },
 
     customRemoveAttribute: function (name) {
+        var type,
+            signature;
         if (name.indexOf('on') === 0) {
             //console.log(name);
 
-            var type = name.substr(2);
-            if (typeof window.eventContainer.container[type] === 'undefined') {
+            type = name.substr(2);
+            if (window.eventContainer.container[type] === undefined) {
                 window.eventContainer.container[type] = {};
             }
 
-            var signature = hex_sha1(this.getAttribute(name).toString());
-            if (typeof window.eventContainer.container[type][signature] !== 'undefined') {
+            signature = hex_sha1(this.getAttribute(name).toString());
+            if (window.eventContainer.container[type][signature] !== undefined) {
                 window.eventContainer.container[type][signature] = undefined;
             }
         }
@@ -135,7 +143,7 @@ window.eventContainer = {
     },
 
     overrideEventListener: function (object) {
-        var prototype = typeof object.prototype === 'undefined' ? object : object.prototype;
+        var prototype = object.prototype === undefined ? object : object.prototype;
 
         prototype._origAddEventListener    = prototype.addEventListener;
         prototype.addEventListener         = window.eventContainer.customAddEventListener;
@@ -144,7 +152,7 @@ window.eventContainer = {
     },
 
     overrideAttributeHandler: function (object) {
-        var prototype = typeof object.prototype === 'undefined' ? object : object.prototype;
+        var prototype = object.prototype === undefined ? object : object.prototype;
 
         prototype._origSetAttribute    = prototype.setAttribute;
         prototype.setAttribute         = window.eventContainer.customSetAttribute;
