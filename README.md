@@ -27,18 +27,27 @@ Few suggestion about its usage:
 
 ## Dependencies
 
- * Node.js
- * PhantomJS
- * Redis
+ * [Node.js](http://nodejs.org/download/)
+ * [PhantomJS](http://phantomjs.org/download.html)
+ * [Redis](http://redis.io/download)
 
 ## Configuration
 
 Change the file `src/config.js` accordingly with your needs.
 
-## Example
+## Installation
 
 ```
-./bin/crawler --url "http://www.google.com"
+npm install
+```
+
+## Examples
+
+```
+[user@hostname /tmp]$ ./bin/crawler --uri "http://www.google.com"
+[user@hostname /tmp]$ ./bin/crawler --uri "www.google.com"
+[user@hostname /tmp]$ ./bin/crawler --uri "/tmp/file.html"
+[user@hostname /tmp]$ ./bin/crawler --uri "file.html"
 ```
 
 ## BUGS
