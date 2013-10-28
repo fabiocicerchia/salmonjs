@@ -3,7 +3,7 @@
   "preferGlobal": true,
   "version": "0.1.0",
   "author": "Fabio Cicerchia <info@fabiocicerchia.it>",
-  "description": "Web Crawler to spider dinamycally whole websites",
+  "description": "Web Crawler in Node.js to spider dynamically whole websites.",
   "contributors": [
     {
       "name": "Fabio Cicerchia",
@@ -11,7 +11,7 @@
     }
   ],
   "bin": {
-    "mapper": "./bin/crawler"
+    "crawler": "./bin/crawler"
   },
   "repository": {
     "type": "git",
