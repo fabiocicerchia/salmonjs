@@ -312,7 +312,13 @@ module.exports = function Crawler() {
                                 plainText = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element];
                                 newId     = sha1.update(plainText).digest('hex').substr(0, 8);
 
-                                winston.info(winstonCrawlerId + 'Firing ' + event.toUpperCase().blue + ' on "' + links.events[event][signature][element].green + '" (' + newId.cyan + ')...');
+                                winston.info(
+                                    '%s Firing %s on "%s" (%s)...',
+                                    winstonCrawlerId,
+                                    event.toUpperCase().blue,
+                                    links.events[event][signature][element].green,
+                                    newId.cyan
+                                );
                                 currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
                             }
                         }
