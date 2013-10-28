@@ -95,6 +95,50 @@ module.exports = function Parser() {
     };
 
     /**
+     * Normalise the data, ordering the array.
+     *
+     * @method normaliseData
+     * @param {Object} data The data to be normalised.
+     * @return {Object}
+     */
+    this.normaliseData = function (data) {
+        var query = data.replace(/.+?/, '');
+
+        var dataContainer = {};
+        var keys = [];
+
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            keys.push(decodeURIComponent(pair[0]));
+            dataContainer[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+        keys = keys.sort();
+
+        var sorted = {};
+        for (var k in keys) {
+            sorted[keys[k]] = dataContainer[keys[k]];
+        }
+
+        return sorted;
+    };
+
+    /**
+     * Convert an array to a querystring.
+     *
+     * @method arrayToQuery
+     * @param {Object} data The data returned by the parser.
+     * @return {String}
+     */
+    this.arrayToQuery = function (arr) {
+        var string = [];
+        for (var k in arr) {
+            string.push(k + '=' + arr[k]);
+        }
+        return string.join('&');
+    };
+
+    /**
      * Utility function to normalise an absolute / relative URL.
      *
      * @method normaliseUrl
@@ -103,7 +147,7 @@ module.exports = function Parser() {
      * @return {String} The normalised URL.
      */
     this.normaliseUrl = function (url, baseUrl) {
-        var normalised;
+        var normalised = '';
 
         if (url.substr(0, 2) === '//') {
             url = baseUrl.split(':')[0] + ':' + url;
@@ -111,10 +155,17 @@ module.exports = function Parser() {
 
         if ((url + '/').indexOf(baseUrl) === 0) {
             normalised = url;
+        } else if (url.indexOf('?') === 0) {
+            normalised = baseUrl.replace(/\?.+/, '') + url;
         } else if (url.indexOf('/') === 0) {
             normalised = baseUrl.replace(/#.*$/, '') + url.substr(1);
         } else if (url.indexOf('#') === 0) {
             normalised = baseUrl.replace(/#.*$/, '') + url;
+        }
+
+        if (normalised.indexOf('?') === 0) {
+            var querystring = this.normaliseData(normalised);
+            normalised = normalised.replace(/\?.+/, '?' + this.arrayToQuery(querystring));
         }
 
         return normalised;
