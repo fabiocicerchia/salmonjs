@@ -265,10 +265,15 @@ module.exports = function Crawler() {
         redisId   = sha1.update(plainText).digest('hex');
         id        = redisId.substr(0, 8);
 
-        winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+        winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
         winston.info(
-            winstonCrawlerId + 'Checking ' + container.type.blue + ' "' + container.url.green +
-            '" - ' + (container.evt === '' ? 'N/A'.grey : container.evt.blue) + ' on ' + (container.xPath === '' ? 'N/A'.grey : container.xPath.green) + ' ...');
+            '%s Checking %s "%s" - %s on %s',
+            winstonCrawlerId,
+            container.type.blue,
+            container.url.green,
+            (container.evt === '' ? 'N/A'.grey : container.evt.blue),
+            (container.xPath === '' ? 'N/A'.grey : container.xPath.green)
+        );
 
         client.hgetall(redisId, function (err, reply) {
             return currentCrawler.analiseRedisResponse(err, reply, redisId, container);
@@ -293,9 +298,9 @@ module.exports = function Crawler() {
             newId,
             winstonCrawlerId;
 
-        winstonCrawlerId = '[' + result.idCrawler.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
+        winstonCrawlerId = '[' + result.idCrawler.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
-        winston.info(winstonCrawlerId + 'Retrieved response');
+        winston.info('%s Retrieved response', winstonCrawlerId);
 
         for (event in links.events) {
             if (links.events.hasOwnProperty(event)) {
@@ -383,8 +388,8 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.onStdErr = function (data) {
-        var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + '] ';
-        winston.info(winstonCrawlerId + 'Retrieved response');
+        var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
+        winston.info('%s Retrieved response', winstonCrawlerId);
         winston.error(data.toString().red);
 
         currentCrawler.handleError(); // TODO: CONVERT TO THIS?
@@ -397,14 +402,15 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.handleError = function () {
-        var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + this.idCrawler.magenta + '] ';
+        var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + this.idCrawler.magenta + ']';
         if (currentCrawler.tries < config.crawler.attempts) {
             waitingRetry = true;
-            winston.info(winstonCrawlerId + ('Trying again in %s msec').grey, config.crawler.delay);
+            winston.info('%s' + ' Trying again in %s msec'.grey, winstonCrawlerId, config.crawler.delay);
             setTimeout((function () {
                 currentCrawler.tries++;
                 winston.warn(
-                    winstonCrawlerId + 'Trying again (%d) to get a response...'.yellow,
+                    '%s' + ' Trying again (%d) to get a response...'.yellow,
+                    winstonCrawlerId,
                     config.crawler.attempts - currentCrawler.tries
                 );
                 return currentCrawler.run(
