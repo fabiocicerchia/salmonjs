@@ -64,24 +64,26 @@ document.getElementsByAttribute = Element.prototype.getElementsByAttribute = fun
 window.eventContainer = {
     container: {},
 
-    customAddEventListener: function (type, listener, useCapture, wantsUntrusted) {
-        var signature, identifier;
-
+    pushEvent: function (type, signature, element) {
         if (window.eventContainer.container[type] === undefined) {
             window.eventContainer.container[type] = {};
         }
 
-        signature = hex_sha1(listener.toString());
         if (window.eventContainer.container[type][signature] === undefined) {
             window.eventContainer.container[type][signature] = [];
         }
 
-        identifier = getXPath(this);
+        var identifier = getXPath(element);
         if (identifier === '') {
-            identifier = this.identifier; // TODO: FIX THIS HACK
+            identifier = element.identifier; // TODO: FIX THIS HACK
         }
 
         window.eventContainer.container[type][signature].push(identifier);
+    },
+
+    customAddEventListener: function (type, listener, useCapture, wantsUntrusted) {
+        var signature = hex_sha1(listener.toString());
+        window.eventContainer.pushEvent(type, signature, this);
 
         return this._origAddEventListener(type, listener, useCapture, wantsUntrusted);
     },
@@ -100,23 +102,11 @@ window.eventContainer = {
         var type,
             signature,
             identifier;
+
         if (name.indexOf('on') === 0) {
             type = name.substr(2);
-            if (window.eventContainer.container[type] === undefined) {
-                window.eventContainer.container[type] = {};
-            }
-
             signature = hex_sha1(value.toString());
-            if (window.eventContainer.container[type][signature] === undefined) {
-                window.eventContainer.container[type][signature] = [];
-            }
-
-            identifier = getXPath(this);
-            if (identifier === '') {
-                identifier = this.identifier; // TODO: FIX THIS HACK
-            }
-
-            window.eventContainer.container[type][signature].push(identifier);
+            window.eventContainer.pushEvent(type, signature, this);
         }
 
         return this._origSetAttribute(name, value);
@@ -160,7 +150,58 @@ window.eventContainer = {
         prototype.removeAttribute      = window.eventContainer.customRemoveAttribute;
     },
 
+    // TODO: what about attributes attached at runtime?
+    getElementsByAttribute: function (attribute) {
+        var arr_elms = document.body.getElementsByTagName('*');
+        var elements = [];
+        var wildcard = false;
+        var curr_attr;
+
+        if (attribute.substr(-1, 1) === '*') {
+            wildcard = true;
+            attribute = attribute.substr(0, attribute.length - 1);
+        }
+
+        for (var i = 0; i < arr_elms.length; i++) {
+            for (var j = 0, attrs = arr_elms[i].attributes, l = attrs.length; j < l; j++){
+                curr_attr = attrs.item(j).nodeName;
+                if ((curr_attr === attribute && !wildcard) || (curr_attr.substr(0, attribute.length) === attribute && wildcard)) {
+                    elements.push(arr_elms[i]);
+                }
+            }
+        }
+        return elements;
+    },
+
+    getEventsGrouped: function (elements) {
+        var events = {};
+        for (var el in elements) {
+            var element = elements[el];
+            for (var i = 0, attrs = element.attributes, l = attrs.length; i < l; i++){
+                var curr_attr = attrs.item(i).nodeName;
+                if (curr_attr.substr(0, 2) === 'on') {
+                    if (events[curr_attr] === undefined) {
+                        events[curr_attr] = [];
+                    }
+                    events[curr_attr].push(element);
+                }
+            }
+        }
+        return events;
+    },
+
     getEvents: function () {
+        var evt, el, type, signature, identifier,
+            staticEvents = window.eventContainer.getEventsGrouped(window.eventContainer.getElementsByAttribute('on*'));
+
+        for (evt in staticEvents) {
+            type = evt.substr(2);
+            for (el in staticEvents[evt]) {
+                signature = hex_sha1(staticEvents[evt][el].getAttribute(evt));
+                window.eventContainer.pushEvent(type, signature, staticEvents[evt][el]);
+            }
+        }
+
         return window.eventContainer.container;
     }
 };
