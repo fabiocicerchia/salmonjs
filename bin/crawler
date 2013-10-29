@@ -1,4 +1,4 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 /**
  *                  __                                __
  * .--.--.--.-----.|  |--. .----.----.---.-.--.--.--.|  |.-----.----.
@@ -85,8 +85,7 @@ if (argv.help !== undefined || argv.uri === undefined) {
     argv.showHelp();
 } else {
     var uri = path.resolve(argv.uri);
-    if (path.existsSync(uri)) {
-    //if (fs.existsSync(uri)) {
+    if (fs.existsSync(uri)) {
         uri = 'file://' + encodeURI(uri);
     } else {
         uri = argv.uri;
