@@ -249,7 +249,7 @@ var PhantomParser = function () {
             links:     links
         };
 
-        console.log(JSON.stringify(response));
+        console.log('###' + JSON.stringify(response));
         phantom.exit();
     };
 
