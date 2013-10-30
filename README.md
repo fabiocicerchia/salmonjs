@@ -33,8 +33,8 @@ Few suggestion about its usage:
  * Handle events bound with `addEventListener`, HTML attributes (`on*`)
  * Exclude external URIs in the crawling
  * Process the page using PhantomJS
- * Store the page details in a report directory
-  * HTTP Header
+ * Generate report for each page crawled
+  * HTTP header
   * HTTP method
   * Data sent
   * Page output
@@ -104,10 +104,6 @@ Options:
  * Add screenshot creation, with an option to be enabled
  * Handle Uploads
  * Create test files for GET (???)
- * Store execution time for each URL
- * Store the params for each scrape
- * Aggregate everything in reports (URLs parsed, execution time, http headers
-   and page size)
  * Implement zombie.js as interface to substitute phantom.js
  * Tests
 
