@@ -30,11 +30,13 @@
 var Parser    = require('../../src/parser');
 var config    = require('../../src/config');
 var idCrawler = require('system').args[1];
-var url       = require('system').args[2];
-var type      = require('system').args[3];
-var data      = require('system').args[4];
-var evt       = require('system').args[5];
-var xPath     = require('system').args[6];
+var username  = require('system').args[2];
+var password  = require('system').args[3];
+var url       = require('system').args[4];
+var type      = require('system').args[5];
+var data      = require('system').args[6];
+var evt       = require('system').args[7];
+var xPath     = require('system').args[8];
 var page      = require('webpage').create();
 var t;
 
@@ -51,6 +53,12 @@ page.onInitialized = function() {
     page.injectJs('../sha1.js');
     page.injectJs('../events.js');
 };
+
+if (username !== undefined && password !== undefined) {
+    page.customHeaders = {
+        'Authorization': 'Basic ' + btoa(username + ':' + password)
+    };
+}
 
 /**
  * PhantomParser Class.

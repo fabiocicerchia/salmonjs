@@ -64,7 +64,7 @@ console.log('');
 argv = require('optimist')
     .usage('Web Crawler in Node.js to spider dynamically whole websites.\nUsage: $0')
     .demand('uri')
-    .alias('u', 'user')
+    .alias('u', 'username')
     .alias('p', 'password')
     .alias('s', 'screenshots')
     .alias('d', 'details')
@@ -95,10 +95,12 @@ if (argv.help !== undefined || argv.uri === undefined) {
         }
     }
 
-	winston.info('Start mapper.parse(' + uri + ')');
+    winston.info('Start mapper.parse(' + uri + ')');
 
-	client.send_command('FLUSHDB', []);
+    client.send_command('FLUSHDB', []);
 
-	var crawler = new Crawler();
-	crawler.run(uri, 'GET');
+    var crawler = new Crawler();
+    crawler.username = argv.username;
+    crawler.password = argv.password;
+    crawler.run(uri, 'GET');
 }

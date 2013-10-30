@@ -101,6 +101,24 @@ module.exports = function Crawler() {
     this.idUri = '';
 
     /**
+     * The username for HTTP Authentication.
+     *
+     * @property username
+     * @type {String}
+     * @default ""
+     */
+    this.username;
+
+    /**
+     * The password for HTTP Authentication.
+     *
+     * @property password
+     * @type {String}
+     * @default ""
+     */
+    this.password;
+
+    /**
      * Current instance.
      *
      * @property currentCrawler
@@ -145,6 +163,8 @@ module.exports = function Crawler() {
                 //'--debug=true',
                 './src/parser/' + config.parser.interface + '.js',
                 this.idUri,
+                this.username,
+                this.password,
                 this.url,
                 this.type,
                 this.serialise(this.data),
@@ -232,6 +252,8 @@ module.exports = function Crawler() {
             client.hset(redisId, 'url', currentCrawler.url);
 
             crawler = new Crawler();
+            crawler.username = currentCrawler.username;
+            crawler.password = currentCrawler.password;
             crawler.run(container.url, container.type, container.container, container.evt, container.xPath);
         } else {
             winston.info(winstonCrawlerId + ('Match found in Redis for "' + container.url + '" (event: "' + container.evt + '" - XPath: "' + container.xPath + '"). Skip').yellow);
