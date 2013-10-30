@@ -136,6 +136,11 @@ module.exports = function Crawler() {
     this.processOutput = '';
 
     /**
+     * TBW
+     */
+    this.timeStart = 0;
+
+    /**
      * Current instance.
      *
      * @property currentCrawler
@@ -286,6 +291,7 @@ module.exports = function Crawler() {
         client.hset(redisId, 'url', currentCrawler.url);
 
         crawler = new Crawler();
+        crawler.timeStart    = currentCrawler.timeStart;
         crawler.username     = currentCrawler.username;
         crawler.password     = currentCrawler.password;
         crawler.storeDetails = currentCrawler.storeDetails;
@@ -466,9 +472,8 @@ module.exports = function Crawler() {
         reportContent = reportContent.replace('%%XPATH%%',      report.xPath);
         reportContent = reportContent.replace('%%DATA%%',       JSON.stringify(report.data));
 
-        // TODO: Add timestamp of the run to group by executions
-        var reportFile    = __dirname + currentCrawler.REPORT_DIRECTORY + reportName + '.html';
-        fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY, '0777', function () {
+        var reportFile    = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/' + reportName + '.html';
+        fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/', '0777', function () {
             fs.writeFileSync(reportFile, reportContent);
         });
     };

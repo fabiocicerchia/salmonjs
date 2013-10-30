@@ -99,6 +99,7 @@ if (argv.help !== undefined || argv.uri === undefined) {
     client.send_command('FLUSHDB', []);
 
     var crawler = new Crawler();
+    crawler.timeStart    = Date.now();
     crawler.username     = argv.username;
     crawler.password     = argv.password;
     crawler.storeDetails = argv.details;
