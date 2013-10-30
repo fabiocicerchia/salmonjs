@@ -102,12 +102,10 @@ module.exports = function Parser() {
      * @return {Object}
      */
     this.normaliseData = function (data) {
-        var query = data.replace(/.+\?/, ''),
-            dataContainer = {},
+        var dataContainer = {},
             keys = [],
-            vars = query.split('&'),
+            vars = data.replace(/.+\?/, '').split('&'),
             i,
-            k,
             pair,
             sorted = {};
 
@@ -118,9 +116,9 @@ module.exports = function Parser() {
         }
         keys = keys.sort();
 
-        for (k in keys) {
-            if (keys.hasOwnProperty(k)) {
-                sorted[keys[k]] = dataContainer[keys[k]];
+        for (i in keys) {
+            if (keys.hasOwnProperty(i)) {
+                sorted[keys[i]] = dataContainer[keys[i]];
             }
         }
 
@@ -137,11 +135,13 @@ module.exports = function Parser() {
     this.arrayToQuery = function (arr) {
         var k,
             string = [];
+
         for (k in arr) {
             if (arr.hasOwnProperty(k)) {
                 string.push(k + '=' + arr[k]);
             }
         }
+
         return string.join('&');
     };
 

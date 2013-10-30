@@ -27,13 +27,18 @@
  * SOFTWARE.
  */
 
+/**
+ * TBW
+ */
 function getXPath(element) {
     var xpath = '',
         nodeList,
         id;
 
     for (; element && element.nodeType == 1; element = element.parentNode) {
-        nodeList = Array.prototype.slice.call(element.parentNode.getElementsByTagName(element.tagName));
+        nodeList = Array.prototype.slice.call(
+            element.parentNode.getElementsByTagName(element.tagName)
+        );
         id = nodeList.indexOf(element) + 1;
 
         id = id > 1 ? ('[' + id + ']') : '';
@@ -42,11 +47,17 @@ function getXPath(element) {
     return xpath;
 }
 
+/**
+ * TBW
+ */
 document.getElementByXpath = function (path) {
     return document.evaluate(path, document, null, 9, null).singleNodeValue;
 };
 
-document.getElementsByAttribute = Element.prototype.getElementsByAttribute = function (attr) {
+/**
+ * TBW
+ */
+Element.prototype.getElementsByAttribute = function (attr) {
     var i,
         elem,
         nodeArray = [],
@@ -60,10 +71,17 @@ document.getElementsByAttribute = Element.prototype.getElementsByAttribute = fun
 
     return nodeArray;
 };
+document.getElementsByAttribute = Element.prototype.getElementsByAttribute;
 
+/**
+ * TBW
+ */
 window.eventContainer = {
     container: {},
 
+    /**
+     * TBW
+     */
     pushEvent: function (type, signature, element) {
         if (window.eventContainer.container[type] === undefined) {
             window.eventContainer.container[type] = {};
@@ -81,6 +99,9 @@ window.eventContainer = {
         window.eventContainer.container[type][signature].push(identifier);
     },
 
+    /**
+     * TBW
+     */
     customAddEventListener: function (type, listener, useCapture, wantsUntrusted) {
         var signature = hex_sha1(listener.toString());
         window.eventContainer.pushEvent(type, signature, this);
@@ -88,6 +109,9 @@ window.eventContainer = {
         return this._origAddEventListener(type, listener, useCapture, wantsUntrusted);
     },
 
+    /**
+     * TBW
+     */
     customRemoveEventListener: function (type, listener, useCapture)
     {
         var signature = hex_sha1(listener.toString());
@@ -98,6 +122,9 @@ window.eventContainer = {
         return this._origRemoveEventListener(type, listener, useCapture);
     },
 
+    /**
+     * TBW
+     */
     customSetAttribute: function (name, value) {
         var type,
             signature,
@@ -112,6 +139,9 @@ window.eventContainer = {
         return this._origSetAttribute(name, value);
     },
 
+    /**
+     * TBW
+     */
     customRemoveAttribute: function (name) {
         var type,
             signature;
@@ -132,6 +162,9 @@ window.eventContainer = {
         return this._origRemoveAttribute(name);
     },
 
+    /**
+     * TBW
+     */
     overrideEventListener: function (object) {
         var prototype = object.prototype === undefined ? object : object.prototype;
 
@@ -141,6 +174,9 @@ window.eventContainer = {
         prototype.removeEventListener      = window.eventContainer.customRemoveEventListener;
     },
 
+    /**
+     * TBW
+     */
     overrideAttributeHandler: function (object) {
         var prototype = object.prototype === undefined ? object : object.prototype;
 
@@ -150,6 +186,9 @@ window.eventContainer = {
         prototype.removeAttribute      = window.eventContainer.customRemoveAttribute;
     },
 
+    /**
+     * TBW
+     */
     // TODO: what about attributes attached at runtime?
     getElementsByAttribute: function (attribute) {
         var arr_elms = document.body.getElementsByTagName('*');
@@ -173,6 +212,9 @@ window.eventContainer = {
         return elements;
     },
 
+    /**
+     * TBW
+     */
     getEventsGrouped: function (elements) {
         var events = {};
         for (var el in elements) {
@@ -190,6 +232,9 @@ window.eventContainer = {
         return events;
     },
 
+    /**
+     * TBW
+     */
     getEvents: function () {
         var evt, el, type, signature, identifier,
             staticEvents = window.eventContainer.getEventsGrouped(window.eventContainer.getElementsByAttribute('on*'));

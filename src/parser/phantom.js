@@ -107,12 +107,9 @@ var PhantomParser = function () {
     this.parseGet = function (url, data, evt, xPath) {
         this.event = evt;
         this.xPath = xPath;
+        data       = data || '';
 
         t = Date.now();
-
-        if (data === 'undefined' || data === undefined) {
-            data = '';
-        }
 
         page.open(url + data, this.onOpen);
         page.onLoadFinished = currentParser.onLoadFinished;
@@ -161,9 +158,10 @@ var PhantomParser = function () {
     this.fireEventObject = function () {
         var obj,
             evt;
+
         eval('obj = ' + arguments[0].xPath);
         if (obj !== undefined) {
-            evt = document.createEvent('CustomEvent');  // MUST be 'CustomEvent'
+            evt = document.createEvent('CustomEvent');
             evt.initCustomEvent(arguments[0].event, false, false, null);
             obj.dispatchEvent(evt);
         }
@@ -176,17 +174,13 @@ var PhantomParser = function () {
      * @return undefined
      */
     this.fireEventDOM = function () {
-        // 1 - Identify the element in the page
-        // 2 - Retrieve the element
         var element = document.getElementByXpath(arguments[0].xPath),
             evt;
+
         if (element !== undefined) {
-            // 3 - Fire the event
-            evt = document.createEvent('CustomEvent');  // MUST be 'CustomEvent'
+            evt = document.createEvent('CustomEvent');
             evt.initCustomEvent(arguments[0].event, false, false, null);
             element.dispatchEvent(evt);
-
-            return document.body.outerHTML;
         }
 
     };
@@ -208,6 +202,16 @@ var PhantomParser = function () {
             }
         }
 
+        currentParser.parsePage();
+    };
+
+    /**
+     * Parse the page to get the information needed.
+     *
+     * @method parsePage
+     * @return undefined
+     */
+    this.parsePage = function () {
         url = page.evaluate(function () {
             return document.location.href;
         });
