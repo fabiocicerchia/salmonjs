@@ -337,6 +337,15 @@ module.exports = function Crawler() {
 
     /**
      * TBW
+     */
+    this.checkRunningCrawlers = function () {
+        if (!waitingRetry && runningCrawlers === 0) {
+            //process.exit();
+        }
+    }
+
+    /**
+     * TBW
      *
      * @method onStdOut
      * @param {Object} data The data returned by the parser.
@@ -418,16 +427,50 @@ module.exports = function Crawler() {
         );
 
         currentCrawler.processPage(currentCrawler.processOutput);
-
         runningCrawlers--;
-        console.log(runningCrawlers);
-        console.log(waitingRetry);
-        /*
+    };
 
+    /**
+     * TBW
+     */
+    this.htmlEscape = function (str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    };
 
-        if (!waitingRetry && runningCrawlers === 0) {
-            process.exit(code);
-        }*/
+    /**
+     * TBW
+     */
+    this.storeDetailsToFile = function (report) {
+        sha1          = crypto.createHash('sha1'),
+        plainText     = JSON.stringify(currentCrawler); // TODO: Generate a unique and reproducible string
+
+        var reportName    = currentCrawler.url.toString().replace(/[^a-zA-Z0-9_]/g, '_');
+        reportName       += '_' + sha1.update(plainText).digest('hex').substr(0, 4);
+        var reportContent = fs.readFileSync(__dirname + '/../src/tpl.html').toString();
+
+        reportContent = reportContent.replace('%%URI%%',        currentCrawler.url);
+        reportContent = reportContent.replace('%%ERRORS%%',     JSON.stringify(report.errors, null, 4).replace(/\n/g, '<br />'));
+        reportContent = reportContent.replace('%%ALERTS%%',     JSON.stringify(report.alerts, null, 4).replace(/\n/g, '<br />'));
+        reportContent = reportContent.replace('%%CONFIRMS%%',   JSON.stringify(report.confirms, null, 4).replace(/\n/g, '<br />'));
+        reportContent = reportContent.replace('%%CONSOLE%%',    JSON.stringify(report.console, null, 4).replace(/\n/g, '<br />'));
+        reportContent = reportContent.replace('%%RESOURCES%%',  JSON.stringify(report.resources, null, 4).replace(/\n/g, '<br />'));
+        reportContent = reportContent.replace('%%TIME%%',       JSON.stringify(report.time, null, 4).replace(/\n/g, '<br />'));
+        reportContent = reportContent.replace('%%CONTENT%%',    currentCrawler.htmlEscape(report.content));
+        reportContent = reportContent.replace('%%HTTPMETHOD%%', report.httpMethod);
+        reportContent = reportContent.replace('%%EVENTS%%',     JSON.stringify(report.event, null, 4).replace(/\n/g, '<br />'));
+        reportContent = reportContent.replace('%%XPATH%%',      report.xPath);
+        reportContent = reportContent.replace('%%DATA%%',       JSON.stringify(report.data));
+
+        // TODO: Add timestamp of the run to group by executions
+        var reportFile    = __dirname + currentCrawler.REPORT_DIRECTORY + reportName + '.html';
+        fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY, '0777', function () {
+            fs.writeFileSync(reportFile, reportContent);
+        });
     };
 
     /**
@@ -451,16 +494,7 @@ module.exports = function Crawler() {
         links  = result.links;
 
         if (currentCrawler.storeDetails) {
-            sha1          = crypto.createHash('sha1'),
-            plainText     = JSON.stringify(currentCrawler);
-
-            var reportName    = currentCrawler.url.toString().replace(/[^a-zA-Z0-9_]/g, '_');
-            reportName       += '_' + sha1.update(plainText).digest('hex').substr(0, 4);
-            var reportContent = JSON.stringify(result.report);
-            var reportFile    = __dirname + currentCrawler.REPORT_DIRECTORY + reportName + '.report';
-            fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY, '0777', function () {
-                fs.writeFileSync(reportFile, reportContent);
-            });
+            currentCrawler.storeDetailsToFile(result.report);
         }
 
         // TODO: Optimise this code
