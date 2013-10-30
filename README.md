@@ -25,6 +25,15 @@ Few suggestion about its usage:
   * Page load
  * ...
 
+## Features
+
+ * Commander Line Interface
+ * Reorder query string params for get and post for uniqueness
+ * HTTP authentication
+ * Handle events bound with `addEventListener`, HTML attributes (`on*`)
+ * Exclude external URIs in the crawling
+ * Process the page using PhantomJS
+
 ## Dependencies
 
  * [Node.js](http://nodejs.org/download/)
@@ -41,6 +50,30 @@ Change the file `src/config.js` accordingly with your needs.
 npm install
 ```
 
+## Usage
+
+```
+                 __                                __
+.--.--.--.-----.|  |--. .----.----.---.-.--.--.--.|  |.-----.----.
+|  |  |  |  -__||  _  | |  __|   _|  _  |  |  |  ||  ||  -__|   _|
+|________|_____||_____| |____|__| |___._|________||__||_____|__|
+
+WEB CRAWLER v0.1.0
+
+Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+
+Web Crawler in Node.js to spider dynamically whole websites.
+Usage: ./bin/crawler
+
+Options:
+  --uri              The URI to be crawled             [required]
+  -u, --user         Username for HTTP authentication
+  -p, --password     Password for HTTP authentication
+  -s, --screenshots  Store screenshots for each page   [default: false]
+  -d, --details      Store details for each page       [default: false]
+  --help             Show the help
+```
+
 ## Examples
 
 ```
@@ -54,11 +87,9 @@ npm install
 
  * jQuery is working within PhantomJS only if the version <= 1.8.3.
  * Not processing $.on().
- * jQuery is not inserting any script at runtime.
 
 ## TODO
 
- * Add authentication (http://stackoverflow.com/questions/10114925/http-authentication-in-phantomjs)
  * Add screenshot creation, with an option to be enabled
  * Store the page details is a report directory, with an option to be enabled
  * Create test files for GET (???)
