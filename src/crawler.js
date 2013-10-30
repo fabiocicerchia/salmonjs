@@ -27,13 +27,15 @@
  * SOFTWARE.
  */
 
-var config  = require('./config');
-var spawn   = require('child_process').spawn;
-var crypto  = require('crypto');
-var Test    = require('../src/test');
-var redis   = require("redis");
-var client  = redis.createClient(config.redis.port, config.redis.hostname);
-var winston = require('winston');
+var config  = require('./config'),
+    spawn   = require('child_process').spawn,
+    crypto  = require('crypto'),
+    Test    = require('../src/test'),
+    redis   = require("redis"),
+    client  = redis.createClient(config.redis.port, config.redis.hostname),
+    winston = require('winston'),
+    fs      = require('fs');
+
 require('colors');
 require('path');
 
@@ -117,6 +119,11 @@ module.exports = function Crawler() {
      * @default ""
      */
     this.password;
+
+    /**
+     * TBW
+     */
+    this.processOutput = '';
 
     /**
      * Current instance.
@@ -210,12 +217,12 @@ module.exports = function Crawler() {
         plainText  = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
         this.idUri = sha1.update(plainText).digest('hex').substr(0, 8);
 
-        var winstonCrawlerId = '[' + this.idUri.cyan + '-' + this.idCrawler.magenta + '] ';
+        var winstonCrawlerId = '[' + this.idUri.cyan + '-' + this.idCrawler.magenta + ']';
 
         winston.info(
             '%s Launching crawler to parse "%s" - %s on %s ...',
             winstonCrawlerId,
-            this.url.green +
+            this.url.green,
             (this.evt === '' ? 'N/A'.grey : this.evt.blue),
             (this.xPath === '' ? 'N/A'.grey : this.xPath.green)
         );
@@ -237,7 +244,7 @@ module.exports = function Crawler() {
      */
     this.analiseRedisResponse = function (err, reply, redisId, container) {
         var id               = redisId.substr(0, 8),
-            winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + '] ',
+            winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']',
             newId,
             crawler;
 
@@ -248,7 +255,7 @@ module.exports = function Crawler() {
         // reply is null when the key is missing
         if (reply !== null) {
             winston.info(
-                '%s' + 'Match found in Redis for "%s" (event: "%s" - XPath: "%s"). Skip'.yellow,
+                '%s' + ' Match found in Redis for "%s" (event: "%s" - XPath: "%s"). Skip'.yellow,
                 winstonCrawlerId,
                 container.url,
                 container.evt,
@@ -262,7 +269,9 @@ module.exports = function Crawler() {
         newId     = sha1.update(plainText).digest('hex').substr(0, 8);
 
         winston.info(
-            winstonCrawlerId + ('Match not found in Redis. Continue (' + newId + ')').grey
+            '%s' + ' Match not found in Redis. Continue. Continue (%s)'.grey,
+            winstonCrawlerId,
+            newId
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
@@ -323,106 +332,14 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.onStdOut = function (data) {
-        if (data.toString().substr(0, 3) !== '###') {
-            //winston.info(data.toString());
-            return;
-        }
+        var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
-        var result = JSON.parse(data.toString().substr(3)),
-            links  = result.links,
-            event,
-            signature,
-            element,
-            newId,
-            winstonCrawlerId;
-
-        winstonCrawlerId = '[' + result.idCrawler.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
-
-        winston.info('%s Retrieved response', winstonCrawlerId);
-
-        // TODO: Optimise this code
-        for (event in links.events) {
-            if (links.events.hasOwnProperty(event)) {
-                for (signature in links.events[event]) {
-                    if (links.events[event].hasOwnProperty(signature)) {
-                        for (element in links.events[event][signature]) {
-                            if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
-                                sha1      = crypto.createHash('sha1');
-                                plainText = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element];
-                                newId     = sha1.update(plainText).digest('hex').substr(0, 8);
-
-                                winston.info(
-                                    '%s Firing %s on "%s" (%s)...',
-                                    winstonCrawlerId,
-                                    event.toUpperCase().blue,
-                                    links.events[event][signature][element].green,
-                                    newId.cyan
-                                );
-                                currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
-                            }
-                        }
-                    }
-                }
-            }
-            //currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
-        }
-
-        links.anchors.forEach(function (element) {
-            currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
-        });
-
-        links.links.forEach(function (element) {
-            currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
-        });
-
-        links.scripts.forEach(function (element) {
-            currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
-        });
-
-        links.forms.forEach(function (element) {
-            var id        = element.action.toString().replace(/[^a-zA-Z0-9_]/g, ''),
-                test      = new Test(),
-                fieldData = {},
-                cases,
-                i,
-                j;
-
-            // TODO: Sort this fields?
-            for (i in element.fields) {
-                if (element.fields.hasOwnProperty(i)) {
-                    fieldData[element.fields[i]] = '';
-                }
-            }
-            test.create(id + '-' + element.type, fieldData);
-            //test.create(id + '-' + 'get', fieldData);
-            //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
-
-            cases = test.getCases(id + '-' + element.type);
-            for (j in cases) {
-                if (cases.hasOwnProperty(j)) {
-                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), []);
-                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), cases[j]);
-                }
-            }
-
-            /*
-            var cases = test.getCases(id + '-get');
-            for (var j in cases) {
-              currentCrawler.checkAndRun(element, 'GET', []);
-              currentCrawler.checkAndRun(element, 'GET', cases[j]);
-            }
-
-            cases = test.getCases(id + '-post');
-            for (j in cases) {
-              currentCrawler.checkAndRun(element, 'POST', []);
-              currentCrawler.checkAndRun(element, 'POST', cases[j]);
-            }
-            */
-        });
+        winston.info(
+            '%s Retrieved %d bytes.',
+            winstonCrawlerId,
+            data.toString().length
+        );
+        currentCrawler.processOutput += data.toString();
     };
 
     /**
@@ -481,10 +398,130 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.onExit = function (code) {
+        var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
+
+        winston.info(
+            '%s Execution terminated with status: %d',
+            winstonCrawlerId,
+            code
+        );
+
+        currentCrawler.processPage(currentCrawler.processOutput);
+
         runningCrawlers--;
+        console.log(runningCrawlers);
+        console.log(waitingRetry);
+        /*
+
 
         if (!waitingRetry && runningCrawlers === 0) {
             process.exit(code);
-        }
+        }*/
     };
+
+    /**
+     * TBW
+     */
+    this.processPage = function (content) {
+        var result,
+            links,
+            event,
+            signature,
+            element,
+            newId,
+            winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
+
+        winston.info('%s Processing response...', winstonCrawlerId);
+
+        result = JSON.parse(content.replace(/^.*###/m, ''));
+
+        winston.info('%s Response ready', winstonCrawlerId);
+
+        links  = result.links;
+
+        // TODO: Optimise this code
+        for (event in links.events) {
+            if (links.events.hasOwnProperty(event)) {
+                for (signature in links.events[event]) {
+                    if (links.events[event].hasOwnProperty(signature)) {
+                        for (element in links.events[event][signature]) {
+                            if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
+                                sha1      = crypto.createHash('sha1');
+                                plainText = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element];
+                                newId     = sha1.update(plainText).digest('hex').substr(0, 8);
+
+                                winston.info(
+                                    '%s Firing %s on "%s" (%s)...',
+                                    winstonCrawlerId,
+                                    event.toUpperCase().blue,
+                                    links.events[event][signature][element].green,
+                                    newId.cyan
+                                );
+                                currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
+                            }
+                        }
+                    }
+                }
+            }
+            //currentCrawler.checkAndRun(element, 'GET');
+            //currentCrawler.checkAndRun(element, 'GET', data);
+        }
+
+        links.anchors.forEach(function (element) {
+            currentCrawler.checkAndRun(element, 'GET');
+            //currentCrawler.checkAndRun(element, 'GET', data);
+        });
+
+        links.links.forEach(function (element) {
+            currentCrawler.checkAndRun(element, 'GET');
+            //currentCrawler.checkAndRun(element, 'GET', data);
+        });
+
+        links.scripts.forEach(function (element) {
+            currentCrawler.checkAndRun(element, 'GET');
+            //currentCrawler.checkAndRun(element, 'GET', data);
+        });
+
+        links.forms.forEach(function (element) {
+            var id        = element.action.toString().replace(/[^a-zA-Z0-9_]/g, '_'),
+                test      = new Test(),
+                fieldData = {},
+                cases,
+                i,
+                j;
+
+            // TODO: Sort this fields?
+            for (i in element.fields) {
+                if (element.fields.hasOwnProperty(i)) {
+                    fieldData[element.fields[i]] = '';
+                }
+            }
+            test.create(id + '-' + element.type, fieldData);
+            //test.create(id + '-' + 'get', fieldData);
+            //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
+
+            cases = test.getCases(id + '-' + element.type);
+            for (j in cases) {
+                if (cases.hasOwnProperty(j)) {
+                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), []);
+                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), cases[j]);
+                }
+            }
+
+            /*
+            var cases = test.getCases(id + '-get');
+            for (var j in cases) {
+              currentCrawler.checkAndRun(element, 'GET', []);
+              currentCrawler.checkAndRun(element, 'GET', cases[j]);
+            }
+
+            cases = test.getCases(id + '-post');
+            for (j in cases) {
+              currentCrawler.checkAndRun(element, 'POST', []);
+              currentCrawler.checkAndRun(element, 'POST', cases[j]);
+            }
+            */
+        });
+    };
+
 };
