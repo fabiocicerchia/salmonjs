@@ -1,10 +1,11 @@
 /**
- *                  __                                __
- * .--.--.--.-----.|  |--. .----.----.---.-.--.--.--.|  |.-----.----.
- * |  |  |  |  -__||  _  | |  __|   _|  _  |  |  |  ||  ||  -__|   _|
- * |________|_____||_____| |____|__| |___._|________||__||_____|__|
+ *               __     __
+ * .-----.-----.|__|.--|  |.-----.--.--.
+ * |__ --|  _  ||  ||  _  ||  -__|  |  |
+ * |_____|   __||__||_____||_____|___  |
+ *       |__|                    |_____|
  *
- * WEB CRAWLER v0.1.0
+ * SPIDEY v0.1.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -50,14 +51,14 @@ winston.add(
     }
 );
 
-console.log('                 __    '.bold.yellow + '                            __'.bold.green);
-console.log('.--.--.--.-----.|  |--.'.bold.yellow + ' .----.----.---.-.--.--.--.|  |.-----.----.'.bold.green);
-console.log('|  |  |  |  -__||  _  |'.bold.yellow + ' |  __|   _|  _  |  |  |  ||  ||  -__|   _|'.bold.green);
-console.log('|________|_____||_____|'.bold.yellow + ' |____|__| |___._|________||__||_____|__|'.bold.green);
+console.log('              __     __'.yellow);
+console.log('.-----.-----.|__|.--|  |.-----.--.--.'.yellow);
+console.log('|__ --|  _  ||  ||  _  ||  -__|  |  |'.yellow);
+console.log('|_____|   __||__||_____||_____|___  |'.yellow);
+console.log('      |__|                    |_____|'.yellow);
 console.log('');
-console.log('WEB CRAWLER v0.1.0'.bold.grey);
-console.log('');
-console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.bold.grey);
+console.log('SPIDEY v0.1.0'.grey);
+console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
 console.log('');
 
 argv = require('optimist')

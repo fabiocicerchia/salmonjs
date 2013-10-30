@@ -1,5 +1,5 @@
 {
-  "name": "web-crawler",
+  "name": "spidey",
   "preferGlobal": true,
   "version": "0.1.0",
   "author": "Fabio Cicerchia <info@fabiocicerchia.it>",
@@ -11,16 +11,17 @@
     }
   ],
   "bin": {
-    "crawler": "./bin/crawler"
+    "spidey": "./bin/spidey"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabiocicerchia/web-crawler.git"
+    "url": "https://github.com/fabiocicerchia/spidey.git"
   },
   "keywords": [
     "cli",
     "web",
-    "crawler"
+    "crawler",
+    "spidey"
   ],
   "dependencies" : {
     "optimist" : "0.6.0",

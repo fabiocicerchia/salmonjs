@@ -1,4 +1,4 @@
-# Web Crawler
+# SPIDEY
 
 Web Crawler in Node.js to spider dynamically whole websites.
 
@@ -63,17 +63,18 @@ npm install
 ## Usage
 
 ```
-                 __                                __
-.--.--.--.-----.|  |--. .----.----.---.-.--.--.--.|  |.-----.----.
-|  |  |  |  -__||  _  | |  __|   _|  _  |  |  |  ||  ||  -__|   _|
-|________|_____||_____| |____|__| |___._|________||__||_____|__|
+              __     __
+.-----.-----.|__|.--|  |.-----.--.--.
+|__ --|  _  ||  ||  _  ||  -__|  |  |
+|_____|   __||__||_____||_____|___  |
+      |__|                    |_____|
 
-WEB CRAWLER v0.1.0
+SPIDEY v0.1.0
 
 Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
 
 Web Crawler in Node.js to spider dynamically whole websites.
-Usage: ./bin/crawler
+Usage: ./bin/spidey
 
 Options:
   --uri              The URI to be crawled             [required]
@@ -87,10 +88,10 @@ Options:
 ## Examples
 
 ```
-[user@hostname /tmp]$ ./bin/crawler --uri "http://www.google.com"
-[user@hostname /tmp]$ ./bin/crawler --uri "www.google.com"
-[user@hostname /tmp]$ ./bin/crawler --uri "/tmp/file.html"
-[user@hostname /tmp]$ ./bin/crawler --uri "file.html"
+[user@hostname /tmp]$ ./bin/spidey --uri "http://www.google.com"
+[user@hostname /tmp]$ ./bin/spidey --uri "www.google.com"
+[user@hostname /tmp]$ ./bin/spidey --uri "/tmp/file.html"
+[user@hostname /tmp]$ ./bin/spidey --uri "file.html"
 ```
 
 ## BUGS
