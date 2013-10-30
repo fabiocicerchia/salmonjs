@@ -27,32 +27,17 @@
  * SOFTWARE.
  */
 
-var Parser    = require('../../src/parser');
-var config    = require('../../src/config');
-var idCrawler = require('system').args[1];
-var username  = require('system').args[2];
-var password  = require('system').args[3];
-var url       = require('system').args[4];
-var type      = require('system').args[5];
-var data      = require('system').args[6];
-var evt       = require('system').args[7];
-var xPath     = require('system').args[8];
-var page      = require('webpage').create();
-var t;
-
-page.settings.resourceTimeout = config.parser.timeout;
-page.onResourceTimeout = function () {
-    phantom.exit();
-};
-page.onError = function () {
-    // Ignore the JS errors
-    // TODO: It might be useful as report metric
-};
-
-page.onInitialized = function() {
-    page.injectJs('../sha1.js');
-    page.injectJs('../events.js');
-};
+var Parser    = require('../../src/parser'),
+    config    = require('../../src/config'),
+    idCrawler = require('system').args[1],
+    username  = require('system').args[2],
+    password  = require('system').args[3],
+    url       = require('system').args[4],
+    type      = require('system').args[5],
+    data      = require('system').args[6],
+    evt       = require('system').args[7],
+    xPath     = require('system').args[8],
+    page      = require('webpage').create();
 
 if (username !== undefined && password !== undefined) {
     page.customHeaders = {
@@ -85,6 +70,20 @@ var PhantomParser = function () {
      */
     this.xPath = '';
 
+    this.report = {
+        errors:     [],
+        alerts:     [],
+        confirms:   [],
+        console:    [],
+        resources:  {},
+        time:       { start: 0, end: 0, total: 0},
+        content:    '',
+        httpMethod: '',
+        event:      '',
+        xPath:      '',
+        data:       {}
+    };
+
     /**
      * Current instance.
      *
@@ -109,10 +108,25 @@ var PhantomParser = function () {
         this.xPath = xPath;
         data       = data || '';
 
-        t = Date.now();
+        currentParser.report.time.start = Date.now();
+
+        currentParser.report.httpMethod = 'GET';
+        currentParser.report.event      = evt;
+        currentParser.report.xPath      = xPath;
+        currentParser.report.data       = data;
+
+        page.settings.resourceTimeout = config.parser.timeout;
+        page.onResourceTimeout        = this.onResourceTimeout;
+        page.onError                  = this.onError;
+        page.onInitialized            = this.onInitialized;
+        page.onResourceReceived       = this.onResourceReceived;
+        page.onAlert                  = this.onAlert;
+        page.onConfirm                = this.onConfirm;
+        page.onPrompt                 = this.onPrompt;
+        page.onConsoleMessage         = this.onConsoleMessage;
 
         page.open(url + data, this.onOpen);
-        page.onLoadFinished = currentParser.onLoadFinished;
+        page.onLoadFinished = this.onLoadFinished;
     };
 
     /**
@@ -129,24 +143,25 @@ var PhantomParser = function () {
         this.event = evt || '';
         this.xPath = xPath || '';
 
-        t = Date.now();
+        currentParser.report.time.start = Date.now();
+
+        currentParser.report.httpMethod = 'POST';
+        currentParser.report.event      = evt;
+        currentParser.report.xPath      = xPath;
+        currentParser.report.data       = data;
+
+        page.settings.resourceTimeout = config.parser.timeout;
+        page.onResourceTimeout        = this.onResourceTimeout;
+        page.onError                  = this.onError;
+        page.onInitialized            = this.onInitialized;
+        page.onResourceReceived       = this.onResourceReceived;
+        page.onAlert                  = this.onAlert;
+        page.onConfirm                = this.onConfirm;
+        page.onPrompt                 = this.onPrompt;
+        page.onConsoleMessage         = this.onConsoleMessage;
 
         page.open(url, 'post', data, this.onOpen);
-    };
-
-    /**
-     * Callback fired when the page has been opened.
-     *
-     * @method onOpen
-     * @param {String} status The page return status
-     * @return undefined
-     */
-    this.onOpen = function (status) {
-        t = Date.now() - t;
-
-        if (status === 'success') {
-            page.navigationLocked = true;
-        }
+        page.onLoadFinished = this.onLoadFinished;
     };
 
     /**
@@ -182,7 +197,95 @@ var PhantomParser = function () {
             evt.initCustomEvent(arguments[0].event, false, false, null);
             element.dispatchEvent(evt);
         }
+    };
 
+    /**
+     * Callback fired when the page has been opened.
+     *
+     * @method onOpen
+     * @param {String} status The page return status
+     * @return undefined
+     */
+    this.onOpen = function (status) {
+        currentParser.report.time.end = Date.now();
+        currentParser.report.time.total = currentParser.report.time.end - currentParser.report.time.start;
+
+        if (status === 'success') {
+            page.navigationLocked = true;
+        }
+    };
+
+    /**
+     * TBW
+     */
+    this.onResourceTimeout = function () {
+        phantom.exit();
+    };
+
+    /**
+     * TBW
+     */
+    this.onError = function (msg, trace) {
+        var msgStack = ['ERROR: ' + msg];
+
+        if (trace && trace.length) {
+            msgStack.push('TRACE:');
+            trace.forEach(function(t) {
+                msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function + '")' : ''));
+            });
+        }
+
+        report.errors.push(msgStack.join('\n'));
+    };
+
+    /**
+     * TBW
+     */
+    this.onInitialized = function() {
+        page.injectJs('../sha1.js');
+        page.injectJs('../events.js');
+    };
+
+    /**
+     * TBW
+     */
+    this.onResourceReceived = function(response) {
+        if (response.stage === 'end') {
+            currentParser.report.resources[response.url] = {
+                headers: response.headers
+            };
+        }
+    };
+
+    /**
+     * TBW
+     */
+    this.onAlert = function(msg) {
+        currentParser.report.alerts.push(msg);
+    };
+
+    /**
+     * TBW
+     */
+    this.onConfirm = function(msg) {
+        currentParser.report.confirms.push(msg);
+        // `true` === pressing the "OK" button, `false` === pressing the "Cancel" button
+        return true; // TODO: Trying to hit both and parse again the page.
+    };
+
+    /**
+     * TBW
+     */
+    this.onPrompt = function(msg, defaultVal) {
+        currentParser.report.confirms.push({msg: msg, defaultVal: defaultVal});
+        return defaultVal; // TODO: Generate a test case for this scenario.
+    };
+
+    /**
+     * TBW
+     */
+    this.onConsoleMessage = function(msg, lineNum, sourceId) {
+        currentParser.report.console.push({msg: msg, lineNum: lineNum, sourceId: sourceId});
     };
 
     /**
@@ -192,8 +295,6 @@ var PhantomParser = function () {
      * @return undefined
      */
     this.onLoadFinished = function () {
-        var url, links, response;
-
         if (currentParser.event.toString() !== '' && currentParser.xPath.toString() !== '') {
             if (currentParser.xPath[0] !== '/') {
                 page.evaluate(currentParser.fireEventObject, currentParser);
@@ -212,6 +313,10 @@ var PhantomParser = function () {
      * @return undefined
      */
     this.parsePage = function () {
+        var url, links, response;
+
+        currentParser.report.content = page.content;
+
         url = page.evaluate(function () {
             return document.location.href;
         });
@@ -246,7 +351,8 @@ var PhantomParser = function () {
 
         response = {
             idCrawler: idCrawler,
-            links:     links
+            links:     links,
+            report:    currentParser.report
         };
 
         console.log('###' + JSON.stringify(response));

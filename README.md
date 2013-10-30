@@ -33,6 +33,16 @@ Few suggestion about its usage:
  * Handle events bound with `addEventListener`, HTML attributes (`on*`)
  * Exclude external URIs in the crawling
  * Process the page using PhantomJS
+ * Store the page details in a report directory
+  * HTTP Header
+  * HTTP method
+  * Data sent
+  * Page output
+  * Execution time
+  * Console messages
+  * Alerts, Confirmations & Prompts
+  * Errors
+  * List of requests
 
 ## Dependencies
 
@@ -42,7 +52,7 @@ Few suggestion about its usage:
 
 ## Configuration
 
-Change the file `src/config.js` accordingly with your needs.
+Change the file `src/config.js` accordingly to your needs.
 
 ## Installation
 
@@ -92,7 +102,7 @@ Options:
 ## TODO
 
  * Add screenshot creation, with an option to be enabled
- * Store the page details is a report directory, with an option to be enabled
+ * Handle Uploads
  * Create test files for GET (???)
  * Store execution time for each URL
  * Store the params for each scrape

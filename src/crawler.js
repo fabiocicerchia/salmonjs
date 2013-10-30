@@ -123,6 +123,16 @@ module.exports = function Crawler() {
     /**
      * TBW
      */
+    this.storeDetails = false;
+
+    /**
+     * TBW
+     */
+    this.REPORT_DIRECTORY = '/../report/';
+
+    /**
+     * TBW
+     */
     this.processOutput = '';
 
     /**
@@ -276,8 +286,9 @@ module.exports = function Crawler() {
         client.hset(redisId, 'url', currentCrawler.url);
 
         crawler = new Crawler();
-        crawler.username = currentCrawler.username;
-        crawler.password = currentCrawler.password;
+        crawler.username     = currentCrawler.username;
+        crawler.password     = currentCrawler.password;
+        crawler.storeDetails = currentCrawler.storeDetails;
         crawler.run(container.url, container.type, container.container, container.evt, container.xPath);
     };
 
@@ -438,6 +449,19 @@ module.exports = function Crawler() {
         winston.info('%s Response ready', winstonCrawlerId);
 
         links  = result.links;
+
+        if (currentCrawler.storeDetails) {
+            sha1          = crypto.createHash('sha1'),
+            plainText     = JSON.stringify(currentCrawler);
+
+            var reportName    = currentCrawler.url.toString().replace(/[^a-zA-Z0-9_]/g, '_');
+            reportName       += '_' + sha1.update(plainText).digest('hex').substr(0, 4);
+            var reportContent = JSON.stringify(result.report);
+            var reportFile    = __dirname + currentCrawler.REPORT_DIRECTORY + reportName + '.report';
+            fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY, '0777', function () {
+                fs.writeFileSync(reportFile, reportContent);
+            });
+        }
 
         // TODO: Optimise this code
         for (event in links.events) {
