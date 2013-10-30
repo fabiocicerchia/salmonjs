@@ -54,6 +54,7 @@ npm install
 
  * jQuery is working within PhantomJS only if the version <= 1.8.3.
  * Not processing $.on().
+ * jQuery is not inserting any script at runtime.
 
 ## TODO
 
