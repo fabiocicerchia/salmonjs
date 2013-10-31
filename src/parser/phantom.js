@@ -33,14 +33,16 @@ var Parser    = require('../../src/parser'),
     fs        = require('fs'),
     idCrawler = require('system').args[1],
     execId    = require('system').args[2],
-    username  = require('system').args[3],
-    password  = require('system').args[4],
-    url       = require('system').args[5],
-    type      = require('system').args[6],
-    data      = require('system').args[7],
-    evt       = require('system').args[8],
-    xPath     = require('system').args[9],
+    idRequest = require('system').args[3],
+    username  = require('system').args[4],
+    password  = require('system').args[5],
+    url       = require('system').args[6],
+    type      = require('system').args[7],
+    data      = require('system').args[8],
+    evt       = require('system').args[9],
+    xPath     = require('system').args[10],
     page      = require('webpage').create();
+require('../../src/sha1');
 
 if (username !== undefined && password !== undefined) {
     page.customHeaders = {
@@ -325,9 +327,7 @@ var PhantomParser = function () {
         });
 
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
-        // TODO: Not unique per event, xpath, type or data.
-        var idImg = url.replace(/[^a-zA-Z0-9_]/g, '_');
-        page.render(fs.workingDirectory + '/report/' + execId + '/' + idImg + '.png');
+        page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
         links = page.evaluate(currentParser.onEvaluate);
 

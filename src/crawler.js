@@ -142,6 +142,11 @@ module.exports = function Crawler() {
     this.timeStart = 0;
 
     /**
+     * TBW
+     */
+    this.processing = false;
+
+    /**
      * Current instance.
      *
      * @property currentCrawler
@@ -181,12 +186,17 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.execPhantomjs = function () {
+        sha1          = crypto.createHash('sha1'),
+        plainText     = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
+        var idRequest = sha1.update(plainText).digest('hex');
+
         var phantom,
             params  = [
                 //'--debug=true',
                 './src/parser/' + config.parser.interface + '.js',
                 this.idUri,
                 this.timeStart,
+                idRequest,
                 this.username,
                 this.password,
                 this.url,
@@ -368,6 +378,17 @@ module.exports = function Crawler() {
             data.toString().length
         );
         currentCrawler.processOutput += data.toString();
+
+        if (currentCrawler.processing) {
+            /**
+             * TODO: This should happen only one time after the process terminated
+             *
+             * 2013-10-31T15:36:49.198Z - info:    [298efe6a-552d] Processing response...
+             * 2013-10-31T15:36:49.202Z - error:   [298efe6a-552d] SyntaxError: Unexpected end of input
+             * 2013-10-31T15:36:49.202Z - info:    [298efe6a-552d] Retrieved 1540 bytes.
+             */
+            currentCrawler.processPage(currentCrawler.processOutput);
+        }
     };
 
     /**
@@ -455,15 +476,13 @@ module.exports = function Crawler() {
      */
     this.storeDetailsToFile = function (report) {
         sha1          = crypto.createHash('sha1'),
-        plainText     = JSON.stringify(currentCrawler); // TODO: Generate a unique and reproducible string
+        plainText     = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + currentCrawler.evt + currentCrawler.xPath;
 
-        var idUrl         = currentCrawler.url.toString().replace(/[^a-zA-Z0-9_]/g, '_');
-        var reportName    = idUrl;
-        reportName       += '_' + sha1.update(plainText).digest('hex').substr(0, 4);
+        var reportName    = sha1.update(plainText).digest('hex');
         var reportContent = fs.readFileSync(__dirname + '/../src/tpl.html').toString();
 
         reportContent = reportContent.replace('%%URI%%',        currentCrawler.url);
-        reportContent = reportContent.replace('%%IMGNAME%%',    idUrl);
+        reportContent = reportContent.replace('%%IMGNAME%%',    reportName);
         reportContent = reportContent.replace('%%ERRORS%%',     JSON.stringify(report.errors, null, 4).replace(/\n/g, '<br />'));
         reportContent = reportContent.replace('%%ALERTS%%',     JSON.stringify(report.alerts, null, 4).replace(/\n/g, '<br />'));
         reportContent = reportContent.replace('%%CONFIRMS%%',   JSON.stringify(report.confirms, null, 4).replace(/\n/g, '<br />'));
@@ -476,9 +495,15 @@ module.exports = function Crawler() {
         reportContent = reportContent.replace('%%XPATH%%',      report.xPath);
         reportContent = reportContent.replace('%%DATA%%',       JSON.stringify(report.data));
 
-        var reportFile    = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/' + reportName + '.html';
+        var indexContent = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
+        indexContent    += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
+        indexContent    += ' XPath: ' + (currentCrawler.xPath === '' ? 'N/A' : currentCrawler.xPath) + '</a>\n';
+
+        var reportFile = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/' + reportName + '.html';
+        var indexFile  = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/index.html';
         fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/', '0777', function () {
             fs.writeFileSync(reportFile, reportContent);
+            fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
         });
     };
 
@@ -486,6 +511,8 @@ module.exports = function Crawler() {
      * TBW
      */
     this.processPage = function (content) {
+        currentCrawler.processing = true;
+
         var result,
             links,
             event,
@@ -496,9 +523,15 @@ module.exports = function Crawler() {
 
         winston.info('%s Processing response...', winstonCrawlerId);
 
-        result = JSON.parse(content.replace(/^.*###/m, ''));
+        try {
+            result = JSON.parse(content.replace(/^.*###/m, ''));
 
-        winston.info('%s Response ready', winstonCrawlerId);
+            winston.info('%s Response ready', winstonCrawlerId);
+        } catch (err) {
+            // TODO: Try again
+            winston.error('%s %s', winstonCrawlerId, err.toString().red);
+            return;
+        }
 
         links  = result.links;
 
