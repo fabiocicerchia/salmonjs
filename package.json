@@ -24,14 +24,15 @@
     "spidey"
   ],
   "dependencies" : {
-    "optimist" : "0.6.0",
-    "prompt"   : "0.2.11",
-    "path"     : "0.4.9",
-    "colors"   : "0.6.2",
-    "redis"    : "0.8.6",
-    "winston"  : "0.7.2",
-    "glob"     : "3.2.6",
-    "zombie"   : "*"
+    "optimist"   : "0.6.0",
+    "prompt"     : "0.2.11",
+    "path"       : "0.4.9",
+    "colors"     : "0.6.2",
+    "redis"      : "0.8.6",
+    "winston"    : "0.7.2",
+    "glob"       : "3.2.6",
+    "async"      : "0.2.9",
+    "underscore" : "1.5.2"
   },
   "analyze": false,
   "devDependencies": {

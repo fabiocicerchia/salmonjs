@@ -34,6 +34,7 @@ Few suggestion about its usage:
  * Exclude external URIs in the crawling
  * Process the page using PhantomJS
  * Generate report for each page crawled
+  * Screenshot
   * HTTP header
   * HTTP method
   * Data sent
@@ -78,9 +79,8 @@ Usage: ./bin/spidey
 
 Options:
   --uri              The URI to be crawled             [required]
-  -u, --user         Username for HTTP authentication
+  -u, --username     Username for HTTP authentication
   -p, --password     Password for HTTP authentication
-  -s, --screenshots  Store screenshots for each page   [default: false]
   -d, --details      Store details for each page       [default: false]
   --help             Show the help
 ```
@@ -102,11 +102,11 @@ Options:
 
 ## TODO
 
- * Add screenshot creation, with an option to be enabled
  * Handle Uploads
  * Create test files for GET (???)
- * Implement zombie.js as interface to substitute phantom.js
- * Tests
+ * Use async (https://github.com/caolan/async)
+ * Use underscorejs (http://underscorejs.org/)
+ * Tests with Mocha
 
 ## Licence
 

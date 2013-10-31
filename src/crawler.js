@@ -186,6 +186,7 @@ module.exports = function Crawler() {
                 //'--debug=true',
                 './src/parser/' + config.parser.interface + '.js',
                 this.idUri,
+                this.timeStart,
                 this.username,
                 this.password,
                 this.url,
@@ -456,11 +457,13 @@ module.exports = function Crawler() {
         sha1          = crypto.createHash('sha1'),
         plainText     = JSON.stringify(currentCrawler); // TODO: Generate a unique and reproducible string
 
-        var reportName    = currentCrawler.url.toString().replace(/[^a-zA-Z0-9_]/g, '_');
+        var idUrl         = currentCrawler.url.toString().replace(/[^a-zA-Z0-9_]/g, '_');
+        var reportName    = idUrl;
         reportName       += '_' + sha1.update(plainText).digest('hex').substr(0, 4);
         var reportContent = fs.readFileSync(__dirname + '/../src/tpl.html').toString();
 
         reportContent = reportContent.replace('%%URI%%',        currentCrawler.url);
+        reportContent = reportContent.replace('%%IMGNAME%%',    idUrl);
         reportContent = reportContent.replace('%%ERRORS%%',     JSON.stringify(report.errors, null, 4).replace(/\n/g, '<br />'));
         reportContent = reportContent.replace('%%ALERTS%%',     JSON.stringify(report.alerts, null, 4).replace(/\n/g, '<br />'));
         reportContent = reportContent.replace('%%CONFIRMS%%',   JSON.stringify(report.confirms, null, 4).replace(/\n/g, '<br />'));
