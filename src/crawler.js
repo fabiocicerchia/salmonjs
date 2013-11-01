@@ -235,7 +235,7 @@ module.exports = function Crawler() {
             phantom.on('exit', this.onExit);
         } catch (err) {
             winston.error(err.message.red);
-            currentCrawler.handleError(); // TODO: CONVERT TO THIS?
+            this.handleError();
         }
     };
 
@@ -403,17 +403,6 @@ module.exports = function Crawler() {
             data.toString().length
         );
         currentCrawler.processOutput += data.toString();
-
-        if (currentCrawler.processing) {
-            /**
-             * TODO: This should happen only one time after the process terminated
-             *
-             * 2013-10-31T15:36:49.198Z - info:    [298efe6a-552d] Processing response...
-             * 2013-10-31T15:36:49.202Z - error:   [298efe6a-552d] SyntaxError: Unexpected end of input
-             * 2013-10-31T15:36:49.202Z - info:    [298efe6a-552d] Retrieved 1540 bytes.
-             */
-            currentCrawler.processPage(currentCrawler.processOutput);
-        }
     };
 
     /**
@@ -429,7 +418,7 @@ module.exports = function Crawler() {
         winston.info('%s Retrieved response', winstonCrawlerId);
         winston.error(data.toString().red);
 
-        currentCrawler.handleError(); // TODO: CONVERT TO THIS?
+        this.handleError();
     };
 
     /**
@@ -443,6 +432,7 @@ module.exports = function Crawler() {
     this.handleError = function () {
         var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + this.idCrawler.magenta + ']';
 
+        // TODO: Add the request in the report as failed if reach the threshold.
         if (currentCrawler.tries < config.crawler.attempts) {
             waitingRetry = true;
             winston.info('%s' + ' Trying again in %s msec'.grey, winstonCrawlerId, config.crawler.delay);
@@ -568,8 +558,8 @@ module.exports = function Crawler() {
 
             winston.info('%s Response ready', winstonCrawlerId);
         } catch (err) {
-            // TODO: Try again
             winston.error('%s %s', winstonCrawlerId, err.toString().red);
+            this.handleError();
             return;
         }
 
