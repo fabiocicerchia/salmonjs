@@ -115,11 +115,11 @@ module.exports = function Parser() {
      * @return undefined
      */
     this.parse = function (url, type, data, evt, xPath) {
-        this.url   = url | '';
+        this.url   = url || '';
+        this.type  = type || 'GET';
+        this.data  = data || '';
         this.event = evt;
         this.xPath = xPath;
-        this.data  = data || '';
-        this.type  = type || 'GET';
 
         this.initReport();
 
