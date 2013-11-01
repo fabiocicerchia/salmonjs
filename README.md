@@ -102,8 +102,14 @@ Options:
 
 ## TODO
 
+ * Handle Redis error
+ * Handle the issue when the `Crawler.onStdOut` is executed after `Crawler.onExit`.
+  * Try to execute again the response if the process output is empty
+ * Check if the attributes (`on*`) attached at runtime are handled correctly.
+ * Handle confirm calling it twice, returning `true` and `false`.
+ * Handle prompt using a test case file.
  * Handle Uploads
- * Create test files for GET (???)
+ * Create test case files for GET querystring
  * Use async (https://github.com/caolan/async)
  * Use underscorejs (http://underscorejs.org/)
  * Tests with Mocha
