@@ -120,7 +120,9 @@ window.eventContainer = {
             identifier = element.identifier; // TODO: FIX THIS HACK
         }
 
-        window.eventContainer.container[type][signature].push(identifier);
+        if (window.eventContainer.container[type][signature].indexOf(identifier) === -1) {
+            window.eventContainer.container[type][signature].push(identifier);
+        }
     },
 
     /**
