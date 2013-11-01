@@ -49,9 +49,6 @@ client.on('error', function (err) {
     process.exit(1);
 });
 
-var runningCrawlers = 0;
-var waitingRetry    = false;
-
 /**
  * Crawler Module
  *
@@ -168,6 +165,11 @@ module.exports = function Crawler() {
     this.processing = false;
 
     /**
+     * TBW
+     */
+    this.possibleCrawlers = 0;
+
+    /**
      * Current instance.
      *
      * @property currentCrawler
@@ -176,7 +178,7 @@ module.exports = function Crawler() {
      */
     var currentCrawler = this,
         sha1          = crypto.createHash('sha1'),
-        plainText     = JSON.stringify(this) + Date.now() + runningCrawlers;
+        plainText     = JSON.stringify(this) + Date.now();
 
     this.idCrawler    = sha1.update(plainText).digest('hex').substr(0, 4);
     console.log(('Started new crawler: ' + this.idCrawler).magenta);
@@ -252,15 +254,11 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.run = function (url, type, data, evt, xPath) {
-        waitingRetry = false;
-
         this.url   = url.action || url;
         this.type  = type || 'GET';
         this.data  = data || {};
         this.evt   = evt || '';
         this.xPath = xPath || '';
-
-        runningCrawlers++;
 
         sha1       = crypto.createHash('sha1');
         plainText  = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
@@ -301,6 +299,7 @@ module.exports = function Crawler() {
             throw err;
         }
 
+        currentCrawler.possibleCrawlers--;
         // reply is null when the key is missing
         if (reply !== null) {
             winston.info(
@@ -310,6 +309,8 @@ module.exports = function Crawler() {
                 container.evt,
                 container.xPath
             );
+
+            currentCrawler.checkRunningCrawlers('No items left to be processed');
             return;
         }
 
@@ -330,6 +331,8 @@ module.exports = function Crawler() {
         crawler.password     = currentCrawler.password;
         crawler.storeDetails = currentCrawler.storeDetails;
         crawler.run(container.url, container.type, container.container, container.evt, container.xPath);
+
+        currentCrawler.checkRunningCrawlers('No items left to be processed');
     };
 
     /**
@@ -379,11 +382,14 @@ module.exports = function Crawler() {
      * Check if there are crawlers is still running.
      *
      * @method checkRunningCrawlers
+     * @param {String} reason The reason to terminate the execution
      * @return undefined
      */
-    this.checkRunningCrawlers = function () {
-        if (!waitingRetry && runningCrawlers === 0) {
-            //process.exit();
+    this.checkRunningCrawlers = function (reason) {
+        if (currentCrawler.possibleCrawlers === 0) {
+            var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
+            winston.info('%s Exit: %s', winstonCrawlerId, reason);
+            process.exit();
         }
     };
 
@@ -434,7 +440,6 @@ module.exports = function Crawler() {
 
         // TODO: Add the request in the report as failed if reach the threshold.
         if (currentCrawler.tries < config.crawler.attempts) {
-            waitingRetry = true;
             winston.info('%s' + ' Trying again in %s msec'.grey, winstonCrawlerId, config.crawler.delay);
 
             setTimeout((function () {
@@ -473,7 +478,6 @@ module.exports = function Crawler() {
         );
 
         currentCrawler.processPage(currentCrawler.processOutput);
-        runningCrawlers--;
     };
 
     /**
@@ -576,6 +580,8 @@ module.exports = function Crawler() {
                     if (links.events[event].hasOwnProperty(signature)) {
                         for (element in links.events[event][signature]) {
                             if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
+                                currentCrawler.possibleCrawlers++;
+
                                 sha1      = crypto.createHash('sha1');
                                 plainText = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element];
                                 newId     = sha1.update(plainText).digest('hex').substr(0, 8);
@@ -597,16 +603,19 @@ module.exports = function Crawler() {
             //currentCrawler.checkAndRun(element, 'GET', data);
         }
 
+        currentCrawler.possibleCrawlers += links.anchors.length;
         links.anchors.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
 
+        currentCrawler.possibleCrawlers += links.links.length;
         links.links.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
 
+        currentCrawler.possibleCrawlers += links.scripts.length;
         links.scripts.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
@@ -631,6 +640,7 @@ module.exports = function Crawler() {
             //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
 
             cases = test.getCases(id + '-' + element.type);
+            currentCrawler.possibleCrawlers += cases.length;
             for (j in cases) {
                 if (cases.hasOwnProperty(j)) {
                     currentCrawler.checkAndRun(element, element.type.toUpperCase(), []);
@@ -652,5 +662,8 @@ module.exports = function Crawler() {
             }
             */
         });
+
+        // TODO: Potential issue if the forEach above are async.
+        currentCrawler.checkRunningCrawlers('No links in the page');
     };
 };
