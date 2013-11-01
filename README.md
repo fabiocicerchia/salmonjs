@@ -102,7 +102,6 @@ Options:
 
 ## TODO
 
- * Check if the attributes (`on*`) attached at runtime are handled correctly.
  * Handle `confirm` calling it twice, returning `true` and `false`.
  * Handle `prompt` using a test case file.
  * Handle Uploads

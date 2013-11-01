@@ -73,7 +73,6 @@ document.getElementByXpath = function (path) {
  * @return {Array}
  */
 Element.prototype.getElementsByAttribute = function (attribute) {
-    // TODO: what about attributes attached at runtime?
     var arr_elms = this.getElementsByTagName('*');
     var elements = [];
     var wildcard = attribute.substr(-1, 1) === '*';

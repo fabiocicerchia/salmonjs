@@ -554,7 +554,7 @@ module.exports = function Crawler() {
         winston.info('%s Processing response...', winstonCrawlerId);
 
         try {
-            result = JSON.parse(content.replace(/^.*###/m, ''));
+            result = JSON.parse(content.replace(/\n/g, '').replace(/.*###/m, ''));
 
             winston.info('%s Response ready', winstonCrawlerId);
         } catch (err) {
