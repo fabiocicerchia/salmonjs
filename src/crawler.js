@@ -43,8 +43,10 @@ require('path');
 /**
  * Redis error handler
  */
-client.on("error", function (err) {
-    winston.error('REDIS - Error' + err);
+client.on('error', function (err) {
+    winston.error('REDIS - %s'.red, err.toString());
+    // TODO: Is it really good to exit?
+    process.exit(1);
 });
 
 var runningCrawlers = 0;

@@ -102,7 +102,6 @@ Options:
 
 ## TODO
 
- * Handle Redis error
  * Handle the issue when the `Crawler.onStdOut` is executed after `Crawler.onExit`.
   * Try to execute again the response if the process output is empty
  * Check if the attributes (`on*`) attached at runtime are handled correctly.

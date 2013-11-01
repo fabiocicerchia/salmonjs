@@ -29,7 +29,6 @@
  */
 
 var prompt  = require('prompt'),
-    colors  = require('colors'),
     config  = require('../src/config'),
     Crawler = require('../src/crawler'),
     winston = require('winston'),
@@ -38,6 +37,16 @@ var prompt  = require('prompt'),
     redis   = require('redis'),
     client  = redis.createClient(config.redis.port, config.redis.hostname),
     argv;
+
+require('colors');
+
+/**
+ * Redis error handler
+ */
+client.on('error', function (err) {
+    winston.error('REDIS - %s'.red, err.toString());
+    process.exit(1);
+});
 
 winston.cli();
 winston.remove(winston.transports.Console);
