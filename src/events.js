@@ -72,19 +72,27 @@ document.getElementByXpath = function (path) {
  * @param {String} attr The attribute name ('*' is a wildcard).
  * @return {Array}
  */
-Element.prototype.getElementsByAttribute = function (attr) {
-    var i,
-        elem,
-        nodeArray = [],
-        nodeList = this.getElementsByTagName('*');
+Element.prototype.getElementsByAttribute = function (attribute) {
+    // TODO: what about attributes attached at runtime?
+    var arr_elms = this.getElementsByTagName('*');
+    var elements = [];
+    var wildcard = attribute.substr(-1, 1) === '*';
+    var curr_attr;
 
-    for (i = 0; elem = nodeList[i]; i++) {
-        if (elem.getAttribute(attr)) {
-            nodeArray.push(elem);
+    if (wildcard) {
+        attribute = attribute.substr(0, attribute.length - 1);
+    }
+
+    for (var i = 0; i < arr_elms.length; i++) {
+        for (var j = 0, attrs = arr_elms[i].attributes, l = attrs.length; j < l; j++){
+            curr_attr = attrs.item(j).nodeName;
+            if ((!wildcard && curr_attr === attribute) || (wildcard && curr_attr.substr(0, attribute.length) === attribute)) {
+                elements.push(arr_elms[i]);
+            }
         }
     }
 
-    return nodeArray;
+    return elements;
 };
 document.getElementsByAttribute = Element.prototype.getElementsByAttribute;
 
@@ -226,37 +234,6 @@ window.eventContainer = {
     },
 
     /**
-     * Retrieve a list of DOM elements based on their attributes.
-     *
-     * @method getElementsByAttribute
-     * @param {String} attribute The attribute name used to retrieve the elements
-     * @return {Array}
-     */
-    getElementsByAttribute: function (attribute) {
-        // TODO: Possible duplicate method (check line 71).
-        // TODO: what about attributes attached at runtime?
-        var arr_elms = document.body.getElementsByTagName('*');
-        var elements = [];
-        var wildcard = attribute.substr(-1, 1) === '*';
-        var curr_attr;
-
-        if (wildcard) {
-            attribute = attribute.substr(0, attribute.length - 1);
-        }
-
-        for (var i = 0; i < arr_elms.length; i++) {
-            for (var j = 0, attrs = arr_elms[i].attributes, l = attrs.length; j < l; j++){
-                curr_attr = attrs.item(j).nodeName;
-                if ((!wildcard && curr_attr === attribute) || (wildcard && curr_attr.substr(0, attribute.length) === attribute)) {
-                    elements.push(arr_elms[i]);
-                }
-            }
-        }
-
-        return elements;
-    },
-
-    /**
      * Returns a list of DOM elements grouped by event type.
      *
      * @method getEventsGrouped
@@ -289,9 +266,9 @@ window.eventContainer = {
      * @return undefined
      */
     getEvents: function () {
-        var evt, el, type, signature, identifier, staticEvents;
+        var evt, el, type, signature, staticEvents;
 
-        staticEvents = window.eventContainer.getEventsGrouped(window.eventContainer.getElementsByAttribute('on*'));
+        staticEvents = window.eventContainer.getEventsGrouped(document.getElementsByAttribute('on*'));
 
         for (evt in staticEvents) {
             type = evt.substr(2);
