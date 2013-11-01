@@ -31,11 +31,78 @@
 /**
  * Parser Module
  *
- * TBW
+ * Base class for any kind of page parser. It provides a basic interface in
+ * order to process the web page.
  *
  * @module Parser
  */
 module.exports = function Parser() {
+    /**
+     * URL.
+     *
+     * @property url
+     * @type {String}
+     * @default ""
+     */
+    this.url = '';
+
+    /**
+     * Request type (GET or POST).
+     *
+     * @property type
+     * @type {String}
+     * @default "GET"
+     */
+    this.type = 'GET';
+
+    /**
+     * Data to be sent.
+     *
+     * @property data
+     * @type {String}
+     * @default """
+     */
+    this.data = '';
+
+    /**
+     * The event to be fired.
+     *
+     * @property event
+     * @type {String}
+     * @default ""
+     */
+    this.event = '';
+
+    /**
+     * The XPath expression to be evaluated.
+     *
+     * @property xPath
+     * @type {String}
+     * @default ""
+     */
+    this.xPath = '';
+
+    /**
+     * Report container.
+     *
+     * @property report
+     * @type {Object}
+     * @default {Object}
+     */
+    this.report = {
+        errors:     [],
+        alerts:     [],
+        confirms:   [],
+        console:    [],
+        resources:  {},
+        time:       { start: 0, end: 0, total: 0 },
+        content:    '',
+        httpMethod: '',
+        event:      '',
+        xPath:      '',
+        data:       {}
+    };
+
     /**
      * Parse the URL.
      *
@@ -43,42 +110,57 @@ module.exports = function Parser() {
      * @param {String} url   The URL to crawl.
      * @param {String} type  The request type: GET or POST.
      * @param {Object} data  The data to send for the request.
-     * @param {String} event The event to fire (optional).
+     * @param {String} evt    The event to fire (optional).
      * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.parse = function (url, type, data, event, xPath) {
-        if (type === 'GET') {
-            this.parseGet(url, data, event, xPath);
+    this.parse = function (url, type, data, evt, xPath) {
+        this.url   = url | '';
+        this.event = evt;
+        this.xPath = xPath;
+        this.data  = data || '';
+        this.type  = type || 'GET';
+
+        this.initReport();
+
+        if (this.type === 'POST') {
+            this.parsePost();
         } else {
-            this.parsePost(url, data, event, xPath);
+            this.parseGet();
         }
+    };
+
+    /**
+     * Initialise the report container.
+     *
+     * @method initReport
+     * @return undefined
+     */
+    this.initReport = function () {
+        this.report.time.start = Date.now();
+
+        this.report.httpMethod = this.type;
+        this.report.event      = this.event;
+        this.report.xPath      = this.xPath;
+        this.report.data       = this.data;
     };
 
     /**
      * Parse the URL as GET request.
      *
      * @method parseGet
-     * @param {String} url   The URL to crawl.
-     * @param {Object} data  The data to send for the request.
-     * @param {String} event The event to fire (optional).
-     * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.parseGet = function (url, data, event, xPath) {
+    this.parseGet = function () {
     };
 
     /**
      * Parse the URL as POST request.
      *
      * @method parsePost
-     * @param {String} url   The URL to crawl.
-     * @param {Object} data  The data to send for the request.
-     * @param {String} event The event to fire (optional).
-     * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.parsePost = function (url, data, event, xPath) {
+    this.parsePost = function () {
     };
 
     /**
@@ -103,12 +185,11 @@ module.exports = function Parser() {
      * @return {Object}
      */
     this.normaliseData = function (data) {
-        var dataContainer = {},
+        var i, pair, vars, dataContainer = {},
             keys = [],
-            vars = data.replace(/.+\?/, '').split('&'),
-            i,
-            pair,
             sorted = {};
+
+        vars = data.replace(/.+\?/, '').split('&');
 
         for (i = 0; i < vars.length; i++) {
             pair = vars[i].split('=');
@@ -134,8 +215,7 @@ module.exports = function Parser() {
      * @return {String}
      */
     this.arrayToQuery = function (arr) {
-        var k,
-            string = [];
+        var k, string = [];
 
         for (k in arr) {
             if (arr.hasOwnProperty(k)) {
@@ -164,7 +244,7 @@ module.exports = function Parser() {
         if ((url + '/').indexOf(baseUrl) === 0) {
             normalised = url;
         } else if (url.indexOf('?') === 0) {
-            normalised = baseUrl.replace(/\?.+/, '') + url;
+            normalised = baseUrl.replace(/\?.+$/, '') + url;
         } else if (url.indexOf('/') === 0) {
             normalised = baseUrl.replace(/#.*$/, '') + url.substr(1);
         } else if (url.indexOf('#') === 0) {

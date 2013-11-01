@@ -35,7 +35,7 @@ require('path');
 /**
  * Test Module
  *
- * TBW
+ * It manage the test case files: creation, retrieving and parsing.
  *
  * @module Test
  */
@@ -108,11 +108,11 @@ module.exports = function Test() {
      * @return {Object}
      */
     this.parseCase = function (file) {
-        var content = fs.readFileSync(file).toString(),
-            lines   = content.split("\n"),
-            data    = [],
-            i,
-            value;
+        var i, value, content, lines,
+            data = [];
+
+        content = fs.readFileSync(file).toString();
+        lines   = content.split("\n");
 
         for (i in lines) {
             if (lines[i] !== '') {

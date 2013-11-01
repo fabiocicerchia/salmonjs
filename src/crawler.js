@@ -41,7 +41,7 @@ require('colors');
 require('path');
 
 /**
- * TBW
+ * Redis error handler
  */
 client.on("error", function (err) {
     winston.error('REDIS - Error' + err);
@@ -52,8 +52,6 @@ var waitingRetry    = false;
 
 /**
  * Crawler Module
- *
- * TBW
  *
  * @module Crawler
  */
@@ -122,27 +120,48 @@ module.exports = function Crawler() {
     this.password;
 
     /**
-     * TBW
+     * Flag to decide whether store the page details.
+     *
+     * @property storeDetails
+     * @type {Boolean}
+     * @default false
      */
     this.storeDetails = false;
 
     /**
-     * TBW
+     * The report directory.
+     *
+     * @property REPORT_DIRECTORY
+     * @type {String}
+     * @default "/../report/"
      */
     this.REPORT_DIRECTORY = '/../report/';
 
     /**
-     * TBW
+     * The output of the process.
+     *
+     * @property processOutput
+     * @type {String}
+     * @default ""
      */
     this.processOutput = '';
 
     /**
-     * TBW
+     * Timestamp of when the CLI tool has been executed.
+     *
+     * @property timeStart
+     * @type {Integer}
+     * @default 0
      */
     this.timeStart = 0;
 
     /**
-     * TBW
+     * Flag to identify whether the page is being processed by the method
+     * processPage.
+     *
+     * @property processing
+     * @type {Boolean}
+     * @default false
      */
     this.processing = false;
 
@@ -219,7 +238,8 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Execute the request launching a spawn'd process to the parser to get the
+     * web page data back as JSON.
      *
      * @method run
      * @param {String} url   The URL to crawl.
@@ -311,7 +331,7 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Check if already crawled, if not so launch a new crawler.
      *
      * @method checkAndRun
      * @param {String} url   The URL to crawl.
@@ -354,16 +374,19 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Check if there are crawlers is still running.
+     *
+     * @method checkRunningCrawlers
+     * @return undefined
      */
     this.checkRunningCrawlers = function () {
         if (!waitingRetry && runningCrawlers === 0) {
             //process.exit();
         }
-    }
+    };
 
     /**
-     * TBW
+     * Collect the output buffer from the spawn'd process.
      *
      * @method onStdOut
      * @param {Object} data The data returned by the parser.
@@ -392,7 +415,7 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Handle the error output from the
      *
      * @method onStdErr
      * @param {Object} data The data returned by the parser.
@@ -408,7 +431,9 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Error Handler, it'll try to re-execute the request several times
+     * (defined by config.crawler.attempts) after a delay defined by
+     * config.crawler.delay.
      *
      * @method handleError
      * @return undefined
@@ -440,7 +465,7 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Callback fired when the spawn'd process will finish the execution.
      *
      * @method onExit
      * @param {Integer} code The exit code returned by the parser.
@@ -460,7 +485,11 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Escape a HTML string.
+     *
+     * @method htmlEscape
+     * @param {String} str The HTML to be escaped.
+     * @return {String}
      */
     this.htmlEscape = function (str) {
         return String(str)
@@ -472,7 +501,11 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Store the report details to a report file.
+     *
+     * @method storeDetailsToFile
+     * @param {Object} report The report container.
+     * @return undefined
      */
     this.storeDetailsToFile = function (report) {
         sha1          = crypto.createHash('sha1'),
@@ -491,7 +524,7 @@ module.exports = function Crawler() {
         reportContent = reportContent.replace('%%TIME%%',       JSON.stringify(report.time, null, 4).replace(/\n/g, '<br />'));
         reportContent = reportContent.replace('%%CONTENT%%',    currentCrawler.htmlEscape(report.content));
         reportContent = reportContent.replace('%%HTTPMETHOD%%', report.httpMethod);
-        reportContent = reportContent.replace('%%EVENTS%%',     JSON.stringify(report.event, null, 4).replace(/\n/g, '<br />'));
+        reportContent = reportContent.replace('%%EVENT%%',      report.event);
         reportContent = reportContent.replace('%%XPATH%%',      report.xPath);
         reportContent = reportContent.replace('%%DATA%%',       JSON.stringify(report.data));
 
@@ -508,7 +541,12 @@ module.exports = function Crawler() {
     };
 
     /**
-     * TBW
+     * Process the page, process each link and launch eventually a new crawler
+     * using the method checkAndRun.
+     *
+     * @method processPage
+     * @param {String} content The full output of the spawn'd process
+     * @return undefined
      */
     this.processPage = function (content) {
         currentCrawler.processing = true;
@@ -533,7 +571,7 @@ module.exports = function Crawler() {
             return;
         }
 
-        links  = result.links;
+        links = result.links;
 
         if (currentCrawler.storeDetails) {
             currentCrawler.storeDetailsToFile(result.report);
@@ -623,5 +661,4 @@ module.exports = function Crawler() {
             */
         });
     };
-
 };

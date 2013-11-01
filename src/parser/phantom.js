@@ -42,7 +42,6 @@ var Parser    = require('../../src/parser'),
     evt       = require('system').args[9],
     xPath     = require('system').args[10],
     page      = require('webpage').create();
-require('../../src/sha1');
 
 if (username !== undefined && password !== undefined) {
     page.customHeaders = {
@@ -58,38 +57,6 @@ if (username !== undefined && password !== undefined) {
  */
 var PhantomParser = function () {
     /**
-     * The event to be fired.
-     *
-     * @property event
-     * @type {String}
-     * @default ""
-     */
-    this.event = '';
-
-    /**
-     * The XPath expression to be evaluated.
-     *
-     * @property xPath
-     * @type {String}
-     * @default ""
-     */
-    this.xPath = '';
-
-    this.report = {
-        errors:     [],
-        alerts:     [],
-        confirms:   [],
-        console:    [],
-        resources:  {},
-        time:       { start: 0, end: 0, total: 0},
-        content:    '',
-        httpMethod: '',
-        event:      '',
-        xPath:      '',
-        data:       {}
-    };
-
-    /**
      * Current instance.
      *
      * @property currentCrawler
@@ -99,27 +66,12 @@ var PhantomParser = function () {
     var currentParser = this;
 
     /**
-     * Parse the URL as GET request.
+     * Configure all the callbacks for PhantomJS.
      *
-     * @method parseGet
-     * @param {String} url   The URL to crawl.
-     * @param {Object} data  The data to send for the request.
-     * @param {String} evt   The event to fire (optional).
-     * @param {String} xPath The XPath expression to identify the element to fire (optional).
+     * @method setUpPage
      * @return undefined
      */
-    this.parseGet = function (url, data, evt, xPath) {
-        this.event = evt;
-        this.xPath = xPath;
-        data       = data || '';
-
-        currentParser.report.time.start = Date.now();
-
-        currentParser.report.httpMethod = 'GET';
-        currentParser.report.event      = evt;
-        currentParser.report.xPath      = xPath;
-        currentParser.report.data       = data;
-
+    this.setUpPage = function () {
         page.settings.resourceTimeout = config.parser.timeout;
         page.onResourceTimeout        = this.onResourceTimeout;
         page.onError                  = this.onError;
@@ -129,8 +81,18 @@ var PhantomParser = function () {
         page.onConfirm                = this.onConfirm;
         page.onPrompt                 = this.onPrompt;
         page.onConsoleMessage         = this.onConsoleMessage;
+    };
 
-        page.open(url + data, this.onOpen);
+    /**
+     * Parse the URL as GET request.
+     *
+     * @method parseGet
+     * @return undefined
+     */
+    this.parseGet = function () {
+        this.setUpPage();
+
+        page.open(this.url + this.data, this.onOpen);
         page.onLoadFinished = this.onLoadFinished;
     };
 
@@ -138,34 +100,12 @@ var PhantomParser = function () {
      * Parse the URL as POST request.
      *
      * @method parsePost
-     * @param {String} url   The URL to crawl.
-     * @param {Object} data  The data to send for the request.
-     * @param {String} evt   The event to fire (optional).
-     * @param {String} xPath The XPath expression to identify the element to fire (optional).
      * @return undefined
      */
-    this.parsePost = function (url, data, evt, xPath) {
-        this.event = evt || '';
-        this.xPath = xPath || '';
+    this.parsePost = function () {
+        this.setUpPage();
 
-        currentParser.report.time.start = Date.now();
-
-        currentParser.report.httpMethod = 'POST';
-        currentParser.report.event      = evt;
-        currentParser.report.xPath      = xPath;
-        currentParser.report.data       = data;
-
-        page.settings.resourceTimeout = config.parser.timeout;
-        page.onResourceTimeout        = this.onResourceTimeout;
-        page.onError                  = this.onError;
-        page.onInitialized            = this.onInitialized;
-        page.onResourceReceived       = this.onResourceReceived;
-        page.onAlert                  = this.onAlert;
-        page.onConfirm                = this.onConfirm;
-        page.onPrompt                 = this.onPrompt;
-        page.onConsoleMessage         = this.onConsoleMessage;
-
-        page.open(url, 'post', data, this.onOpen);
+        page.open(this.url, 'post', this.data, this.onOpen);
         page.onLoadFinished = this.onLoadFinished;
     };
 
@@ -221,14 +161,22 @@ var PhantomParser = function () {
     };
 
     /**
-     * TBW
+     * Callback fired when the page goes on timeout.
+     *
+     * @method onResourceTimeout
+     * @return undefined
      */
     this.onResourceTimeout = function () {
         phantom.exit();
     };
 
     /**
-     * TBW
+     * Callback fired when the page has thrown an error.
+     *
+     * @method onError
+     * @param {String} msg   The error message
+     * @param {Array}  trace The stack trace
+     * @return undefined
      */
     this.onError = function (msg, trace) {
         var msgStack = ['ERROR: ' + msg];
@@ -240,11 +188,15 @@ var PhantomParser = function () {
             });
         }
 
-        report.errors.push(msgStack.join('\n'));
+        currentParser.report.errors.push(msgStack.join('\n'));
     };
 
     /**
-     * TBW
+     * Callback invoked after the web page is created but before a URL is
+     * loaded.
+     *
+     * @method onInitialized
+     * @return undefined
      */
     this.onInitialized = function() {
         page.injectJs('../sha1.js');
@@ -252,7 +204,11 @@ var PhantomParser = function () {
     };
 
     /**
-     * TBW
+     * Callback invoked when the a resource requested by the page is received.
+     *
+     * @method onResourceReceived
+     * @param {Object} response The response metadata object
+     * @return undefined
      */
     this.onResourceReceived = function(response) {
         if (response.stage === 'end') {
@@ -263,14 +219,22 @@ var PhantomParser = function () {
     };
 
     /**
-     * TBW
+     * Callback invoked when there is a JavaScript alert on the web page.
+     *
+     * @method onAlert
+     * @param {String} msg The string for the message
+     * @return undefined
      */
     this.onAlert = function(msg) {
         currentParser.report.alerts.push(msg);
     };
 
     /**
-     * TBW
+     * Callback invoked when there is a JavaScript confirm on the web page.
+     *
+     * @method onConfirm
+     * @param {String} msg The string for the message
+     * @return undefined
      */
     this.onConfirm = function(msg) {
         currentParser.report.confirms.push(msg);
@@ -279,7 +243,12 @@ var PhantomParser = function () {
     };
 
     /**
-     * TBW
+     * Callback invoked when there is a JavaScript prompt on the web page.
+     *
+     * @method onPrompt
+     * @param {String} msg        The string for the message
+     * @param {String} defaultVal The default value for the prompt answer
+     * @return undefined
      */
     this.onPrompt = function(msg, defaultVal) {
         currentParser.report.confirms.push({msg: msg, defaultVal: defaultVal});
@@ -287,7 +256,14 @@ var PhantomParser = function () {
     };
 
     /**
-     * TBW
+     * Callback invoked when there is a JavaScript console message on the web
+     * page.
+     *
+     * @method onConsoleMessage
+     * @param {String}  msg      The string for the message
+     * @param {Integer} lineNum  The line number
+     * @param {String}  sourceId The source identifier
+     * @return undefined
      */
     this.onConsoleMessage = function(msg, lineNum, sourceId) {
         currentParser.report.console.push({msg: msg, lineNum: lineNum, sourceId: sourceId});

@@ -29,7 +29,11 @@
  */
 
 /**
- * TBW
+ * Returns the XPath for a certain DOM element.
+ *
+ * @method getXPath
+ * @param {DOMElement} element The DOM element to be converted as XPath
+ * @return {String}
  */
 function getXPath(element) {
     var xpath = '',
@@ -40,23 +44,33 @@ function getXPath(element) {
         nodeList = Array.prototype.slice.call(
             element.parentNode.getElementsByTagName(element.tagName)
         );
-        id = nodeList.indexOf(element) + 1;
 
+        id = nodeList.indexOf(element) + 1;
         id = id > 1 ? ('[' + id + ']') : '';
+
         xpath = '/' + element.tagName.toLowerCase() + id + xpath;
     }
+
     return xpath;
 }
 
 /**
- * TBW
+ * Retrieve a DOM element by XPath.
+ *
+ * @method getElementByXpath
+ * @param {String} path The XPath expression
+ * @return {DOMElement}
  */
 document.getElementByXpath = function (path) {
     return document.evaluate(path, document, null, 9, null).singleNodeValue;
 };
 
 /**
- * TBW
+ * Retrieve a list of DOM elements based on their attributes.
+ *
+ * @method getElementsByAttribute
+ * @param {String} attr The attribute name ('*' is a wildcard).
+ * @return {Array}
  */
 Element.prototype.getElementsByAttribute = function (attr) {
     var i,
@@ -75,22 +89,23 @@ Element.prototype.getElementsByAttribute = function (attr) {
 document.getElementsByAttribute = Element.prototype.getElementsByAttribute;
 
 /**
- * TBW
+ * Event Container Class
  */
 window.eventContainer = {
     container: {},
 
     /**
-     * TBW
+     * Add the element's event to the container.
+     *
+     * @method pushEvent
+     * @param {String}     type      The event type
+     * @param {String}     signature The signature of the event (sha1 of the function)
+     * @param {DOMElement} element   The DOM element
+     * @return Add the
      */
     pushEvent: function (type, signature, element) {
-        if (window.eventContainer.container[type] === undefined) {
-            window.eventContainer.container[type] = {};
-        }
-
-        if (window.eventContainer.container[type][signature] === undefined) {
-            window.eventContainer.container[type][signature] = [];
-        }
+        window.eventContainer.container[type] = window.eventContainer.container[type] || {};
+        window.eventContainer.container[type][signature] = window.eventContainer.container[type][signature] || [];
 
         var identifier = getXPath(element);
         if (identifier === '') {
@@ -101,17 +116,26 @@ window.eventContainer = {
     },
 
     /**
-     * TBW
+     * Override the native function "addEventListener".
+     *
+     * @method customAddEventListener
+     * @return undefined
      */
     customAddEventListener: function (type, listener, useCapture, wantsUntrusted) {
         var signature = hex_sha1(listener.toString());
         window.eventContainer.pushEvent(type, signature, this);
 
-        return this._origAddEventListener(type, listener, useCapture, wantsUntrusted);
+        this._origAddEventListener(type, listener, useCapture, wantsUntrusted);
     },
 
     /**
-     * TBW
+     * Override the native function "removeEventListener".
+     *
+     * @method customRemoveEventListener
+     * @param {String}   type       A string representing the event type being removed.
+     * @param {Function} listener   The listener parameter indicates the EventListener function to be removed.
+     * @param {Boolean}  useCapture Specifies whether the EventListener being removed was registered as a capturing listener or not. If not specified, useCapture defaults to false.
+     * @return undefined
      */
     customRemoveEventListener: function (type, listener, useCapture)
     {
@@ -120,16 +144,19 @@ window.eventContainer = {
             window.eventContainer.container[type][signature] = undefined;
         }
 
-        return this._origRemoveEventListener(type, listener, useCapture);
+        this._origRemoveEventListener(type, listener, useCapture);
     },
 
     /**
-     * TBW
+     * Override the native function "setAttribute".
+     *
+     * @method customSetAttribute
+     * @param {String} name  The name of the attribute as a string.
+     * @param {String} value The desired new value of the attribute.
+     * @return undefined
      */
     customSetAttribute: function (name, value) {
-        var type,
-            signature,
-            identifier;
+        var type, signature;
 
         if (name.indexOf('on') === 0) {
             type = name.substr(2);
@@ -137,34 +164,40 @@ window.eventContainer = {
             window.eventContainer.pushEvent(type, signature, this);
         }
 
-        return this._origSetAttribute(name, value);
+        this._origSetAttribute(name, value);
     },
 
     /**
-     * TBW
+     * Override the native function "removeAttribute".
+     *
+     * @method customRemoveAttribute
+     * @param {String} attrName The attribute to be removed from element.
+     * @return undefined
      */
-    customRemoveAttribute: function (name) {
-        var type,
-            signature;
-        if (name.indexOf('on') === 0) {
-            //console.log(name);
+    customRemoveAttribute: function (attrName) {
+        var type, signature;
 
-            type = name.substr(2);
-            if (window.eventContainer.container[type] === undefined) {
-                window.eventContainer.container[type] = {};
-            }
+        if (attrName.indexOf('on') === 0) {
+            type = attrName.substr(2);
 
-            signature = hex_sha1(this.getAttribute(name).toString());
+            window.eventContainer.container[type] = window.eventContainer.container[type] || {};
+
+            signature = hex_sha1(this.getAttribute(attrName).toString());
             if (window.eventContainer.container[type][signature] !== undefined) {
                 window.eventContainer.container[type][signature] = undefined;
             }
         }
 
-        return this._origRemoveAttribute(name);
+        this._origRemoveAttribute(name);
     },
 
     /**
-     * TBW
+     * Override the event listener for a certain object (e.g.: document, window,
+     * element).
+     *
+     * @method overrideEventListener
+     * @param {Object} object The object that will be changed
+     * @return undefined
      */
     overrideEventListener: function (object) {
         var prototype = object.prototype === undefined ? object : object.prototype;
@@ -176,7 +209,12 @@ window.eventContainer = {
     },
 
     /**
-     * TBW
+     * Override the attribute handler for a certain object (e.g.: document,
+     * window, element).
+     *
+     * @method overrideAttributeHandler
+     * @param {Object} object The object that will be changed
+     * @return undefined
      */
     overrideAttributeHandler: function (object) {
         var prototype = object.prototype === undefined ? object : object.prototype;
@@ -188,40 +226,50 @@ window.eventContainer = {
     },
 
     /**
-     * TBW
+     * Retrieve a list of DOM elements based on their attributes.
+     *
+     * @method getElementsByAttribute
+     * @param {String} attribute The attribute name used to retrieve the elements
+     * @return {Array}
      */
-    // TODO: what about attributes attached at runtime?
     getElementsByAttribute: function (attribute) {
+        // TODO: Possible duplicate method (check line 71).
+        // TODO: what about attributes attached at runtime?
         var arr_elms = document.body.getElementsByTagName('*');
         var elements = [];
-        var wildcard = false;
+        var wildcard = attribute.substr(-1, 1) === '*';
         var curr_attr;
 
-        if (attribute.substr(-1, 1) === '*') {
-            wildcard = true;
+        if (wildcard) {
             attribute = attribute.substr(0, attribute.length - 1);
         }
 
         for (var i = 0; i < arr_elms.length; i++) {
             for (var j = 0, attrs = arr_elms[i].attributes, l = attrs.length; j < l; j++){
                 curr_attr = attrs.item(j).nodeName;
-                if ((curr_attr === attribute && !wildcard) || (curr_attr.substr(0, attribute.length) === attribute && wildcard)) {
+                if ((!wildcard && curr_attr === attribute) || (wildcard && curr_attr.substr(0, attribute.length) === attribute)) {
                     elements.push(arr_elms[i]);
                 }
             }
         }
+
         return elements;
     },
 
     /**
-     * TBW
+     * Returns a list of DOM elements grouped by event type.
+     *
+     * @method getEventsGrouped
+     * @param {Array} elements A list of DOM elements to be aggregated
+     * @return {Array}
      */
     getEventsGrouped: function (elements) {
-        var events = {};
-        for (var el in elements) {
+        var el, i, l, curr_attr, attrs, events = {};
+
+        for (el in elements) {
             var element = elements[el];
-            for (var i = 0, attrs = element.attributes, l = attrs.length; i < l; i++){
-                var curr_attr = attrs.item(i).nodeName;
+            for (i = 0, attrs = element.attributes, l = attrs.length; i < l; i++){
+                curr_attr = attrs.item(i).nodeName;
                 if (curr_attr.substr(0, 2) === 'on') {
                     if (events[curr_attr] === undefined) {
                         events[curr_attr] = [];
@@ -230,20 +278,26 @@ window.eventContainer = {
                 }
             }
         }
+
         return events;
     },
 
     /**
-     * TBW
+     * Returns a list of events bound to any element in the page.
+     *
+     * @method getEvents
+     * @return undefined
      */
     getEvents: function () {
-        var evt, el, type, signature, identifier,
-            staticEvents = window.eventContainer.getEventsGrouped(window.eventContainer.getElementsByAttribute('on*'));
+        var evt, el, type, signature, identifier, staticEvents;
+
+        staticEvents = window.eventContainer.getEventsGrouped(window.eventContainer.getElementsByAttribute('on*'));
 
         for (evt in staticEvents) {
             type = evt.substr(2);
             for (el in staticEvents[evt]) {
                 signature = hex_sha1(staticEvents[evt][el].getAttribute(evt));
+
                 window.eventContainer.pushEvent(type, signature, staticEvents[evt][el]);
             }
         }
