@@ -1,5 +1,10 @@
 # SPIDEY
 
+[![Build Status](https://secure.travis-ci.org/fabiocicerchia/spidey.png)](http://travis-ci.org/fabiocicerchia/spidey)
+[![Dependency Status](https://gemnasium.com/fabiocicerchia/spidey.png)](https://gemnasium.com/fabiocicerchia/spidey)
+
+[![NPM](https://nodei.co/npm/spidey.png?downloads=true)](https://nodei.co/npm/spidey/)
+
 Web Crawler in Node.js to spider dynamically whole websites.
 
 It helps you to map / process entire websites, spidering them and parsing each

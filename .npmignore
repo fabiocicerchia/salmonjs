@@ -17,6 +17,7 @@ node_modules
 
 # Mixed
 .*.swp
+.git
 npm-debug.log
 
 # Project
