@@ -75,7 +75,7 @@ npm install
 |_____|   __||__||_____||_____|___  |
       |__|                    |_____|
 
-SPIDEY v0.1.0
+SPIDEY v0.1.1
 
 Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
 

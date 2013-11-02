@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.0
+ * SPIDEY v0.1.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -66,7 +66,7 @@ console.log('|__ --|  _  ||  ||  _  ||  -__|  |  |'.yellow);
 console.log('|_____|   __||__||_____||_____|___  |'.yellow);
 console.log('      |__|                    |_____|'.yellow);
 console.log('');
-console.log('SPIDEY v0.1.0'.grey);
+console.log('SPIDEY v0.1.1'.grey);
 console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
 console.log('');
 
