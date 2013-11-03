@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.1
+ * SPIDEY v0.1.2
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -28,14 +28,15 @@
  * SOFTWARE.
  */
 
-var config  = require('./config'),
-    spawn   = require('child_process').spawn,
-    crypto  = require('crypto'),
-    Test    = require('../src/test'),
-    redis   = require("redis"),
-    client  = redis.createClient(config.redis.port, config.redis.hostname),
-    winston = require('winston'),
-    fs      = require('fs');
+var config    = require('./config'),
+    spawn     = require('child_process').spawn,
+    crypto    = require('crypto'),
+    Test      = require('../src/test'),
+    redis     = require("redis"),
+    client    = redis.createClient(config.redis.port, config.redis.hostname),
+    winston   = require('winston'),
+    fs        = require('fs'),
+    phantomjs = require('phantomjs');
 
 require('colors');
 require('path');
@@ -230,7 +231,7 @@ module.exports = function Crawler() {
             ];
 
         try {
-            phantom = spawn(config.parser.cmd, params);
+            phantom = spawn(phantomjs.path, params);
 
             phantom.stdout.on('data', this.onStdOut);
             phantom.stderr.on('data', this.onStdErr);

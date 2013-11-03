@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.1
+ * SPIDEY v0.1.2
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -39,7 +39,6 @@ var config = {
     },
     parser: {
         interface: 'phantom', // Only this at the moment.
-        cmd: 'phantomjs',
         timeout: 5000 // Resource timeout in milliseconds.
     },
     crawler: {

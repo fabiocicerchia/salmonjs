@@ -1,8 +1,6 @@
 # SPIDEY
 
-[![Build Status](https://secure.travis-ci.org/fabiocicerchia/spidey.png)](http://travis-ci.org/fabiocicerchia/spidey)
 [![Dependency Status](https://gemnasium.com/fabiocicerchia/spidey.png)](https://gemnasium.com/fabiocicerchia/spidey)
-
 [![NPM](https://nodei.co/npm/spidey.png?downloads=true)](https://nodei.co/npm/spidey/)
 
 Web Crawler in Node.js to spider dynamically whole websites.
@@ -62,8 +60,16 @@ Change the file `src/config.js` accordingly to your needs.
 
 ## Installation
 
+You can install it directly from npm:
+
 ```
-npm install
+[user@hostname /tmp/spidey]$ npm install spidey
+```
+
+or you can download the source code from GitHub and run these commands:
+
+```
+[user@hostname /tmp/spidey]$ npm install
 ```
 
 ## Usage
@@ -75,7 +81,7 @@ npm install
 |_____|   __||__||_____||_____|___  |
       |__|                    |_____|
 
-SPIDEY v0.1.1
+SPIDEY v0.1.2
 
 Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
 
@@ -93,10 +99,10 @@ Options:
 ## Examples
 
 ```
-[user@hostname /tmp]$ ./bin/spidey --uri "http://www.google.com"
-[user@hostname /tmp]$ ./bin/spidey --uri "www.google.com"
-[user@hostname /tmp]$ ./bin/spidey --uri "/tmp/file.html"
-[user@hostname /tmp]$ ./bin/spidey --uri "file.html"
+[user@hostname /tmp/spidey]$ ./bin/spidey --uri "http://www.google.com"
+[user@hostname /tmp/spidey]$ ./bin/spidey --uri "www.google.com"
+[user@hostname /tmp/spidey]$ ./bin/spidey --uri "/tmp/file.html"
+[user@hostname /tmp/spidey]$ ./bin/spidey --uri "file.html"
 ```
 
 ## BUGS
@@ -107,13 +113,13 @@ Options:
 
 ## TODO
 
+ * Tests with Mocha
  * Handle `confirm` calling it twice, returning `true` and `false`.
  * Handle `prompt` using a test case file.
  * Handle Uploads
  * Create test case files for GET querystring
  * Use async (https://github.com/caolan/async)
  * Use underscorejs (http://underscorejs.org/)
- * Tests with Mocha
 
 ## Licence
 
