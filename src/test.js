@@ -62,11 +62,12 @@ module.exports = function Test() {
      * Create test case file.
      *
      * @method create
-     * @param  {String} The name of the test case.
-     * @param  {String} The data of the test case.
+     * @param  {String}   name     The name of the test case.
+     * @param  {String}   data     The data of the test case.
+     * @param  {Function} callback The data of the test case.
      * @return undefined
      */
-    this.create = function (name, data) {
+    this.create = function (name, data, callback) {
         var content      = '',
             testCaseFile = __dirname + this.TEST_CASE_DIRECTORY + name + '.tst',
             k;
@@ -79,6 +80,8 @@ module.exports = function Test() {
 
         fs.mkdir(__dirname + this.TEST_CASE_DIRECTORY, '0777', function () {
             fs.writeFileSync(testCaseFile, content);
+
+            callback();
         });
     };
 

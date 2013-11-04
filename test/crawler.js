@@ -34,198 +34,198 @@ var assert  = require('assert'),
     Crawler = require(libpath + '/crawler');
 
 describe('Crawler', function() {
-  describe('#serialise()', function() {
-    it('encode entities properly', function() {
-        var crawler = new Crawler();
+    describe('#serialise()', function() {
+        it('encode entities properly', function() {
+            var crawler = new Crawler();
 
-        crawler.serialise({}).should.equal('');
-        crawler.serialise({a: 1, b: 2}).should.equal('a=1&b=2');
-        crawler.serialise([]).should.equal('');
-        crawler.serialise(['a', 'b']).should.equal('0=a&1=b');
+            crawler.serialise({}).should.equal('');
+            crawler.serialise({a: 1, b: 2}).should.equal('a=1&b=2');
+            crawler.serialise([]).should.equal('');
+            crawler.serialise(['a', 'b']).should.equal('0=a&1=b');
+        });
+
+        it('doesn\'t process a string', function() {
+            var crawler = new Crawler();
+
+            crawler.serialise('').should.equal('');
+            crawler.serialise('test').should.equal('');
+        });
+
+        it('doesn\'t process an integer', function() {
+            var crawler = new Crawler();
+
+            crawler.serialise(1).should.equal('');
+            crawler.serialise(-1).should.equal('');
+            crawler.serialise(0).should.equal('');
+        });
     });
 
-    it('doesn\'t process a string', function() {
-        var crawler = new Crawler();
-
-        crawler.serialise('').should.equal('');
-        crawler.serialise('test').should.equal('');
+    describe('#execPhantomjs()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
 
-    it('doesn\'t process an integer', function() {
-        var crawler = new Crawler();
-
-        crawler.serialise(1).should.equal('');
-        crawler.serialise(-1).should.equal('');
-        crawler.serialise(0).should.equal('');
-    });
-  });
-
-  describe('#execPhantomjs()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
-    });
-  });
-
-  describe('#run()', function() {
-    it('runs', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
-  });
-
-  describe('#analiseRedisResponse()', function() {
-    it('runs', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
-  });
-
-  describe('#checkAndRun()', function() {
-    it('runs', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
-  });
-
-  describe('#checkRunningCrawlers()', function() {
-    it('doesn\'t exit when there are running crawlers', function() {
-        var crawler = new Crawler();
-
-        crawler.possibleCrawlers = 1;
-        crawler.checkRunningCrawlers().should.be.equal(true);
+    describe('#run()', function() {
+        it('runs', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
     });
 
-    it('exits when there are no running crawlers', function() {
-        var crawler = new Crawler();
-
-        crawler.possibleCrawlers = 0;
-        crawler.checkRunningCrawlers().should.be.equal(false);
-    });
-  });
-
-  describe('#onStdOut()', function() {
-    it('collect the data from response', function() {
-        var crawler = new Crawler();
-
-        crawler.processOutput = '';
-        crawler.onStdOut('test\n');
-        crawler.processOutput.should.equal('test\n');
-
-        crawler.onStdOut('test2\n');
-        crawler.processOutput.should.equal('test\ntest2\n');
-    });
-  });
-
-  describe('#onStdErr()', function() {
-    it('runs', function() {
-        var crawler = new Crawler();
-
-        crawler.handleError = function() {};
-
-        var resp = crawler.onStdErr('');
-        assert.equal(undefined, resp);
-    });
-  });
-
-  describe('#handleError()', function() {
-    it('tries to run another crawler if max attempts is not reached', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
+    describe('#analiseRedisResponse()', function() {
+        it('runs', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
     });
 
-    it('doesn\'t try to run another crawler if max attempts is reached', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
-  });
-
-  describe('#onExit()', function() {
-    it('runs', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
-  });
-
-  describe('#htmlEscape()', function() {
-    it('escape "ampersand" correctly', function() {
-        var crawler = new Crawler();
-
-        crawler.htmlEscape('&').should.be.equal('&amp;');
+    describe('#checkAndRun()', function() {
+        it('runs', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
     });
 
-    it('escape "double quote" correctly', function() {
-        var crawler = new Crawler();
+    describe('#checkRunningCrawlers()', function() {
+        it('doesn\'t exit when there are running crawlers', function() {
+            var crawler = new Crawler();
 
-        crawler.htmlEscape('"').should.be.equal('&quot;');
+            crawler.possibleCrawlers = 1;
+            crawler.checkRunningCrawlers().should.be.equal(true);
+        });
+
+        it('exits when there are no running crawlers', function() {
+            var crawler = new Crawler();
+
+            crawler.possibleCrawlers = 0;
+            crawler.checkRunningCrawlers().should.be.equal(false);
+        });
     });
 
-    it('escape "single quote" correctly', function() {
-        var crawler = new Crawler();
+    describe('#onStdOut()', function() {
+        it('collect the data from response', function() {
+            var crawler = new Crawler();
 
-        crawler.htmlEscape('\'').should.be.equal('&#39;');
+            crawler.processOutput = '';
+            crawler.onStdOut('test\n');
+            crawler.processOutput.should.equal('test\n');
+
+            crawler.onStdOut('test2\n');
+            crawler.processOutput.should.equal('test\ntest2\n');
+        });
     });
 
-    it('escape "less than" correctly', function() {
-        var crawler = new Crawler();
+    describe('#onStdErr()', function() {
+        it('runs', function() {
+            var crawler = new Crawler();
 
-        crawler.htmlEscape('<').should.be.equal('&lt;');
+            crawler.handleError = function() {};
+
+            var resp = crawler.onStdErr('');
+            assert.equal(undefined, resp);
+        });
     });
 
-    it('escape "greater than" correctly', function() {
-        var crawler = new Crawler();
+    describe('#handleError()', function() {
+        it('tries to run another crawler if max attempts is not reached', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
 
-        crawler.htmlEscape('>').should.be.equal('&gt;');
+        it('doesn\'t try to run another crawler if max attempts is reached', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
     });
 
-    it('doesn\'t escape anything else', function() {
-        var crawler = new Crawler();
-
-        var unescaped = 'abcdefghijklmnopqrstuvwxyz0123456789\\|!£$%/()=?^[]{}@#;,:.-_+';
-        crawler.htmlEscape(unescaped).should.be.equal(unescaped);
-    });
-  });
-
-  describe('#storeDetailsToFile()', function() {
-    it('save properly a report file', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
-  });
-
-  describe('#processPage()', function() {
-    it('process an empty page', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
+    describe('#onExit()', function() {
+        it('runs', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
     });
 
-    it('process a page with 1 link', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
+    describe('#htmlEscape()', function() {
+        it('escape "ampersand" correctly', function() {
+            var crawler = new Crawler();
+
+            crawler.htmlEscape('&').should.be.equal('&amp;');
+        });
+
+        it('escape "double quote" correctly', function() {
+            var crawler = new Crawler();
+
+            crawler.htmlEscape('"').should.be.equal('&quot;');
+        });
+
+        it('escape "single quote" correctly', function() {
+            var crawler = new Crawler();
+
+            crawler.htmlEscape('\'').should.be.equal('&#39;');
+        });
+
+        it('escape "less than" correctly', function() {
+            var crawler = new Crawler();
+
+            crawler.htmlEscape('<').should.be.equal('&lt;');
+        });
+
+        it('escape "greater than" correctly', function() {
+            var crawler = new Crawler();
+
+            crawler.htmlEscape('>').should.be.equal('&gt;');
+        });
+
+        it('doesn\'t escape anything else', function() {
+            var crawler = new Crawler();
+
+            var unescaped = 'abcdefghijklmnopqrstuvwxyz0123456789\\|!£$%/()=?^[]{}@#;,:.-_+';
+            crawler.htmlEscape(unescaped).should.be.equal(unescaped);
+        });
     });
 
-    it('process a page with 2 links', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
+    describe('#storeDetailsToFile()', function() {
+        it('save properly a report file', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
     });
 
-    it('process a page with 1 event', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
+    describe('#processPage()', function() {
+        it('process an empty page', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
 
-    it('process a page with 2 events', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
+        it('process a page with 1 link', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
 
-    it('process a page with 1 link and 1 event', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
-    });
+        it('process a page with 2 links', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
 
-    it('process a page with 2 links and 2 events', function() {
-        var crawler = new Crawler();
-        false.should.equal(true, 'TBD');
+        it('process a page with 1 event', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
+
+        it('process a page with 2 events', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
+
+        it('process a page with 1 link and 1 event', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
+
+        it('process a page with 2 links and 2 events', function() {
+            var crawler = new Crawler();
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 });

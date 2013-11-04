@@ -31,127 +31,128 @@
 var assert        = require('assert'),
     should        = require('chai').should(),
     libpath       = process.env['SPIDEY_COV'] ? '../../src-cov' : '../../src',
-    PhantomParser = require(libpath + '/parser/phantom');
+    PhantomParser = {}; //require(libpath + '/parser/phantom');
 
 describe('PhantomParser', function() {
-  describe('#setUpPage()', function() {
-    it('has been set up properly', function() {
-        var phantom = new PhantomParser();
+    describe('#setUpPage()', function() {
+        it('has been set up properly', function() {
+            var phantom = new PhantomParser();
 
-        phantom.setUpPage();
-        /*
-        page.settings.resourceTimeout = config.parser.timeout;
-        page.onResourceTimeout        = this.onResourceTimeout;
-        page.onError                  = this.onError;
-        page.onInitialized            = this.onInitialized;
-        page.onResourceReceived       = this.onResourceReceived;
-        page.onAlert                  = this.onAlert;
-        page.onConfirm                = this.onConfirm;
-        page.onPrompt                 = this.onPrompt;
-        page.onConsoleMessage         = this.onConsoleMessage;
-        */
-        false.should.equal(true, 'TBD');
-    });
-  });
+            // phantom.setUpPage();
 
-  describe('#parseGet()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+            /*
+               page.settings.resourceTimeout = config.parser.timeout;
+               page.onResourceTimeout        = this.onResourceTimeout;
+               page.onError                  = this.onError;
+               page.onInitialized            = this.onInitialized;
+               page.onResourceReceived       = this.onResourceReceived;
+               page.onAlert                  = this.onAlert;
+               page.onConfirm                = this.onConfirm;
+               page.onPrompt                 = this.onPrompt;
+               page.onConsoleMessage         = this.onConsoleMessage;
+               */
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#parsePost()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#parseGet()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#fireEventObject()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#parsePost()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#fireEventDOM()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#fireEventObject()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#onOpen()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#fireEventDOM()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#onResourceTimeout()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#onOpen()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#onError()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#onResourceTimeout()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#onInitialized()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#onError()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  // TODO: do it
-  describe('#onResourceReceived()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#onInitialized()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  // TODO: do it
-  describe('#onAlert()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    // TODO: do it
+    describe('#onResourceReceived()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  // TODO: do it
-  describe('#onConfirm()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    // TODO: do it
+    describe('#onAlert()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  // TODO: do it
-  describe('#onPrompt()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    // TODO: do it
+    describe('#onConfirm()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  // TODO: do it
-  describe('#onConsoleMessage()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    // TODO: do it
+    describe('#onPrompt()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#onLoadFinished()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    // TODO: do it
+    describe('#onConsoleMessage()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#parsePage()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#onLoadFinished()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#onEvaluate()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#parsePage()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
+
+    describe('#onEvaluate()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
+    });
 });

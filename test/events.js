@@ -34,75 +34,75 @@ var assert         = require('assert'),
     EventContainer = require(libpath + '/events');
 
 describe('EventContainer', function() {
-  describe('#getXPath()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#getXPath()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#getElementsByAttribute()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#getElementsByAttribute()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#pushEvent()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#pushEvent()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#customAddEventListener()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#customAddEventListener()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#customRemoveEventListener()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#customRemoveEventListener()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#customSetAttribute()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#customSetAttribute()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#customRemoveAttribute()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#customRemoveAttribute()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#overrideEventListener()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#overrideEventListener()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#overrideAttributeHandler()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#overrideAttributeHandler()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#getEventsGrouped()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#getEventsGrouped()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#getEvents()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#getEvents()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 
-  describe('#getElementByXpath()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+    describe('#getElementByXpath()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
     });
-  });
 });

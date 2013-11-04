@@ -28,26 +28,49 @@
  * SOFTWARE.
  */
 
-var assert  = require("assert"),
+var assert  = require('assert'),
+    fs      = require('fs'),
     libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src',
     Test    = require(libpath + '/test');
 
 describe('Test', function() {
-  describe('#create()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
-    });
-  });
+    describe('#create()', function() {
+        it('doesn\'t create if name is empty', function() {
+            var test = new Test();
 
-  describe('#getCases()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
-    });
-  });
+            test.create('', {a: 1}, function() {
+                var content;
+                try {
+                    content = fs.readFileSync(libpath + test.TEST_CASE_DIRECTORY + '.tst');
+                } catch (err) {}
 
-  describe('#parseCase()', function() {
-    it('TBD', function() {
-        false.should.equal(true, 'TBD');
+                assert.equal(content, undefined);
+            });
+        });
+
+        it('doesn\'t create if data is empty', function() {
+            var test = new Test();
+
+            test.create('test', {}, function() {
+                var content;
+                try {
+                    content = fs.readFileSync(libpath + test.TEST_CASE_DIRECTORY + '.tst');
+                } catch (err) {}
+
+                assert.equal(content, undefined);
+            });
+        });
     });
-  });
+
+    describe('#getCases()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
+    });
+
+    describe('#parseCase()', function() {
+        it('TBD', function() {
+            false.should.equal(true, 'TBD');
+        });
+    });
 });

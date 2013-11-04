@@ -34,71 +34,71 @@ var assert  = require('assert'),
     config  = require(libpath + '/config');
 
 describe('Config', function() {
-  describe('#redis', function() {
-    it('should be an object', function() {
-        should.exist(config.redis);
-        config.redis.should.be.a('object');
+    describe('#redis', function() {
+        it('should be an object', function() {
+            should.exist(config.redis);
+            config.redis.should.be.a('object');
+        });
+
+        it('contains "port" element', function() {
+            should.exist(config.redis.port);
+            config.redis.port.should.be.an('number');
+        });
+
+        it('contains "hostname" element', function() {
+            should.exist(config.redis.hostname);
+            config.redis.hostname.should.be.a('string');
+        });
     });
 
-    it('contains "port" element', function() {
-        should.exist(config.redis.port);
-        config.redis.port.should.be.an('number');
+    describe('#logging', function() {
+        it('should be an object', function() {
+            should.exist(config.logging);
+            config.logging.should.be.a('object');
+        });
+
+        it('contains "level" element', function() {
+            should.exist(config.logging.level);
+            config.logging.level.should.be.a('string');
+        });
+
+        it('contains "silent" element', function() {
+            should.exist(config.logging.silent);
+            config.logging.silent.should.be.a('boolean');
+        });
     });
 
-    it('contains "hostname" element', function() {
-        should.exist(config.redis.hostname);
-        config.redis.hostname.should.be.a('string');
-    });
-  });
+    describe('#parser', function() {
+        it('should be an object', function() {
+            should.exist(config.parser);
+            config.parser.should.be.a('object');
+        });
 
-  describe('#logging', function() {
-    it('should be an object', function() {
-        should.exist(config.logging);
-        config.logging.should.be.a('object');
-    });
+        it('contains "interface" element', function() {
+            should.exist(config.parser.interface);
+            config.parser.interface.should.be.a('string');
+        });
 
-    it('contains "level" element', function() {
-        should.exist(config.logging.level);
-        config.logging.level.should.be.a('string');
-    });
-
-    it('contains "silent" element', function() {
-        should.exist(config.logging.silent);
-        config.logging.silent.should.be.a('boolean');
-    });
-  });
-
-  describe('#parser', function() {
-    it('should be an object', function() {
-        should.exist(config.parser);
-        config.parser.should.be.a('object');
+        it('contains "timeout" element', function() {
+            should.exist(config.parser.timeout);
+            config.parser.timeout.should.be.an('number');
+        });
     });
 
-    it('contains "interface" element', function() {
-        should.exist(config.parser.interface);
-        config.parser.interface.should.be.a('string');
-    });
+    describe('#crawler', function() {
+        it('should be an object', function() {
+            should.exist(config.crawler);
+            config.crawler.should.be.a('object');
+        });
 
-    it('contains "timeout" element', function() {
-        should.exist(config.parser.timeout);
-        config.parser.timeout.should.be.an('number');
-    });
-  });
+        it('contains "attempts" element', function() {
+            should.exist(config.crawler.attempts);
+            config.crawler.attempts.should.be.an('number');
+        });
 
-  describe('#crawler', function() {
-    it('should be an object', function() {
-        should.exist(config.crawler);
-        config.crawler.should.be.a('object');
+        it('contains "delay" element', function() {
+            should.exist(config.crawler.delay);
+            config.crawler.delay.should.be.an('number');
+        });
     });
-
-    it('contains "attempts" element', function() {
-        should.exist(config.crawler.attempts);
-        config.crawler.attempts.should.be.an('number');
-    });
-
-    it('contains "delay" element', function() {
-        should.exist(config.crawler.delay);
-        config.crawler.delay.should.be.an('number');
-    });
-  });
 });
