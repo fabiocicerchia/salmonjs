@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.2
+ * SPIDEY v0.2.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -181,7 +181,7 @@ module.exports = function Parser() {
      * Normalise the data, ordering the array.
      *
      * @method normaliseData
-     * @param {Object} data The data to be normalised.
+     * @param {String} data The data to be normalised.
      * @return {Object}
      */
     this.normaliseData = function (data) {
@@ -189,7 +189,15 @@ module.exports = function Parser() {
             keys = [],
             sorted = {};
 
+        if (typeof data !== 'string') {
+            return {};
+        }
+
         vars = data.replace(/.+\?/, '').split('&');
+
+        if (vars.length === 0 || vars[0] === '') {
+            return {};
+        }
 
         for (i = 0; i < vars.length; i++) {
             pair = vars[i].split('=');
@@ -211,19 +219,28 @@ module.exports = function Parser() {
      * Convert an array to a querystring.
      *
      * @method arrayToQuery
-     * @param {Object} data The data returned by the parser.
+     * @param {Object} obj    The obj to be converted.
+     * @param {String} prefix The eventual prefix to be concatenated if array.
      * @return {String}
      */
-    this.arrayToQuery = function (arr) {
-        var k, string = [];
+    this.arrayToQuery = function (obj, prefix) {
+        var p, k, v, str = [];
 
-        for (k in arr) {
-            if (arr.hasOwnProperty(k)) {
-                string.push(k + '=' + arr[k]);
-            }
+        if (typeof obj !== 'object') {
+            return '';
         }
 
-        return string.join('&');
+        for (p in obj) {
+            k = prefix ? prefix + '[' + p + ']' : p
+            v = obj[p];
+            str.push(
+                typeof v == 'object' ?
+                this.arrayToQuery(v, k) :
+                encodeURIComponent(k) + '=' + encodeURIComponent(v)
+            );
+        }
+
+        return str.join('&');
     };
 
     /**

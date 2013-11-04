@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.2
+ * SPIDEY v0.2.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -32,7 +32,7 @@ var config    = require('./config'),
     spawn     = require('child_process').spawn,
     crypto    = require('crypto'),
     Test      = require('../src/test'),
-    redis     = require("redis"),
+    redis     = require('redis'),
     client    = redis.createClient(config.redis.port, config.redis.hostname),
     winston   = require('winston'),
     fs        = require('fs'),
@@ -194,6 +194,10 @@ module.exports = function Crawler() {
     this.serialise = function (obj) {
         var str = [], p;
 
+        if (typeof obj !== 'object') {
+            return '';
+        }
+
         for (p in obj) {
             if (obj.hasOwnProperty(p)) {
                 str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
@@ -210,6 +214,7 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.execPhantomjs = function () {
+        // TODO: Move to another method
         sha1          = crypto.createHash('sha1'),
         plainText     = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
         var idRequest = sha1.update(plainText).digest('hex');
@@ -384,14 +389,21 @@ module.exports = function Crawler() {
      *
      * @method checkRunningCrawlers
      * @param {String} reason The reason to terminate the execution
-     * @return undefined
+     * @return boolean
      */
     this.checkRunningCrawlers = function (reason) {
         if (currentCrawler.possibleCrawlers === 0) {
             var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
-            process.exit();
+
+            if (require('optimist').argv.$0.indexOf('mocha') === 0) {
+                process.exit();
+            }
+
+            return false;
         }
+
+        return true;
     };
 
     /**

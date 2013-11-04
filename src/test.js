@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.2
+ * SPIDEY v0.2.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *

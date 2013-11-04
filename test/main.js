@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  *               __     __
  * .-----.-----.|__|.--|  |.-----.--.--.
@@ -29,4 +28,11 @@
  * SOFTWARE.
  */
 
-require('../src/main');
+var assert  = require('assert'),
+    should  = require('chai').should();
+
+describe('Main', function() {
+  it('should\'nt be tested', function() {
+      true.should.equal(true);
+  });
+});

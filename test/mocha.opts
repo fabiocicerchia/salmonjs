@@ -1,0 +1,6 @@
+--check-leaks
+--colors
+--recursive
+--require chai
+--reporter spec
+--ui bdd

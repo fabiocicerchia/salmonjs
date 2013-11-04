@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.2
+ * SPIDEY v0.2.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -134,7 +134,7 @@ var PhantomParser = function () {
      * @return undefined
      */
     this.fireEventDOM = function () {
-        var element = document.getElementByXpath(arguments[0].xPath),
+        var element = window.eventContainer.getElementByXpath(arguments[0].xPath),
             evt;
 
         if (element !== undefined) {
@@ -397,4 +397,6 @@ var PhantomParser = function () {
 };
 
 PhantomParser.prototype = new Parser();
-new PhantomParser().parse(url, type, data, evt, xPath);
+if (require('optimist').argv.$0.indexOf('mocha') === 0) {
+    new PhantomParser().parse(url, type, data, evt, xPath);
+}

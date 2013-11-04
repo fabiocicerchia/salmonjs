@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  *               __     __
  * .-----.-----.|__|.--|  |.-----.--.--.
@@ -6,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.1.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -29,4 +28,26 @@
  * SOFTWARE.
  */
 
-require('../src/main');
+var assert  = require("assert"),
+    libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src',
+    Test    = require(libpath + '/test');
+
+describe('Test', function() {
+  describe('#create()', function() {
+    it('TBD', function() {
+        false.should.equal(true, 'TBD');
+    });
+  });
+
+  describe('#getCases()', function() {
+    it('TBD', function() {
+        false.should.equal(true, 'TBD');
+    });
+  });
+
+  describe('#parseCase()', function() {
+    it('TBD', function() {
+        false.should.equal(true, 'TBD');
+    });
+  });
+});
