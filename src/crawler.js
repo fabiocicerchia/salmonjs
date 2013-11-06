@@ -41,6 +41,10 @@ var config    = require('./config'),
 require('colors');
 require('path');
 
+if (require('optimist').argv.$0.indexOf('mocha') !== -1) {
+    winston.remove(winston.transports.Console);
+}
+
 /**
  * Redis error handler
  */
@@ -182,7 +186,7 @@ module.exports = function Crawler() {
         plainText     = JSON.stringify(this) + Date.now();
 
     this.idCrawler    = sha1.update(plainText).digest('hex').substr(0, 4);
-    console.log(('Started new crawler: ' + this.idCrawler).magenta);
+    winston.info(('Started new crawler: ' + this.idCrawler).magenta);
 
     /**
      * Serialise an object as questring.
