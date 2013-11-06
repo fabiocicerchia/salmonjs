@@ -124,10 +124,12 @@ module.exports = function Parser() {
         this.initReport();
 
         if (this.type === 'POST') {
-            this.parsePost();
-        } else {
-            this.parseGet();
+            return this.parsePost();
+        } else if (this.type === 'GET') {
+            return this.parseGet();
         }
+
+        return undefined;
     };
 
     /**
@@ -258,18 +260,21 @@ module.exports = function Parser() {
             url = baseUrl.split(':')[0] + ':' + url;
         }
 
-        if ((url + '/').indexOf(baseUrl) === 0) {
-            normalised = url;
+        if (baseUrl.substr(baseUrl.length - 1, 1) !== '/' && baseUrl.indexOf('?') === -1 && baseUrl.indexOf('#') === -1) {
+            baseUrl += '/';
+        }
+
+        if (url.indexOf('/') === 0) {
+            normalised = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/.*$/, 'http$1://$2') + url;
         } else if (url.indexOf('?') === 0) {
-            normalised = baseUrl.replace(/\?.+$/, '') + url;
-        } else if (url.indexOf('/') === 0) {
-            normalised = baseUrl.replace(/#.*$/, '') + url.substr(1);
+            normalised = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/.*$/, 'http$1://$2/') + url;
         } else if (url.indexOf('#') === 0) {
             normalised = baseUrl.replace(/#.*$/, '') + url;
         }
 
         if (normalised !== undefined && normalised.indexOf('?') > 0) {
-            normalised = normalised.replace(/\?.+/, '?' + this.arrayToQuery(this.normaliseData(normalised)));
+            var qs = normalised.replace(/\?(.+)(#.*)?/, '$1');
+            normalised = normalised.replace(qs, '?' + this.arrayToQuery(this.normaliseData(qs)));
         }
 
         return normalised;

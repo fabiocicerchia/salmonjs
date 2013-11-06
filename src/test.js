@@ -79,7 +79,7 @@ module.exports = function Test() {
         }
 
         fs.mkdir(__dirname + this.TEST_CASE_DIRECTORY, '0777', function () {
-            fs.writeFileSync(testCaseFile, content);
+            fs.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
 
             callback();
         });
@@ -89,16 +89,28 @@ module.exports = function Test() {
      * Returns a list of test cases based on the URL.
      *
      * @method getCases
-     * @param  {String} The URL for the test cases.
+     * @param  {String} url The URL for the test cases.
      * @return {Object}
      */
     this.getCases = function (url) {
         var cases = [],
+            filename,
+            testCase,
             files = glob.sync(__dirname + this.TEST_CASE_DIRECTORY + url + '*.tst');
 
-        files.forEach(function (filename) {
-            cases.push(currentTest.parseCase(filename));
-        });
+        if (url === '') {
+            return [];
+        }
+
+        for (filename in files) {
+            if (files.hasOwnProperty(filename)) {
+                testCase = currentTest.parseCase(filename);
+
+                if (testCase !== {}) {
+                    cases.push(testCase);
+                }
+            }
+        }
 
         return cases;
     };
@@ -112,7 +124,11 @@ module.exports = function Test() {
      */
     this.parseCase = function (file) {
         var i, value, content, lines,
-            data = [];
+            data = {};
+
+        if (!fs.existsSync(file)) {
+            return {};
+        }
 
         content = fs.readFileSync(file).toString();
         lines   = content.split("\n");

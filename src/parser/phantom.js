@@ -352,9 +352,10 @@ var PhantomParser = function () {
     this.onEvaluate = function () {
         var urls = {
                 anchors: [],
-                links: [],
+                links:   [],
                 scripts: [],
-                forms: []
+                forms:   [],
+                events:  []
             },
             currentUrl = document.location.href;
 
@@ -397,6 +398,4 @@ var PhantomParser = function () {
 };
 
 PhantomParser.prototype = new Parser();
-if (require('optimist').argv.$0.indexOf('mocha') === 0) {
-    new PhantomParser().parse(url, type, data, evt, xPath);
-}
+new PhantomParser().parse(url, type, data, evt, xPath);

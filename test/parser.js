@@ -37,17 +37,38 @@ describe('Parser', function() {
     describe('#parse()', function() {
         it('parses a GET request', function() {
             var parser = new Parser();
-            false.should.equal(true, 'TBD');
+
+            parser.parseGet   = function () { return 'GET'; };
+            parser.initReport = function () {};
+
+            parser.parse('', 'GET', '', '', '').should.be.equal('GET');
+            parser.url.should.be.equal('');
+            parser.type.should.be.equal('GET');
+            parser.data.should.be.equal('');
+            parser.event.should.be.equal('');
+            parser.xPath.should.be.equal('');
         });
 
         it('parses a POST request', function() {
             var parser = new Parser();
-            false.should.equal(true, 'TBD');
+
+            parser.parsePost  = function () { return 'POST'; };
+            parser.initReport = function () {};
+
+            parser.parse('', 'POST', '', '', '').should.be.equal('POST');
+            parser.url.should.be.equal('');
+            parser.type.should.be.equal('POST');
+            parser.data.should.be.equal('');
+            parser.event.should.be.equal('');
+            parser.xPath.should.be.equal('');
         });
 
         it('doesn\'t parse anything else', function() {
             var parser = new Parser();
-            false.should.equal(true, 'TBD');
+
+            parser.initReport = function () {};
+
+            assert.equal(parser.parse('', 'HEAD', '', '', ''), undefined);
         });
     });
 
@@ -164,26 +185,39 @@ describe('Parser', function() {
     describe('#normaliseUrl()', function() {
         it('strips querystring when baseUrl contains a querystring', function() {
             var parser = new Parser();
-            false.should.equal(true, 'TBD');
+
+            parser.normaliseUrl('/?b=2', 'http://www.example.com/?a=1').should.be.equal('http://www.example.com/?b=2');
         });
 
         it('strips hash when baseUrl contains an hash', function() {
             var parser = new Parser();
-            false.should.equal(true, 'TBD');
+
+            parser.normaliseUrl('/#def', 'http://www.example.com/#abc').should.be.equal('http://www.example.com/#def');
         });
 
-        // TODO: Write more cases
-        // baseUrl: http://www.example.com url: /
-        // baseUrl: http://www.example.com url: /#
-        // baseUrl: http://www.example.com url: /?param=value
-        // baseUrl: http://www.example.com url: /#?param=value
-        // baseUrl: http://www.example.com/# url: /
-        // baseUrl: http://www.example.com/# url: /#
-        // baseUrl: http://www.example.com/# url: /?param=value
-        // baseUrl: http://www.example.com/# url: /#?param=value
-        // baseUrl: http://www.example.com/?param=value url: /
-        // baseUrl: http://www.example.com/?param=value url: /#
-        // baseUrl: http://www.example.com/?param=value url: /?param=value
-        // baseUrl: http://www.example.com/?param=value url: /#?param=value
+        it('convert properly other URLs', function() {
+            var parser = new Parser();
+
+            parser.normaliseUrl('/', 'http://www.example.com').should.be.equal('http://www.example.com/');
+            parser.normaliseUrl('/#', 'http://www.example.com').should.be.equal('http://www.example.com/#');
+            parser.normaliseUrl('/?param=value', 'http://www.example.com').should.be.equal('http://www.example.com/?param=value');
+            parser.normaliseUrl('/?param=value#', 'http://www.example.com').should.be.equal('http://www.example.com/?param=value#');
+            parser.normaliseUrl('/', 'http://www.example.com/#').should.be.equal('http://www.example.com/');
+            parser.normaliseUrl('/#', 'http://www.example.com/#').should.be.equal('http://www.example.com/#');
+            parser.normaliseUrl('/?param=value', 'http://www.example.com/#').should.be.equal('http://www.example.com/?param=value');
+            parser.normaliseUrl('/?param=value#', 'http://www.example.com/#').should.be.equal('http://www.example.com/?param=value#');
+            parser.normaliseUrl('/', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/');
+            parser.normaliseUrl('/#', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/#');
+            parser.normaliseUrl('/?param=value', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value');
+            parser.normaliseUrl('/?param=value#', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value#');
+            parser.normaliseUrl('?param=value', 'http://www.example.com/').should.be.equal('http://www.example.com/?param=value');
+            parser.normaliseUrl('?param=value', 'http://www.example.com/#').should.be.equal('http://www.example.com/?param=value');
+            parser.normaliseUrl('?param=value', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value');
+            parser.normaliseUrl('?param=value', 'http://www.example.com/?param=value#').should.be.equal('http://www.example.com/?param=value');
+            parser.normaliseUrl('#', 'http://www.example.com/').should.be.equal('http://www.example.com/#');
+            parser.normaliseUrl('#', 'http://www.example.com/#').should.be.equal('http://www.example.com/#');
+            parser.normaliseUrl('#', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value#');
+            parser.normaliseUrl('#', 'http://www.example.com/?param=value#').should.be.equal('http://www.example.com/?param=value#');
+        });
     });
 });

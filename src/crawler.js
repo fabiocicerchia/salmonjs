@@ -281,8 +281,10 @@ module.exports = function Crawler() {
         );
 
         if (config.parser.interface === 'phantom') {
-            this.execPhantomjs();
+            return this.execPhantomjs();
         }
+
+        return undefined;
     };
 
     /**
@@ -472,6 +474,8 @@ module.exports = function Crawler() {
                 );
             }), config.crawler.delay);
         }
+
+        return currentCrawler.tries < config.crawler.attempts;
     };
 
     /**
@@ -490,7 +494,7 @@ module.exports = function Crawler() {
             code
         );
 
-        currentCrawler.processPage(currentCrawler.processOutput);
+        return currentCrawler.processPage(currentCrawler.processOutput);
     };
 
     /**
@@ -677,6 +681,6 @@ module.exports = function Crawler() {
         });
 
         // TODO: Potential issue if the forEach above are async.
-        currentCrawler.checkRunningCrawlers('No links in the page');
+        return currentCrawler.checkRunningCrawlers('No links in the page');
     };
 };

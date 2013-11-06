@@ -61,15 +61,26 @@ describe('Crawler', function() {
     });
 
     describe('#execPhantomjs()', function() {
-        it('TBD', function() {
-            false.should.equal(true, 'TBD');
+        it('runs', function(done) {
+            var crawler = new Crawler();
+
+            crawler.onStdOut = function() {};
+            crawler.onStdErr = function() {};
+            crawler.onExit = function() {
+                done();
+            };
+
+            crawler.execPhantomjs();
         });
     });
 
     describe('#run()', function() {
         it('runs', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            crawler.execPhantomjs = function () { return 'OK' };
+
+            crawler.run('', '', '', '', '').should.be.equal('OK');
         });
     });
 
@@ -128,21 +139,32 @@ describe('Crawler', function() {
     });
 
     describe('#handleError()', function() {
-        it('tries to run another crawler if max attempts is not reached', function() {
+        it('tries to run another crawler if max attempts is not reached', function(done) {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            crawler.run = function () {
+                done();
+            };
+
+            crawler.tries = 0;
+            crawler.handleError().should.be.equal(true);
         });
 
         it('doesn\'t try to run another crawler if max attempts is reached', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            crawler.tries = 10;
+            crawler.handleError().should.be.equal(false);
         });
     });
 
     describe('#onExit()', function() {
         it('runs', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            crawler.processPage = function () { return true; };
+
+            crawler.onExit().should.be.equal(true);
         });
     });
 
@@ -195,37 +217,273 @@ describe('Crawler', function() {
     describe('#processPage()', function() {
         it('process an empty page', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            var data = {
+                idCrawler: '',
+                links:     {
+                    anchors: [],
+                    links:   [],
+                    scripts: [],
+                    forms:   [],
+                    events:  []
+                },
+                report:    {
+                    errors:     [],
+                    alerts:     [],
+                    confirms:   [],
+                    console:    [],
+                    resources:  {},
+                    time:       { start: 0, end: 0, total: 0 },
+                    content:    '',
+                    httpMethod: '',
+                    event:      '',
+                    xPath:      '',
+                    data:       {}
+                }
+            };
+            var content = '###' + JSON.stringify(data);
+
+            crawler.checkRunningCrawlers = function () { return 'OK'; };
+            crawler.checkAndRun          = function () {};
+
+            crawler.processPage(content).should.be.equal('OK');
+            crawler.possibleCrawlers.should.be.equal(0);
         });
 
         it('process a page with 1 link', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            var data = {
+                idCrawler: '',
+                links:     {
+                    anchors: ['#'],
+                    links:   [],
+                    scripts: [],
+                    forms:   [],
+                    events:  []
+                },
+                report:    {
+                    errors:     [],
+                    alerts:     [],
+                    confirms:   [],
+                    console:    [],
+                    resources:  {},
+                    time:       { start: 0, end: 0, total: 0 },
+                    content:    '',
+                    httpMethod: '',
+                    event:      '',
+                    xPath:      '',
+                    data:       {}
+                }
+            };
+            var content = '###' + JSON.stringify(data);
+
+            crawler.checkRunningCrawlers = function () { return 'OK'; };
+            crawler.checkAndRun          = function () {};
+
+            crawler.processPage(content).should.be.equal('OK');
+            crawler.possibleCrawlers.should.be.equal(1);
         });
 
         it('process a page with 2 links', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            var data = {
+                idCrawler: '',
+                links:     {
+                    anchors: ['#', '/'],
+                    links:   [],
+                    scripts: [],
+                    forms:   [],
+                    events:  []
+                },
+                report:    {
+                    errors:     [],
+                    alerts:     [],
+                    confirms:   [],
+                    console:    [],
+                    resources:  {},
+                    time:       { start: 0, end: 0, total: 0 },
+                    content:    '',
+                    httpMethod: '',
+                    event:      '',
+                    xPath:      '',
+                    data:       {}
+                }
+            };
+            var content = '###' + JSON.stringify(data);
+
+            crawler.checkRunningCrawlers = function () { return 'OK'; };
+            crawler.checkAndRun          = function () {};
+
+            crawler.processPage(content).should.be.equal('OK');
+            crawler.possibleCrawlers.should.be.equal(2);
         });
 
         it('process a page with 1 event', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            var data = {
+                idCrawler: '',
+                links:     {
+                    anchors: [],
+                    links:   [],
+                    scripts: [],
+                    forms:   [],
+                    events:  {
+                        click: {
+                            da39a3ee5e6b4b0d3255bfef95601890afd80709: [
+                                '//whatever'
+                            ]
+                        }
+                    }
+                },
+                report:    {
+                    errors:     [],
+                    alerts:     [],
+                    confirms:   [],
+                    console:    [],
+                    resources:  {},
+                    time:       { start: 0, end: 0, total: 0 },
+                    content:    '',
+                    httpMethod: '',
+                    event:      '',
+                    xPath:      '',
+                    data:       {}
+                }
+            };
+            var content = '###' + JSON.stringify(data);
+
+            crawler.checkRunningCrawlers = function () { return 'OK'; };
+            crawler.checkAndRun          = function () {};
+
+            crawler.processPage(content).should.be.equal('OK');
+            crawler.possibleCrawlers.should.be.equal(1);
         });
 
         it('process a page with 2 events', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            var data = {
+                idCrawler: '',
+                links:     {
+                    anchors: [],
+                    links:   [],
+                    scripts: [],
+                    forms:   [],
+                    events:  {
+                        click: {
+                            da39a3ee5e6b4b0d3255bfef95601890afd80709: [
+                                '//whatever',
+                                '//whatever2'
+                            ]
+                        }
+                    }
+                },
+                report:    {
+                    errors:     [],
+                    alerts:     [],
+                    confirms:   [],
+                    console:    [],
+                    resources:  {},
+                    time:       { start: 0, end: 0, total: 0 },
+                    content:    '',
+                    httpMethod: '',
+                    event:      '',
+                    xPath:      '',
+                    data:       {}
+                }
+            };
+            var content = '###' + JSON.stringify(data);
+
+            crawler.checkRunningCrawlers = function () { return 'OK'; };
+            crawler.checkAndRun          = function () {};
+
+            crawler.processPage(content).should.be.equal('OK');
+            crawler.possibleCrawlers.should.be.equal(2);
         });
 
         it('process a page with 1 link and 1 event', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            var data = {
+                idCrawler: '',
+                links:     {
+                    anchors: ['#'],
+                    links:   [],
+                    scripts: [],
+                    forms:   [],
+                    events:  {
+                        click: {
+                            da39a3ee5e6b4b0d3255bfef95601890afd80709: [
+                                '//whatever'
+                            ]
+                        }
+                    }
+                },
+                report:    {
+                    errors:     [],
+                    alerts:     [],
+                    confirms:   [],
+                    console:    [],
+                    resources:  {},
+                    time:       { start: 0, end: 0, total: 0 },
+                    content:    '',
+                    httpMethod: '',
+                    event:      '',
+                    xPath:      '',
+                    data:       {}
+                }
+            };
+            var content = '###' + JSON.stringify(data);
+
+            crawler.checkRunningCrawlers = function () { return 'OK'; };
+            crawler.checkAndRun          = function () {};
+
+            crawler.processPage(content).should.be.equal('OK');
+            crawler.possibleCrawlers.should.be.equal(2);
         });
 
         it('process a page with 2 links and 2 events', function() {
             var crawler = new Crawler();
-            false.should.equal(true, 'TBD');
+
+            var data = {
+                idCrawler: '',
+                links:     {
+                    anchors: ['#', '/'],
+                    links:   [],
+                    scripts: [],
+                    forms:   [],
+                    events:  {
+                        click: {
+                            da39a3ee5e6b4b0d3255bfef95601890afd80709: [
+                                '//whatever',
+                                '//whatever2'
+                            ]
+                        }
+                    }
+                },
+                report:    {
+                    errors:     [],
+                    alerts:     [],
+                    confirms:   [],
+                    console:    [],
+                    resources:  {},
+                    time:       { start: 0, end: 0, total: 0 },
+                    content:    '',
+                    httpMethod: '',
+                    event:      '',
+                    xPath:      '',
+                    data:       {}
+                }
+            };
+            var content = '###' + JSON.stringify(data);
+
+            crawler.checkRunningCrawlers = function () { return 'OK'; };
+            crawler.checkAndRun          = function () {};
+
+            crawler.processPage(content).should.be.equal('OK');
+            crawler.possibleCrawlers.should.be.equal(4);
         });
     });
 });
