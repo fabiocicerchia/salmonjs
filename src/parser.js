@@ -118,8 +118,8 @@ module.exports = function Parser() {
         this.url   = url || '';
         this.type  = type || 'GET';
         this.data  = data || '';
-        this.event = evt;
-        this.xPath = xPath;
+        this.event = evt || '';
+        this.xPath = xPath || '';
 
         this.initReport();
 

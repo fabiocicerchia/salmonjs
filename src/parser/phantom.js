@@ -276,7 +276,7 @@ var PhantomParser = function () {
      * @return undefined
      */
     this.onLoadFinished = function () {
-        if (currentParser.event.toString() !== '' && currentParser.xPath.toString() !== '') {
+        if (currentParser.event !== '' && currentParser.xPath !== '') {
             if (currentParser.xPath[0] !== '/') {
                 page.evaluate(currentParser.fireEventObject, currentParser);
             } else {
