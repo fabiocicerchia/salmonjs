@@ -402,7 +402,7 @@ var Crawler = function () {
             var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
 
-            if (require('optimist').argv.$0.indexOf('mocha') === 0) {
+            if (require('optimist').argv.$0.indexOf('mocha') === -1) {
                 process.exit();
             }
 
