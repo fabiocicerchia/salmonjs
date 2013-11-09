@@ -59,7 +59,7 @@ client.on('error', function (err) {
  *
  * @module Crawler
  */
-module.exports = function Crawler() {
+var Crawler = function () {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -443,7 +443,7 @@ module.exports = function Crawler() {
         winston.info('%s Retrieved response', winstonCrawlerId);
         winston.error(data.toString().red);
 
-        this.handleError();
+        currentCrawler.handleError();
     };
 
     /**
@@ -493,9 +493,9 @@ module.exports = function Crawler() {
         var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
         winston.info(
-            '%s Execution terminated with status: %d',
+            '%s Execution terminated with status: %s',
             winstonCrawlerId,
-            code
+            code === null ? 'null' : code
         );
 
         return currentCrawler.processPage(currentCrawler.processOutput);
@@ -688,3 +688,5 @@ module.exports = function Crawler() {
         return currentCrawler.checkRunningCrawlers('No links in the page');
     };
 };
+
+module.exports = Crawler;

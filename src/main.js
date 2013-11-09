@@ -100,7 +100,7 @@ if (argv.help !== undefined || argv.uri === undefined) {
         }
     }
 
-    winston.info('Start mapper.parse(' + uri + ')');
+    winston.info('Start processing "' + uri + '"...');
 
     client.send_command('FLUSHDB', []);
 
