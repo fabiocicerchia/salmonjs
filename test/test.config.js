@@ -28,10 +28,14 @@
  * SOFTWARE.
  */
 
-var assert  = require('assert'),
-    should  = require('chai').should(),
-    libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src',
+var chai, should, libpath, config;
+
+chai   = chai || require('chai');
+should = chai.should();
+if (config === undefined) {
+    libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src';
     config  = require(libpath + '/config');
+}
 
 describe('Config', function() {
     describe('#redis', function() {

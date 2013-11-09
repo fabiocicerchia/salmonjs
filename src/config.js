@@ -47,4 +47,6 @@ var config = {
     }
 };
 
-module.exports = config;
+if (typeof module !== 'undefined') {
+    module.exports = config;
+}

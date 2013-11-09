@@ -28,8 +28,10 @@
  * SOFTWARE.
  */
 
-var assert  = require('assert'),
-    should  = require('chai').should();
+var chai, should;
+
+chai   = chai || require('chai');
+should = chai.should();
 
 describe('Main', function() {
     it('should\'nt be tested', function() {

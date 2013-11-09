@@ -28,10 +28,15 @@
  * SOFTWARE.
  */
 
-var assert  = require('assert'),
-    should  = require('chai').should(),
-    libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src',
-    Crawler = require(libpath + '/crawler');
+var assert, chai, should, libpath, Crawler;
+
+chai   = chai || require('chai');
+assert = chai.assert;
+should = chai.should();
+if (Crawler === undefined) {
+    libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src';
+    Crawler  = require(libpath + '/crawler');
+}
 
 describe('Crawler', function() {
     describe('#serialise()', function() {
