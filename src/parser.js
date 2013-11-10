@@ -260,7 +260,7 @@ module.exports = function Parser() {
             url = baseUrl.split(':')[0] + ':' + url;
         }
 
-        if (baseUrl.substr(baseUrl.length - 1, 1) !== '/' && baseUrl.indexOf('?') === -1 && baseUrl.indexOf('#') === -1) {
+        if (baseUrl.substr(0, 7) !== 'file://' && baseUrl.substr(baseUrl.length - 1, 1) !== '/' && baseUrl.indexOf('?') === -1 && baseUrl.indexOf('#') === -1) {
             baseUrl += '/';
         }
 
@@ -270,6 +270,8 @@ module.exports = function Parser() {
             normalised = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/.*$/, 'http$1://$2/') + url;
         } else if (url.indexOf('#') === 0) {
             normalised = baseUrl.replace(/#.*$/, '') + url;
+        } else if (url === baseUrl) {
+            normalised = baseUrl;
         }
 
         if (normalised !== undefined && normalised.indexOf('?') > 0) {

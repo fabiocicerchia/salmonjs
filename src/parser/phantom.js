@@ -324,6 +324,7 @@ var PhantomParser = function () {
         }).filter(currentParser.onlyUnique);
 
         links.forms = [].map.call(links.forms, function (item) {
+            item.action = item.action || url;
             item.action = currentParser.normaliseUrl(item.action, url);
 
             if (item.action === undefined) {
