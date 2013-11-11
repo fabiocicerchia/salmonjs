@@ -270,8 +270,10 @@ module.exports = function Parser() {
             normalised = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/.*$/, 'http$1://$2/') + url;
         } else if (url.indexOf('#') === 0) {
             normalised = baseUrl.replace(/#.*$/, '') + url;
-        } else if (url === baseUrl) {
+        } else if (url === baseUrl || url === '') {
             normalised = baseUrl;
+        } else if (url.indexOf('://') !== -1) {
+            normalised = url;
         }
 
         if (normalised !== undefined && normalised.indexOf('?') > 0) {

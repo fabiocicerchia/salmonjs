@@ -218,6 +218,9 @@ describe('Parser', function() {
             parser.normaliseUrl('#', 'http://www.example.com/#').should.be.equal('http://www.example.com/#');
             parser.normaliseUrl('#', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value#');
             parser.normaliseUrl('#', 'http://www.example.com/?param=value#').should.be.equal('http://www.example.com/?param=value#');
+            parser.normaliseUrl('', 'http://www.example.com/').should.be.equal('http://www.example.com/');
+            parser.normaliseUrl('http://www.example.com/', 'http://www.example.com/').should.be.equal('http://www.example.com/');
+            parser.normaliseUrl('http://www.example2.com/', 'http://www.example.com/').should.be.equal('http://www.example2.com/');
         });
     });
 });
