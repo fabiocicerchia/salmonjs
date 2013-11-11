@@ -31,23 +31,17 @@
 var Parser    = require('../../src/parser'),
     config    = require('../../src/config'),
     fs        = require('fs'),
-    idCrawler = require('system').args[1],
-    execId    = require('system').args[2],
-    idRequest = require('system').args[3],
-    username  = require('system').args[4],
-    password  = require('system').args[5],
-    url       = require('system').args[6],
-    type      = require('system').args[7],
-    data      = require('system').args[8],
-    evt       = require('system').args[9],
-    xPath     = require('system').args[10],
-    page      = require('webpage').create();
-
-if (username !== undefined && password !== undefined) {
-    page.customHeaders = {
-        'Authorization': 'Basic ' + btoa(username + ':' + password)
-    };
-}
+    idCrawler = require('system').args[4],
+    execId    = require('system').args[5],
+    idRequest = require('system').args[6],
+    username  = require('system').args[7],
+    password  = require('system').args[8],
+    url       = require('system').args[9],
+    type      = require('system').args[10],
+    data      = require('system').args[11],
+    evt       = require('system').args[12],
+    xPath     = require('system').args[13],
+    casper    = require('casper').create();
 
 /**
  * CasperParser Class.
@@ -72,15 +66,15 @@ var CasperParser = function () {
      * @return undefined
      */
     this.setUpPage = function () {
-        page.settings.resourceTimeout = config.parser.timeout;
-        page.onResourceTimeout        = this.onResourceTimeout;
-        page.onError                  = this.onError;
-        page.onInitialized            = this.onInitialized;
-        page.onResourceReceived       = this.onResourceReceived;
-        page.onAlert                  = this.onAlert;
-        page.onConfirm                = this.onConfirm;
-        page.onPrompt                 = this.onPrompt;
-        page.onConsoleMessage         = this.onConsoleMessage;
+        casper.resourceTimeout    = config.parser.timeout;
+        casper.onTimeout          = this.onResourceTimeout;
+        casper.onError            = this.onError;
+        casper.onPageInitialized  = this.onInitialized;
+        casper.onResourceReceived = this.onResourceReceived;
+        casper.onAlert            = this.onAlert;
+        casper.on('page.confirm', this.onConfirm);
+        casper.on('page.prompt', this.onPrompt);
+        casper.on('remote.message', this.onConsoleMessage);
     };
 
     /**
@@ -92,8 +86,8 @@ var CasperParser = function () {
     this.parseGet = function () {
         this.setUpPage();
 
-        page.open(this.url + this.data, this.onOpen);
-        page.onLoadFinished = this.onLoadFinished;
+        casper.start(this.url + this.data, this.onOpen);
+        casper.run();
     };
 
     /**
@@ -105,8 +99,8 @@ var CasperParser = function () {
     this.parsePost = function () {
         this.setUpPage();
 
-        page.open(this.url, 'post', this.data, this.onOpen);
-        page.onLoadFinished = this.onLoadFinished;
+        casper.start(this.url, 'post', this.data, this.onOpen);
+        casper.run();
     };
 
     /**
@@ -151,13 +145,19 @@ var CasperParser = function () {
      * @param {String} status The page return status
      * @return undefined
      */
-    this.onOpen = function (status) {
+    this.onOpen = function () {
         currentParser.report.time.end = Date.now();
         currentParser.report.time.total = currentParser.report.time.end - currentParser.report.time.start;
 
-        if (status === 'success') {
-            page.navigationLocked = true;
+        if (username !== undefined && password !== undefined) {
+            casper.setHttpAuth(username, password);
         }
+
+        //if (this.status(true) === 'success') {
+        //    this.page.navigationLocked = true;
+        //}
+
+        currentParser.onLoadFinished();
     };
 
     /**
@@ -167,7 +167,7 @@ var CasperParser = function () {
      * @return undefined
      */
     this.onResourceTimeout = function () {
-        Casper.exit();
+        casper.exit();
     };
 
     /**
@@ -199,8 +199,8 @@ var CasperParser = function () {
      * @return undefined
      */
     this.onInitialized = function() {
-        page.injectJs('../sha1.js');
-        page.injectJs('../events.js');
+        casper.page.injectJs('../sha1.js');
+        casper.page.injectJs('../events.js');
     };
 
     /**
@@ -278,9 +278,9 @@ var CasperParser = function () {
     this.onLoadFinished = function () {
         if (currentParser.event !== '' && currentParser.xPath !== '') {
             if (currentParser.xPath[0] !== '/') {
-                page.evaluate(currentParser.fireEventObject, currentParser);
+                casper.evaluate(currentParser.fireEventObject, currentParser);
             } else {
-                page.evaluate(currentParser.fireEventDOM, currentParser);
+                casper.evaluate(currentParser.fireEventDOM, currentParser);
             }
         }
 
@@ -296,18 +296,18 @@ var CasperParser = function () {
     this.parsePage = function () {
         var url, links, response;
 
-        currentParser.report.content = page.content;
+        currentParser.report.content = casper.page.content;
 
-        url = page.evaluate(function () {
+        url = casper.evaluate(function () {
             return document.location.href;
         });
 
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
-        page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
+        // TODO: page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
-        links = page.evaluate(currentParser.onEvaluate);
+        links = casper.evaluate(currentParser.onEvaluate);
 
-        links.events = page.evaluate(function () {
+        links.events = casper.evaluate(function () {
             return window.eventContainer.getEvents();
         });
 
@@ -341,7 +341,7 @@ var CasperParser = function () {
         };
 
         console.log('###' + JSON.stringify(response));
-        Casper.exit();
+        casper.exit();
     };
 
     /**
@@ -370,7 +370,9 @@ var CasperParser = function () {
             currentUrl = document.location.href;
 
         // HTML 4
-        urls.anchors = this.getAttributeValueFromElements('a', 'href', document);
+        urls.anchors = [].map.call(document.querySelectorAll('a'), function (item) {
+            return item.getAttribute('href');
+        });
         // applet.archive
         // applet.codebase
         // area.href -> urls.uris = this.getAttributeValueFromElements('area', 'href', document);
@@ -404,12 +406,16 @@ var CasperParser = function () {
         // img.longdesc
         // img.src -> urls.uris = this.getAttributeValueFromElements('img', 'src', document);
         // input.src -> urls.uris = this.getAttributeValueFromElements('input', 'src', document); // Possible exception: only when type="image"
-        urls.links   = this.getAttributeValueFromElements('link', 'href', document);
+        urls.links   = [].map.call(document.querySelectorAll('link'), function (item) {
+            return item.getAttribute('href');
+        });
         // object.archive
         // object.classid
         // object.codebase
         // q.cite
-        urls.scripts = this.getAttributeValueFromElements('script', 'src', document);
+        urls.scripts = [].map.call(document.querySelectorAll('script'), function (item) {
+            return item.getAttribute('href');
+        });
 
         // HTML 5
         // audio.src
@@ -431,3 +437,4 @@ var CasperParser = function () {
 
 CasperParser.prototype = new Parser();
 new CasperParser().parse(url, type, data, evt, xPath);
+
