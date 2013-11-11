@@ -38,7 +38,8 @@ var config = {
         silent: false
     },
     parser: {
-        interface: 'phantom', // Only this at the moment.
+        interface: 'phantomjs', // PhantomJS: 'phantomjs', CasperJS: 'casperjs'
+        cmd: 'phantomjs',
         timeout: 5000 // Resource timeout in milliseconds.
     },
     crawler: {

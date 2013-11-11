@@ -30,7 +30,8 @@ install-coverage:
 	git clone https://github.com/visionmedia/node-jscoverage.git
 
 test:
-	./node_modules/.bin/mocha
+	./node_modules/.bin/mocha test/test.config.js test/test.crawler.js test/test.main.js test/test.parser.js test/test.test.js
+	./casperjs/bin/casperjs test test/casper.js
 
 coverage:
 	rm -rf src-cov 2> /dev/null

@@ -58,7 +58,7 @@ Few suggestion about its usage:
 Here the list of main dependencies:
 
  * [Node.js](http://nodejs.org/download/)
- * [PhantomJS](http://phantomjs.org/download.html)
+ * [PhantomJS](http://phantomjs.org/download.html) / [CasperJS](http://casperjs.org/)
  * [Redis](http://redis.io/download)
 
 ## Installation

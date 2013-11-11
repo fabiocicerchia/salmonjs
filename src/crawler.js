@@ -33,7 +33,7 @@
  *
  * @module Crawler
  */
-var Crawler = function (config, spawn, crypto, test, client, winston, fs, phantomjs, optimist) {
+var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist) {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -249,6 +249,46 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, phanto
     };
 
     /**
+     * Execute CasperJS.
+     *
+     * @method execCasperjs
+     * @return undefined
+     */
+    this.execCasperjs = function () {
+        // TODO: Move to another method
+        sha1          = crypto.createHash('sha1'),
+        plainText     = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
+        var idRequest = sha1.update(plainText).digest('hex');
+
+        var casper,
+            params  = [
+                //'--debug=true',
+                './src/parser/' + config.parser.interface + '.js',
+                this.idUri,
+                this.timeStart,
+                idRequest,
+                this.username,
+                this.password,
+                this.url,
+                this.type,
+                this.serialise(this.data),
+                this.evt,
+                this.xPath
+            ];
+
+        try {
+            casper = spawn(config.parser.cmd, params);
+
+            casper.stdout.on('data', this.onStdOut);
+            casper.stderr.on('data', this.onStdErr);
+            casper.on('exit', this.onExit);
+        } catch (err) {
+            winston.error(err.message.red);
+            this.handleError();
+        }
+    };
+
+    /**
      * Execute the request launching a spawn'd process to the parser to get the
      * web page data back as JSON.
      *
@@ -281,8 +321,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, phanto
             (this.xPath === '' ? 'N/A'.grey : this.xPath.green)
         );
 
-        if (config.parser.interface === 'phantom') {
+        if (config.parser.interface === 'phantomjs') {
             return this.execPhantomjs();
+        } else if (config.parser.interface === 'casperjs') {
+            return this.execCasperjs();
         }
 
         return undefined;
@@ -334,7 +376,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, phanto
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
+        crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
         crawler.init();
         crawler.timeStart    = currentCrawler.timeStart;
         crawler.username     = currentCrawler.username;
