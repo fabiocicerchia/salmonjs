@@ -38,7 +38,7 @@ var config = {
         silent: false
     },
     parser: {
-        interface: 'phantomjs', // PhantomJS: 'phantomjs', CasperJS: 'casperjs'
+        interface: 'phantom', // PhantomJS: 'phantom', CasperJS: 'casper'
         cmd: 'phantomjs',
         timeout: 5000 // Resource timeout in milliseconds.
     },
