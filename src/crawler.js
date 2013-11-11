@@ -321,9 +321,9 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             (this.xPath === '' ? 'N/A'.grey : this.xPath.green)
         );
 
-        if (config.parser.interface === 'phantomjs') {
+        if (config.parser.interface === 'phantom') {
             return this.execPhantomjs();
-        } else if (config.parser.interface === 'casperjs') {
+        } else if (config.parser.interface === 'casper') {
             return this.execCasperjs();
         }
 
