@@ -237,7 +237,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             ];
 
         try {
-            phantom = spawn(phantomjs.path, params);
+            phantom = spawn(config.parser.cmd, params);
 
             phantom.stdout.on('data', this.onStdOut);
             phantom.stderr.on('data', this.onStdErr);
