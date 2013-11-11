@@ -28,10 +28,6 @@
  * SOFTWARE.
  */
 
-var fs   = require('fs');
-var glob = require('glob');
-require('path');
-
 /**
  * Test Module
  *
@@ -39,7 +35,7 @@ require('path');
  *
  * @module Test
  */
-module.exports = function Test() {
+var Test = function (fs, glob) {
     /**
      * Test case directory.
      *
@@ -78,11 +74,15 @@ module.exports = function Test() {
             }
         }
 
-        fs.mkdir(__dirname + this.TEST_CASE_DIRECTORY, '0777', function () {
+        if (!fs.existsSync(__dirname + this.TEST_CASE_DIRECTORY)) {
+            fs.mkdir(__dirname + this.TEST_CASE_DIRECTORY, '0777', function () {
+                fs.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
+                if (callback !== undefined) callback();
+            });
+        } else {
             fs.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
-
-            callback();
-        });
+            if (callback !== undefined) callback();
+        }
     };
 
     /**
@@ -143,3 +143,5 @@ module.exports = function Test() {
         return data;
     };
 };
+
+module.exports = Test;

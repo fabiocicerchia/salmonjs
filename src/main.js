@@ -28,17 +28,35 @@
  * SOFTWARE.
  */
 
-var prompt  = require('prompt'),
-    config  = require('../src/config'),
-    Crawler = require('../src/crawler'),
-    winston = require('winston'),
-    fs      = require('fs'),
-    path    = require('path'),
-    redis   = require('redis'),
-    client  = redis.createClient(config.redis.port, config.redis.hostname),
+var IOC       = require('./ioc'),
+    config    = require('../src/config'),
+    Crawler   = require('../src/crawler'),
+    winston   = require('winston'),
+    fs        = require('fs'),
+    path      = require('path'),
+    glob      = require('glob'),
+    redis     = require('redis'),
+    client    = redis.createClient(config.redis.port, config.redis.hostname),
+    spawn     = require('child_process').spawn,
+    crypto    = require('crypto'),
+    Test      = require('../src/test'),
+    phantomjs = require('phantomjs'),
     argv;
 
+require('path');
 require('colors');
+
+var ioc = new IOC();
+ioc.add('config',    config);
+ioc.add('spawn',     spawn);
+ioc.add('crypto',    crypto);
+ioc.add('redis',     redis);
+ioc.add('client',    client);
+ioc.add('winston',   winston);
+ioc.add('fs',        fs);
+ioc.add('phantomjs', phantomjs);
+ioc.add('glob',      glob);
+ioc.add('test',      ioc.get(Test));
 
 /**
  * Redis error handler
@@ -104,7 +122,8 @@ if (argv.help !== undefined || argv.uri === undefined) {
 
     client.send_command('FLUSHDB', []);
 
-    var crawler = new Crawler();
+    var crawler = ioc.get(Crawler);
+    crawler.init();
     crawler.timeStart    = Date.now();
     crawler.username     = argv.username;
     crawler.password     = argv.password;

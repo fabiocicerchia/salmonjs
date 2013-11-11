@@ -30,6 +30,20 @@
 
 var assert, chai, should, libpath, Crawler;
 
+var config    = require('../src/config'),
+    winston   = require('winston'),
+    fs        = require('fs'),
+    redis     = require('redis'),
+    client    = redis.createClient(config.redis.port, config.redis.hostname),
+    spawn     = require('child_process').spawn,
+    crypto    = require('crypto'),
+    glob      = require('glob'),
+    optimist  = require('optimist'),
+    Test      = require('../src/test'),
+    test      = new Test(fs, glob),
+    phantomjs = require('phantomjs'),
+    argv;
+
 chai   = chai || require('chai');
 assert = chai.assert;
 should = chai.should();
@@ -41,7 +55,7 @@ if (Crawler === undefined) {
 describe('Crawler', function() {
     describe('#serialise()', function() {
         it('encode entities properly', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.serialise({}).should.equal('');
             crawler.serialise({a: 1, b: 2}).should.equal('a=1&b=2');
@@ -50,14 +64,14 @@ describe('Crawler', function() {
         });
 
         it('doesn\'t process a string', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.serialise('').should.equal('');
             crawler.serialise('test').should.equal('');
         });
 
         it('doesn\'t process an integer', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.serialise(1).should.equal('');
             crawler.serialise(-1).should.equal('');
@@ -67,7 +81,7 @@ describe('Crawler', function() {
 
     describe('#execPhantomjs()', function() {
         it('runs', function(done) {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.onStdOut = function() {};
             crawler.onStdErr = function() {};
@@ -81,7 +95,7 @@ describe('Crawler', function() {
 
     describe('#run()', function() {
         it('runs', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.execPhantomjs = function () { return 'OK' };
 
@@ -91,28 +105,28 @@ describe('Crawler', function() {
 
     describe('#analiseRedisResponse()', function() {
         it('runs', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
             false.should.equal(true, 'TBD');
         });
     });
 
     describe('#checkAndRun()', function() {
         it('runs', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
             false.should.equal(true, 'TBD');
         });
     });
 
     describe('#checkRunningCrawlers()', function() {
         it('doesn\'t exit when there are running crawlers', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.possibleCrawlers = 1;
             crawler.checkRunningCrawlers().should.be.equal(true);
         });
 
         it('exits when there are no running crawlers', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.possibleCrawlers = 0;
             crawler.checkRunningCrawlers().should.be.equal(false);
@@ -121,7 +135,7 @@ describe('Crawler', function() {
 
     describe('#onStdOut()', function() {
         it('collect the data from response', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.processOutput = '';
             crawler.onStdOut('test\n');
@@ -134,7 +148,7 @@ describe('Crawler', function() {
 
     describe('#onStdErr()', function() {
         it('runs', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.handleError = function() {};
 
@@ -145,7 +159,7 @@ describe('Crawler', function() {
 
     describe('#handleError()', function() {
         it('tries to run another crawler if max attempts is not reached', function(done) {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.run = function () {
                 done();
@@ -156,7 +170,7 @@ describe('Crawler', function() {
         });
 
         it('doesn\'t try to run another crawler if max attempts is reached', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.tries = 10;
             crawler.handleError().should.be.equal(false);
@@ -165,7 +179,7 @@ describe('Crawler', function() {
 
     describe('#onExit()', function() {
         it('runs', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.processPage = function () { return true; };
 
@@ -175,37 +189,37 @@ describe('Crawler', function() {
 
     describe('#htmlEscape()', function() {
         it('escape "ampersand" correctly', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.htmlEscape('&').should.be.equal('&amp;');
         });
 
         it('escape "double quote" correctly', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.htmlEscape('"').should.be.equal('&quot;');
         });
 
         it('escape "single quote" correctly', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.htmlEscape('\'').should.be.equal('&#39;');
         });
 
         it('escape "less than" correctly', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.htmlEscape('<').should.be.equal('&lt;');
         });
 
         it('escape "greater than" correctly', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             crawler.htmlEscape('>').should.be.equal('&gt;');
         });
 
         it('doesn\'t escape anything else', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             var unescaped = 'abcdefghijklmnopqrstuvwxyz0123456789\\|!£$%/()=?^[]{}@#;,:.-_+';
             crawler.htmlEscape(unescaped).should.be.equal(unescaped);
@@ -214,14 +228,14 @@ describe('Crawler', function() {
 
     describe('#storeDetailsToFile()', function() {
         it('save properly a report file', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
             false.should.equal(true, 'TBD');
         });
     });
 
     describe('#processPage()', function() {
         it('process an empty page', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             var data = {
                 idCrawler: '',
@@ -256,7 +270,7 @@ describe('Crawler', function() {
         });
 
         it('process a page with 1 link', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             var data = {
                 idCrawler: '',
@@ -291,7 +305,7 @@ describe('Crawler', function() {
         });
 
         it('process a page with 2 links', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             var data = {
                 idCrawler: '',
@@ -326,7 +340,7 @@ describe('Crawler', function() {
         });
 
         it('process a page with 1 event', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             var data = {
                 idCrawler: '',
@@ -367,7 +381,7 @@ describe('Crawler', function() {
         });
 
         it('process a page with 2 events', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             var data = {
                 idCrawler: '',
@@ -409,7 +423,7 @@ describe('Crawler', function() {
         });
 
         it('process a page with 1 link and 1 event', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             var data = {
                 idCrawler: '',
@@ -450,7 +464,7 @@ describe('Crawler', function() {
         });
 
         it('process a page with 2 links and 2 events', function() {
-            var crawler = new Crawler();
+            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
 
             var data = {
                 idCrawler: '',

@@ -28,38 +28,12 @@
  * SOFTWARE.
  */
 
-var config    = require('./config'),
-    spawn     = require('child_process').spawn,
-    crypto    = require('crypto'),
-    Test      = require('../src/test'),
-    redis     = require('redis'),
-    client    = redis.createClient(config.redis.port, config.redis.hostname),
-    winston   = require('winston'),
-    fs        = require('fs'),
-    phantomjs = require('phantomjs');
-
-require('colors');
-require('path');
-
-if (require('optimist').argv.$0.indexOf('mocha') !== -1) {
-    winston.remove(winston.transports.Console);
-}
-
-/**
- * Redis error handler
- */
-client.on('error', function (err) {
-    winston.error('REDIS - %s'.red, err.toString());
-    // TODO: Is it really good to exit?
-    process.exit(1);
-});
-
 /**
  * Crawler Module
  *
  * @module Crawler
  */
-var Crawler = function () {
+var Crawler = function (config, spawn, crypto, test, client, winston, fs, phantomjs, optimist) {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -175,18 +149,41 @@ var Crawler = function () {
     this.possibleCrawlers = 0;
 
     /**
+     * TBW
+     */
+    this.idCrawler = '';
+
+    /**
      * Current instance.
      *
      * @property currentCrawler
      * @type {Object}
      * @default this
      */
-    var currentCrawler = this,
-        sha1          = crypto.createHash('sha1'),
-        plainText     = JSON.stringify(this) + Date.now();
+    var currentCrawler = this, sha1, plainText;
 
-    this.idCrawler    = sha1.update(plainText).digest('hex').substr(0, 4);
-    winston.info(('Started new crawler: ' + this.idCrawler).magenta);
+    if (typeof optimist !== 'undefined' && typeof winston !== 'undefined') {
+        if (optimist.argv.$0.indexOf('mocha') !== -1) {
+            try { winston.remove(winston.transports.Console); } catch (err) {}
+        }
+    }
+
+    this.init = function () {
+        /**
+         * Redis error handler
+         */
+        client.on('error', function (err) {
+            winston.error('REDIS - %s'.red, err.toString());
+            // TODO: Is it really good to exit?
+            process.exit(1);
+        });
+
+        sha1      = crypto.createHash('sha1');
+        plainText = JSON.stringify(this) + Date.now();
+
+        this.idCrawler = sha1.update(plainText).digest('hex').substr(0, 4);
+        winston.info('Started new crawler: %s'.magenta, this.idCrawler);
+    };
 
     /**
      * Serialise an object as questring.
@@ -337,7 +334,8 @@ var Crawler = function () {
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        crawler = new Crawler();
+        crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, phantomjs, optimist);
+        crawler.init();
         crawler.timeStart    = currentCrawler.timeStart;
         crawler.username     = currentCrawler.username;
         crawler.password     = currentCrawler.password;
@@ -644,7 +642,6 @@ var Crawler = function () {
 
         links.forms.forEach(function (element) {
             var id        = element.action.toString().replace(/[^a-zA-Z0-9_]/g, '_'),
-                test      = new Test(),
                 fieldData = {},
                 cases,
                 i,
@@ -656,6 +653,7 @@ var Crawler = function () {
                     fieldData[element.fields[i]] = '';
                 }
             }
+
             test.create(id + '-' + element.type, fieldData);
             //test.create(id + '-' + 'get', fieldData);
             //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
