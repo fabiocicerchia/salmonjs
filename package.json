@@ -29,16 +29,11 @@
     "colors": "0.6.2",
     "redis": "0.9.0",
     "winston": "0.7",
-    "glob": "3.2.7",
-    "phantomjs": "1.9.2-2"
+    "glob": "3.2.7"
   },
   "devDependencies": {
     "mocha": "1.14.0",
-    "chai": "1.8.1",
-    "grunt": "*",
-    "grunt-cli": "*",
-    "grunt-mocha": "*",
-    "grunt-mocha-runner": "*"
+    "chai": "1.8.1"
   },
   "analyze": false,
   "scripts": {
