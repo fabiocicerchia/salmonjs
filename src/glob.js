@@ -28,7 +28,20 @@
  * SOFTWARE.
  */
 
+/**
+ * Glob Emulation Module
+ * It emulates the behaviour of glob.
+ *
+ * @module glob
+ */
 var glob = {
+    /**
+     * Sleep function.
+     *
+     * @method sleep
+     * @param {Integer} millis The number of millisecond to wait for
+     * @return undefined
+     */
     sleep: function(millis) {
         var date = new Date(),
           curDate = null;
@@ -37,6 +50,14 @@ var glob = {
             curDate = new Date();
         } while(curDate-date < millis);
     },
+
+    /**
+     * Sync version of glob.
+     *
+     * @method sync
+     * @param {String} dir The directory to be processed
+     * @return {Array}
+     */
     sync: function(dir) {
         var results;
 
@@ -50,6 +71,15 @@ var glob = {
 
         return results;
     },
+
+    /**
+     * Async version of glob.
+     *
+     * @method glob
+     * @param {String}   dir  The directory to be processed
+     * @param {Function} done The callback called when it finish the processing
+     * @return undefined
+     */
     glob: function (dir, done) {
         var firstOccurrence = dir.indexOf('*');
         var dirToProcess = dir.substr(0, (firstOccurrence === -1) ? dir.length : firstOccurrence);
@@ -71,18 +101,26 @@ var glob = {
         });
     },
 
+    /**
+     * Return a list of all the files contained in a certain directory.
+     *
+     * @method list
+     * @param {String}   dir  The directory to be processed
+     * @param {Function} done The callback called when it finish the processing
+     * @return undefined
+     */
     list: function (dir, done) {
         var fsWrapper = new (require('../src/fs'));
         var results = [];
 
-        var list = fsWrapper.readdir(dir);
+        var list = fsWrapper.readdirSync(dir);
         var pending = list.length - 2;
         if (!pending) return done(null, results);
 
         list.forEach(function(file) {
             if (file !== '.' && file !== '..') {
                 file = dir + '/' + file;
-                if (fsWrapper.isDir(file)) {
+                if (fsWrapper.isDirectory(file)) {
                     glob.list(file, function(err, res) {
                         results = results.concat(res);
                         if (!--pending) done(null, results);

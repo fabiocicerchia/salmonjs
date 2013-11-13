@@ -34,14 +34,8 @@ var IOC       = require('./ioc'),
     winston   = require('winston'),
     fs        = require('fs'),
     path      = require('path'),
-    glob      = require('glob'),
     redis     = require('redis'),
     client    = redis.createClient(config.redis.port, config.redis.hostname),
-    spawn     = require('child_process').spawn,
-    crypto    = require('crypto'),
-    Test      = require('../src/test'),
-    FSWrapper = require('../src/fs'),
-    phantomjs = require('phantomjs'),
     argv;
 
 require('path');
@@ -49,18 +43,17 @@ require('colors');
 
 var ioc = new IOC();
 ioc.add('config',    config);
-ioc.add('spawn',     spawn);
-ioc.add('crypto',    crypto);
+ioc.add('spawn',     require('child_process').spawn);
+ioc.add('crypto',    require('crypto'));
 ioc.add('redis',     redis);
 ioc.add('client',    client);
 ioc.add('winston',   winston);
 ioc.add('fs',        fs);
-ioc.add('phantomjs', phantomjs);
-ioc.add('glob',      glob);
+ioc.add('glob',      require('glob'));
 ioc.add('dirName',   __dirname);
 ioc.add('mainDir',   __dirname + '/..');
-ioc.add('fsWrapper', ioc.get(FSWrapper));
-ioc.add('test',      ioc.get(Test));
+ioc.add('fsWrapper', ioc.get(require('../src/fs')));
+ioc.add('test',      ioc.get(require('../src/test')));
 
 /**
  * Redis error handler

@@ -28,37 +28,95 @@
  * SOFTWARE.
  */
 
+/**
+ * FS Wrapper Module
+ * It handles the differences between the Node.js module FS and the PhantomJS
+ * module FS.
+ *
+ * @module FSWrapper
+ */
  var FSWrapper = function(fs) {
     if (typeof fs === 'undefined') {
         fs = require('fs');
     }
 
-    this.read = function(filename) {
+    /**
+     * Method to handle the differences between Node.js FS.readFileSync and
+     * PhantomJS FS.read.
+     *
+     * @method readFileSync
+     * @param {String} filename The filename
+     * @return {String}
+     */
+    this.readFileSync = function(filename) {
         var method = (typeof fs.readFileSync !== 'undefined') ? 'readFileSync' : 'read';
         return fs[method].call(fs, filename);
     };
 
-    this.write = function(filename, data, options) {
+    /**
+     * Method to handle the differences between Node.js FS.writeFileSync and
+     * PhantomJS FS.write.
+     *
+     * @method writeFileSync
+     * @param {String} filename The filename
+     * @param {String} data     The data
+     * @param {Object} options  The options
+     * @return {String}
+     */
+    this.writeFileSync = function(filename, data, options) {
         var method = (typeof fs.writeFileSync !== 'undefined') ? 'writeFileSync' : 'write';
         return fs[method].call(fs, filename, data, options);
     };
 
-    this.exists = function(filename) {
+    /**
+     * Method to handle the differences between Node.js FS.existsSync and
+     * PhantomJS FS.exists.
+     *
+     * @method existsSync
+     * @param {String} filename The filename
+     * @return {Boolean}
+     */
+    this.existsSync = function(filename) {
         var method = (typeof fs.existsSync !== 'undefined') ? 'existsSync' : 'exists';
         return fs[method].call(fs, filename);
     };
 
-    this.mkdir = function(path, mode) {
+    /**
+     * Method to handle the differences between Node.js FS.mkdirSync and
+     * PhantomJS FS.makeDirectory.
+     *
+     * @method mkdirSync
+     * @param {String} path The path
+     * @param {String} mode The mode
+     * @return undefined
+     */
+    this.mkdirSync = function(path, mode) {
         var method = (typeof fs.mkdirSync !== 'undefined') ? 'mkdirSync' : 'makeDirectory';
         return fs[method].call(fs, path, mode);
     };
 
-    this.unlink = function(path) {
+    /**
+     * Method to handle the differences between Node.js FS.unlinkSync and
+     * PhantomJS FS.remove.
+     *
+     * @method unlinkSync
+     * @param {String} path The path
+     * @return undefined
+     */
+    this.unlinkSync = function(path) {
         var method = (typeof fs.unlinkSync !== 'undefined') ? 'unlinkSync' : 'remove';
         return fs[method].call(fs, path);
     };
 
-    this.readdir = function(path) {
+    /**
+     * Method to handle the differences between Node.js FS.readdirSync and
+     * PhantomJS FS.list.
+     *
+     * @method readdirSync
+     * @param {String} path The path
+     * @return {Array}
+     */
+    this.readdirSync = function(path) {
         if (typeof fs.readdirSync !== 'undefined') {
             return fs.readdirSync.call(fs, path);
         } else {
@@ -66,7 +124,15 @@
         }
     };
 
-    this.isDir = function(path) {
+    /**
+     * Method to handle the differences between Node.js FS.statSync.isDirectory
+     * and PhantomJS FS.isDirectory.
+     *
+     * @method isDirectory
+     * @param {String} path The path
+     * @return {Boolean}
+     */
+    this.isDirectory = function(path) {
         if (typeof fs.statSync !== 'undefined') {
             return fs.statSync.call(fs, path).isDirectory();
         } else {

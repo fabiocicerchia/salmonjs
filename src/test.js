@@ -79,11 +79,11 @@ var Test = function (fsWrapper, glob, mainDir) {
             }
         }
 
-        if (!fsWrapper.exists(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'))) {
-            fsWrapper.mkdir(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'), '0777');
+        if (!fsWrapper.existsSync(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'))) {
+            fsWrapper.mkdirSync(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'), '0777');
         }
 
-        fsWrapper.write(testCaseFile, content, {flag: 'w+', mode: 0755});
+        fsWrapper.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
         if (callback !== undefined) callback();
     };
 
@@ -95,7 +95,7 @@ var Test = function (fsWrapper, glob, mainDir) {
      * @return {Object}
      */
     this.getCases = function (url) {
-        if (url === '' || !fsWrapper.exists(mainDir + this.TEST_CASE_DIRECTORY + url)) {
+        if (url === '' || !fsWrapper.existsSync(mainDir + this.TEST_CASE_DIRECTORY + url)) {
             return [];
         }
 
@@ -128,11 +128,11 @@ var Test = function (fsWrapper, glob, mainDir) {
         var i, value, content, lines,
             data = {};
 
-        if (!fsWrapper.exists(file)) {
+        if (!fsWrapper.existsSync(file)) {
             return {};
         }
 
-        content = fsWrapper.read(file).toString();
+        content = fsWrapper.readFileSync(file).toString();
         lines   = content.split("\n");
 
         for (i in lines) {

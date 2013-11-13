@@ -104,7 +104,11 @@ module.exports = function Parser() {
     };
 
     /**
-     * TBW
+     * Mapping between HTML tag name and attributes that may contain URIs.
+     *
+     * @property tags
+     * @type {Object}
+     * @default {Object}
      */
     this.tags = {
         // HTML 4

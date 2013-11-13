@@ -303,7 +303,7 @@ var CasperParser = function () {
         });
 
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
-        // TODO: page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
+        casper.capture(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
         links = casper.evaluate(currentParser.onEvaluate, currentParser);
 
@@ -394,4 +394,3 @@ var CasperParser = function () {
 
 CasperParser.prototype = new Parser();
 new CasperParser().parse(url, type, data, evt, xPath);
-

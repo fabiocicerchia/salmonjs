@@ -32,6 +32,13 @@
  * Event Container Class
  */
 var EventContainer = function () {
+    /**
+     * The Event Container.
+     *
+     * @property container
+     * @type {Object}
+     * @default {}
+     */
     this.container = {};
 
     /**
@@ -42,6 +49,21 @@ var EventContainer = function () {
      * @default this
      */
     var currentEventContainer = this;
+
+    /**
+     * Hash a string with SHA1 (if exists).
+     *
+     * @method hashString
+     * @param {String} string The string to be converted to hash
+     * @return {String}
+     */
+    this.hashString = function (string) {
+        if (typeof SHA1 !== 'undefined') {
+            return SHA1(string);
+        } else {
+            return string.replace(/[^a-zA-Z0-9]/g, '_');
+        }
+    };
 
     /**
      * Returns the XPath for a certain DOM element.
@@ -129,7 +151,7 @@ var EventContainer = function () {
      * @return undefined
      */
     this.customAddEventListener = function (type, listener, useCapture, wantsUntrusted) {
-        var signature = SHA1(listener.toString());
+        var signature = currentEventContainer.hashString(listener.toString());
         currentEventContainer.pushEvent(type, signature, this);
 
         this._origAddEventListener(type, listener, useCapture, wantsUntrusted);
@@ -146,7 +168,7 @@ var EventContainer = function () {
      */
     this.customRemoveEventListener = function (type, listener, useCapture)
     {
-        var signature = SHA1(listener.toString());
+        var signature = currentEventContainer.hashString(listener.toString());
         if (currentEventContainer.container[type][signature] !== undefined) {
             currentEventContainer.container[type][signature] = undefined;
         }
@@ -167,7 +189,7 @@ var EventContainer = function () {
 
         if (name.indexOf('on') === 0) {
             type = name.substr(2);
-            signature = SHA1(value.toString());
+            signature = currentEventContainer.hashString(value.toString());
             currentEventContainer.pushEvent(type, signature, this);
         }
 
@@ -189,7 +211,7 @@ var EventContainer = function () {
 
             currentEventContainer.container[type] = currentEventContainer.container[type] || {};
 
-            signature = SHA1(this.getAttribute(attrName).toString());
+            signature = currentEventContainer.hashString(this.getAttribute(attrName).toString());
             if (currentEventContainer.container[type][signature] !== undefined) {
                 currentEventContainer.container[type][signature] = undefined;
             }
@@ -272,7 +294,7 @@ var EventContainer = function () {
         for (evt in staticEvents) {
             type = evt.substr(2);
             for (el in staticEvents[evt]) {
-                signature = SHA1(staticEvents[evt][el].getAttribute(evt));
+                signature = currentEventContainer.hashString(staticEvents[evt][el].getAttribute(evt));
 
                 currentEventContainer.pushEvent(type, signature, staticEvents[evt][el]);
             }
@@ -292,8 +314,6 @@ var EventContainer = function () {
         return document.evaluate(path, document, null, 9, null).singleNodeValue;
     };
 };
-
-//module.exports = EventContainer;
 
 var eventContainer = new EventContainer();
 
