@@ -305,25 +305,25 @@ var PhantomParser = function () {
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
         page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
-        links = page.evaluate(currentParser.onEvaluate);
+        links = page.evaluate(currentParser.onEvaluate, currentParser);
 
         links.events = page.evaluate(function () {
             return window.eventContainer.getEvents();
         });
 
-        links.anchors = [].map.call(links.anchors, function (item) {
+        links.a = [].map.call(links.a, function (item) {
             return currentParser.normaliseUrl(item, url);
         }).filter(currentParser.onlyUnique);
 
-        links.links = [].map.call(links.links, function (item) {
+        links.link = [].map.call(links.link, function (item) {
             return currentParser.normaliseUrl(item, url);
         }).filter(currentParser.onlyUnique);
 
-        links.scripts = [].map.call(links.scripts, function (item) {
+        links.script = [].map.call(links.script, function (item) {
             return currentParser.normaliseUrl(item, url);
         }).filter(currentParser.onlyUnique);
 
-        links.forms = [].map.call(links.forms, function (item) {
+        links.form = [].map.call(links.form, function (item) {
             item.action = item.action || url;
             item.action = currentParser.normaliseUrl(item.action, url);
 
@@ -352,27 +352,21 @@ var PhantomParser = function () {
      */
     this.onEvaluate = function () {
         var urls = {
-                anchors: [],
-                links:   [],
-                scripts: [],
-                forms:   [],
-                events:  []
+                a:      [],
+                link:   [],
+                script: [],
+                form:   [],
+                events: []
             },
-            currentUrl = document.location.href;
+            currentUrl = document.location.href,
+            attribute, tag;
 
-        urls.anchors = [].map.call(document.querySelectorAll('a'), function (item) {
-            return item.getAttribute('href');
-        });
+        for (tag in arguments[0].tags) {
+            attribute = arguments[0].tags[tag];
+            urls[tag] = [].map.call(document.querySelectorAll(tag), function(item) { return item.getAttribute(attribute); });
+        }
 
-        urls.links = [].map.call(document.querySelectorAll('link'), function (item) {
-            return item.getAttribute('href');
-        });
-
-        urls.scripts = [].map.call(document.querySelectorAll('script'), function (item) {
-            return item.getAttribute('src');
-        });
-
-        urls.forms = [].map.call(document.querySelectorAll('form'), function (item) {
+        urls.form   = [].map.call(document.querySelectorAll('form'), function (item) {
             var input, select, textarea;
 
             input = [].map.call(item.getElementsByTagName('input'), function (item) {

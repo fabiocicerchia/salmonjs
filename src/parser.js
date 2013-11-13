@@ -104,6 +104,45 @@ module.exports = function Parser() {
     };
 
     /**
+     * TBW
+     */
+    this.tags = {
+        // HTML 4
+        a: 'href',
+        area: 'href',
+        //applet: 'archive',
+        //applet: 'codebase',
+        base: 'href',
+        //blockquote: 'cite',
+        // frame.longdesc',
+        frame: 'src',
+        // iframe.longdesc',
+        iframe: 'src',
+        // img.longdesc',
+        img: 'src',
+        input: 'src', // Possible exception: only when type="image"
+        link: 'href',
+        // object.archive',
+        // object.classid',
+        // object.codebase',
+        // q.cite',
+        script: 'href'
+        // HTML 5
+        // audio: 'src',
+        // button: 'formaction',
+        // del: 'cite',
+        // embed: 'src',
+        // html: 'manifest',
+        // input: 'formaction',
+        // ins: 'cite',
+        // object: 'data',
+        // source: 'src',
+        // track: 'src',
+        // video: 'poster',
+        // video: 'src'
+    };
+
+    /**
      * Parse the URL.
      *
      * @method parse

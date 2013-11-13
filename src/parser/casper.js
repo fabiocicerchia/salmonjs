@@ -305,25 +305,25 @@ var CasperParser = function () {
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
         // TODO: page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
-        links = casper.evaluate(currentParser.onEvaluate);
+        links = casper.evaluate(currentParser.onEvaluate, currentParser);
 
         links.events = casper.evaluate(function () {
             return window.eventContainer.getEvents();
         });
 
-        links.anchors = [].map.call(links.anchors, function (item) {
+        links.a = [].map.call(links.a, function (item) {
             return currentParser.normaliseUrl(item, url);
         }).filter(currentParser.onlyUnique);
 
-        links.links = [].map.call(links.links, function (item) {
+        links.link = [].map.call(links.link, function (item) {
             return currentParser.normaliseUrl(item, url);
         }).filter(currentParser.onlyUnique);
 
-        links.scripts = [].map.call(links.scripts, function (item) {
+        links.script = [].map.call(links.script, function (item) {
             return currentParser.normaliseUrl(item, url);
         }).filter(currentParser.onlyUnique);
 
-        links.forms = [].map.call(links.forms, function (item) {
+        links.form = [].map.call(links.form, function (item) {
             item.action = item.action || url;
             item.action = currentParser.normaliseUrl(item.action, url);
 
@@ -345,15 +345,6 @@ var CasperParser = function () {
     };
 
     /**
-     * TBW
-     */
-    this.getAttributeValueFromElements = function (tag, attribute, document) {
-        return [].map.call(document.querySelectorAll(tag), function (item) {
-            return item.getAttribute(attribute);
-        });
-    };
-
-    /**
      * Callback fired to evaluate the page content.
      *
      * @method onEvaluate
@@ -361,24 +352,21 @@ var CasperParser = function () {
      */
     this.onEvaluate = function () {
         var urls = {
-                anchors: [],
-                links:   [],
-                scripts: [],
-                forms:   [],
-                events:  []
+                a:      [],
+                link:   [],
+                script: [],
+                form:   [],
+                events: []
             },
-            currentUrl = document.location.href;
+            currentUrl = document.location.href,
+            attribute, tag;
 
-        // HTML 4
-        urls.anchors = [].map.call(document.querySelectorAll('a'), function (item) {
-            return item.getAttribute('href');
-        });
-        // applet.archive
-        // applet.codebase
-        // area.href -> urls.uris = this.getAttributeValueFromElements('area', 'href', document);
-        // base.href -> urls.uris = this.getAttributeValueFromElements('base', 'href', document);
-        // blockquote.cite
-        urls.forms   = [].map.call(document.querySelectorAll('form'), function (item) {
+        for (tag in arguments[0].tags) {
+            attribute = arguments[0].tags[tag];
+            urls[tag] = [].map.call(document.querySelectorAll(tag), function(item) { return item.getAttribute(attribute); });
+        }
+
+        urls.form = [].map.call(document.querySelectorAll('form'), function (item) {
             var input, select, textarea;
 
             input = [].map.call(item.getElementsByTagName('input'), function (item) {
@@ -399,37 +387,6 @@ var CasperParser = function () {
                 fields: input.concat(select).concat(textarea)
             };
         });
-        // frame.longdesc
-        // frame.src -> urls.uris = this.getAttributeValueFromElements('frame', 'src', document);
-        // iframe.longdesc
-        // iframe.src -> urls.uris = this.getAttributeValueFromElements('iframe', 'src', document);
-        // img.longdesc
-        // img.src -> urls.uris = this.getAttributeValueFromElements('img', 'src', document);
-        // input.src -> urls.uris = this.getAttributeValueFromElements('input', 'src', document); // Possible exception: only when type="image"
-        urls.links   = [].map.call(document.querySelectorAll('link'), function (item) {
-            return item.getAttribute('href');
-        });
-        // object.archive
-        // object.classid
-        // object.codebase
-        // q.cite
-        urls.scripts = [].map.call(document.querySelectorAll('script'), function (item) {
-            return item.getAttribute('href');
-        });
-
-        // HTML 5
-        // audio.src
-        // button.formaction
-        // del.cite
-        // embed.src
-        // html.manifest
-        // input.formaction
-        // ins.cite
-        // object.data
-        // source.src
-        // track.src
-        // video.poster
-        // video.src
 
         return urls;
     };

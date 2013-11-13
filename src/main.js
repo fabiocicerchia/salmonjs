@@ -40,6 +40,7 @@ var IOC       = require('./ioc'),
     spawn     = require('child_process').spawn,
     crypto    = require('crypto'),
     Test      = require('../src/test'),
+    FSWrapper = require('../src/fs'),
     phantomjs = require('phantomjs'),
     argv;
 
@@ -56,6 +57,9 @@ ioc.add('winston',   winston);
 ioc.add('fs',        fs);
 ioc.add('phantomjs', phantomjs);
 ioc.add('glob',      glob);
+ioc.add('dirName',   __dirname);
+ioc.add('mainDir',   __dirname + '/..');
+ioc.add('fsWrapper', ioc.get(FSWrapper));
 ioc.add('test',      ioc.get(Test));
 
 /**

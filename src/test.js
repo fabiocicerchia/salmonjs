@@ -35,7 +35,7 @@
  *
  * @module Test
  */
-var Test = function (fs, glob) {
+var Test = function (fsWrapper, glob, mainDir) {
     /**
      * Test case directory.
      *
@@ -43,7 +43,7 @@ var Test = function (fs, glob) {
      * @type {String}
      * @default "/../tests/cases/"
      */
-    this.TEST_CASE_DIRECTORY = '/../tests/cases/';
+    this.TEST_CASE_DIRECTORY = '/tests/cases/';
 
     /**
      * Current instance.
@@ -63,10 +63,15 @@ var Test = function (fs, glob) {
      * @param  {Function} callback The data of the test case.
      * @return undefined
      */
-    this.create = function (name, data, callback) {
+    this.create = function (url, name, data, callback) {
         var content      = '',
-            testCaseFile = __dirname + this.TEST_CASE_DIRECTORY + name + '.tst',
+            testCaseFile = mainDir + this.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_') + '/' + name + '.tst',
             k;
+
+        if (url === '' || name === '' || Object.keys(data).length === 0) {
+            if (callback !== undefined) return callback();
+            return;
+        }
 
         for (k in data) {
             if (data.hasOwnProperty(k)) {
@@ -74,15 +79,12 @@ var Test = function (fs, glob) {
             }
         }
 
-        if (!fs.existsSync(__dirname + this.TEST_CASE_DIRECTORY)) {
-            fs.mkdir(__dirname + this.TEST_CASE_DIRECTORY, '0777', function () {
-                fs.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
-                if (callback !== undefined) callback();
-            });
-        } else {
-            fs.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
-            if (callback !== undefined) callback();
+        if (!fsWrapper.exists(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'))) {
+            fsWrapper.mkdir(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'), '0777');
         }
+
+        fsWrapper.write(testCaseFile, content, {flag: 'w+', mode: 0755});
+        if (callback !== undefined) callback();
     };
 
     /**
@@ -93,14 +95,14 @@ var Test = function (fs, glob) {
      * @return {Object}
      */
     this.getCases = function (url) {
+        if (url === '' || !fsWrapper.exists(mainDir + this.TEST_CASE_DIRECTORY + url)) {
+            return [];
+        }
+
         var cases = [],
             filename,
             testCase,
-            files = glob.sync(__dirname + this.TEST_CASE_DIRECTORY + url + '*.tst');
-
-        if (url === '') {
-            return [];
-        }
+            files = glob.sync(mainDir + this.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_') + '/*.tst');
 
         for (filename in files) {
             if (files.hasOwnProperty(filename)) {
@@ -126,11 +128,11 @@ var Test = function (fs, glob) {
         var i, value, content, lines,
             data = {};
 
-        if (!fs.existsSync(file)) {
+        if (!fsWrapper.exists(file)) {
             return {};
         }
 
-        content = fs.readFileSync(file).toString();
+        content = fsWrapper.read(file).toString();
         lines   = content.split("\n");
 
         for (i in lines) {

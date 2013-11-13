@@ -664,25 +664,25 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             //currentCrawler.checkAndRun(element, 'GET', data);
         }
 
-        currentCrawler.possibleCrawlers += links.anchors.length;
-        links.anchors.forEach(function (element) {
+        currentCrawler.possibleCrawlers += links.a.length;
+        links.a.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
 
-        currentCrawler.possibleCrawlers += links.links.length;
-        links.links.forEach(function (element) {
+        currentCrawler.possibleCrawlers += links.link.length;
+        links.link.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
 
-        currentCrawler.possibleCrawlers += links.scripts.length;
-        links.scripts.forEach(function (element) {
+        currentCrawler.possibleCrawlers += links.script.length;
+        links.script.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
 
-        links.forms.forEach(function (element) {
+        links.form.forEach(function (element) {
             var id        = element.action.toString().replace(/[^a-zA-Z0-9_]/g, '_'),
                 fieldData = {},
                 cases,
@@ -696,11 +696,11 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 }
             }
 
-            test.create(id + '-' + element.type, fieldData);
+            test.create(element.action, id + '-' + element.type, fieldData);
             //test.create(id + '-' + 'get', fieldData);
             //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
 
-            cases = test.getCases(id + '-' + element.type);
+            cases = test.getCases(element.action); // TODO: Possible duplicates
             currentCrawler.possibleCrawlers += cases.length;
             for (j in cases) {
                 if (cases.hasOwnProperty(j)) {
