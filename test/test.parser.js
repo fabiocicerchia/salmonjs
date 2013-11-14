@@ -28,199 +28,168 @@
  * SOFTWARE.
  */
 
-var assert  = require('assert'),
-    should  = require('chai').should(),
-    libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src',
-    Parser  = require(libpath + '/parser');
+var fs       = require('fs'),
+    glob     = require('../src/glob'),
+    basePath = fs.absolute('.') + '/test/assets/';
 
-describe('Parser', function() {
-    describe('#parse()', function() {
-        it('parses a GET request', function() {
-            var parser = new Parser();
+casper.options.onPageInitialized = function () {
+    casper.page.injectJs(basePath + '../../src/sha1.js');
+    casper.page.injectJs(basePath + '../../src/events.js');
+};
 
-            parser.parseGet   = function () { return 'GET'; };
-            parser.initReport = function () {};
+casper.on('remote.message', function(msg) {
+    console.log('CONSOLE.LOG: ' + msg);
+});
 
-            parser.parse('', 'GET', '', '', '').should.be.equal('GET');
-            parser.url.should.be.equal('');
-            parser.type.should.be.equal('GET');
-            parser.data.should.be.equal('');
-            parser.event.should.be.equal('');
-            parser.xPath.should.be.equal('');
-        });
+casper.test.begin('Parser', function(test) {
+    var Parser = require('../src/parser');
 
-        it('parses a POST request', function() {
-            var parser = new Parser();
+    // parse
+    var parser = new Parser();
 
-            parser.parsePost  = function () { return 'POST'; };
-            parser.initReport = function () {};
+    parser.parseGet   = function () { return 'GET'; };
+    parser.initReport = function () {};
 
-            parser.parse('', 'POST', '', '', '').should.be.equal('POST');
-            parser.url.should.be.equal('');
-            parser.type.should.be.equal('POST');
-            parser.data.should.be.equal('');
-            parser.event.should.be.equal('');
-            parser.xPath.should.be.equal('');
-        });
+    test.assertEquals(parser.parse('', 'GET', '', '', ''), 'GET', 'parses a GET request');
+    test.assertEquals(parser.url, '', 'parses a GET request');
+    test.assertEquals(parser.type, 'GET', 'parses a GET request');
+    test.assertEquals(parser.data, '', 'parses a GET request');
+    test.assertEquals(parser.event, '', 'parses a GET request');
+    test.assertEquals(parser.xPath, '', 'parses a GET request');
 
-        it('doesn\'t parse anything else', function() {
-            var parser = new Parser();
+    var parser = new Parser();
 
-            parser.initReport = function () {};
+    parser.parsePost  = function () { return 'POST'; };
+    parser.initReport = function () {};
 
-            assert.equal(parser.parse('', 'HEAD', '', '', ''), undefined);
-        });
-    });
+    test.assertEquals(parser.parse('', 'POST', '', '', ''), 'POST', 'parses a POST request');
+    test.assertEquals(parser.url, '', 'parses a POST request');
+    test.assertEquals(parser.type, 'POST', 'parses a POST request');
+    test.assertEquals(parser.data, '', 'parses a POST request');
+    test.assertEquals(parser.event, '', 'parses a POST request');
+    test.assertEquals(parser.xPath, '', 'parses a POST request');
 
-    describe('#initReport()', function() {
-        it('sets up the report container', function() {
-            var parser = new Parser();
+    // doesn\'t parse anything else
+    var parser = new Parser();
 
-            parser.type  = 'type';
-            parser.event = 'event';
-            parser.xPath = 'xPath';
-            parser.data  = 'data';
-            parser.initReport();
+    parser.initReport = function () {};
 
-            parser.report.time.start.should.be.a('number');
-            parser.report.httpMethod.should.be.equal('type');
-            parser.report.event.should.be.equal('event');
-            parser.report.xPath.should.be.equal('xPath');
-            parser.report.data.should.be.equal('data');
-        });
-    });
+    test.assertEquals(parser.parse('', 'HEAD', '', '', ''), undefined);
 
-    describe('#parseGet()', function() {
-        it('doesn\'t do anything', function() {
-            var parser = new Parser();
-            var resp   = parser.parseGet();
+    // initReport
+    var parser = new Parser();
 
-            assert.equal(resp, undefined);
-        });
-    });
+    parser.type  = 'type';
+    parser.event = 'event';
+    parser.xPath = 'xPath';
+    parser.data  = 'data';
+    parser.initReport();
 
-    describe('#parsePost()', function() {
-        it('doesn\'t do anything', function() {
-            var parser = new Parser();
-            var resp   = parser.parsePost();
+    test.assertType(parser.report.time.start, 'number', 'sets up the report container');
+    test.assertEquals(parser.report.httpMethod, 'type', 'sets up the report container');
+    test.assertEquals(parser.report.event, 'event', 'sets up the report container');
+    test.assertEquals(parser.report.xPath, 'xPath', 'sets up the report container');
+    test.assertEquals(parser.report.data, 'data', 'sets up the report container');
 
-            assert.equal(resp, undefined);
-        });
-    });
+    // parseGet
+    var parser = new Parser();
+    var resp   = parser.parseGet();
 
-    describe('#onlyUnique()', function() {
-        it('returns true when the element is unique', function() {
-            var parser = new Parser();
+    test.assertEquals(resp, undefined, 'doesn\'t do anything');
 
-            parser.onlyUnique('unique', 0, ['unique']).should.be.equal(true);
-            parser.onlyUnique('unique', 0, ['unique', 'test']).should.be.equal(true);
-            parser.onlyUnique('test', 1, ['unique', 'test']).should.be.equal(true);
-            parser.onlyUnique('unique', 0, ['unique', 'unique']).should.be.equal(true);
-        });
+    // parsePost
+    var parser = new Parser();
+    var resp   = parser.parsePost();
 
-        it('returns false when the element is not unique', function() {
-            var parser = new Parser();
+    test.assertEquals(resp, undefined, 'doesn\'t do anything');
 
-            parser.onlyUnique('unique', 1, ['unique', 'unique']).should.be.equal(false);
-            parser.onlyUnique(undefined, 0, [undefined, 'unique', 'unique']).should.be.equal(false);
-        });
-    });
+    // onlyUnique
+    var parser = new Parser();
 
-    describe('#normaliseData()', function() {
-        it('encodes correctly', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.onlyUnique('unique', 0, ['unique']), true, 'returns true when the element is unique');
+    test.assertEquals(parser.onlyUnique('unique', 0, ['unique', 'test']), true, 'returns true when the element is unique');
+    test.assertEquals(parser.onlyUnique('test', 1, ['unique', 'test']), true, 'returns true when the element is unique');
+    test.assertEquals(parser.onlyUnique('unique', 0, ['unique', 'unique']), true, 'returns true when the element is unique');
 
-            parser.normaliseData('http://www.example.com/?%C3%A0=1').should.be.eql({'à': '1'});
-            parser.normaliseData('http://www.example.com/?a=%3D').should.be.eql({a: '='});
-        });
+    var parser = new Parser();
 
-        it('removes duplicates', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.onlyUnique('unique', 1, ['unique', 'unique']), false, 'returns false when the element is not unique');
+    test.assertEquals(parser.onlyUnique(undefined, 0, [undefined, 'unique', 'unique']), false, 'returns false when the element is not unique');
 
-            parser.normaliseData('http://www.example.com/?a=1&a=2').should.be.eql({a: '2'});
-        });
+    // normaliseData
+    var parser = new Parser();
 
-        it('orders alphabetically', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.normaliseData('http://www.example.com/?%C3%A0=1'), {'à': '1'}, 'encodes correctly');
+    test.assertEquals(parser.normaliseData('http://www.example.com/?a=%3D'), {a: '='}, 'encodes correctly');
 
-            parser.normaliseData('http://www.example.com/?b=1&a=2').should.be.eql({a: '2', b: '1'});
-        });
+    var parser = new Parser();
 
-        it('returns empty array when input is not array', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.normaliseData('http://www.example.com/?a=1&a=2'), {a: '2'}, 'removes duplicates');
 
-            parser.normaliseData('http://www.example.com/?').should.be.eql({});
-            parser.normaliseData([]).should.be.eql({});
-            parser.normaliseData({}).should.be.eql({});
-            parser.normaliseData(1).should.be.eql({});
-        });
-    });
+    var parser = new Parser();
 
-    describe('#arrayToQuery()', function() {
-        it('works correctly', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.normaliseData('http://www.example.com/?b=1&a=2'), {a: '2', b: '1'}, 'orders alphabetically');
 
-            parser.arrayToQuery({}).should.be.equal('');
-            parser.arrayToQuery({a: 1}).should.be.equal('a=1');
-            parser.arrayToQuery({a: 1, b: 2}).should.be.equal('a=1&b=2');
-            parser.arrayToQuery({'&agrave;': 1}).should.be.equal('%26agrave%3B=1');
-            parser.arrayToQuery({'à': 1}).should.be.equal('%C3%A0=1');
-        });
+    var parser = new Parser();
 
-        it('handles matrixes correctly', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.normaliseData('http://www.example.com/?'), {}, 'returns empty array when input is not array');
+    test.assertEquals(parser.normaliseData([]), {}, 'returns empty array when input is not array');
+    test.assertEquals(parser.normaliseData({}), {}, 'returns empty array when input is not array');
+    test.assertEquals(parser.normaliseData(1), {}, 'returns empty array when input is not array');
 
-            parser.arrayToQuery({a: [1, 2]}).should.be.equal('a%5B0%5D=1&a%5B1%5D=2');
-        });
+    // arrayToQuery
+    var parser = new Parser();
 
-        it('returns empty string when input is not array', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.arrayToQuery({}), '', 'works correctly');
+    test.assertEquals(parser.arrayToQuery({a: 1}), 'a=1', 'works correctly');
+    test.assertEquals(parser.arrayToQuery({a: 1, b: 2}), 'a=1&b=2', 'works correctly');
+    test.assertEquals(parser.arrayToQuery({'&agrave;': 1}), '%26agrave%3B=1', 'works correctly');
+    test.assertEquals(parser.arrayToQuery({'à': 1}), '%C3%A0=1', 'works correctly');
 
-            parser.arrayToQuery(1).should.be.equal('');
-            parser.arrayToQuery('').should.be.equal('');
-            parser.arrayToQuery('test').should.be.equal('');
-        });
-    });
+    var parser = new Parser();
 
-    describe('#normaliseUrl()', function() {
-        it('strips querystring when baseUrl contains a querystring', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.arrayToQuery({a: [1, 2]}), 'a%5B0%5D=1&a%5B1%5D=2', 'handles matrixes correctly');
 
-            parser.normaliseUrl('/?b=2', 'http://www.example.com/?a=1').should.be.equal('http://www.example.com/?b=2');
-        });
+    var parser = new Parser();
 
-        it('strips hash when baseUrl contains an hash', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.arrayToQuery(1), '', 'returns empty string when input is not array');
+    test.assertEquals(parser.arrayToQuery(''), '', 'returns empty string when input is not array');
+    test.assertEquals(parser.arrayToQuery('test'), '', 'returns empty string when input is not array');
 
-            parser.normaliseUrl('/#def', 'http://www.example.com/#abc').should.be.equal('http://www.example.com/#def');
-        });
+    // normaliseUrl
+    var parser = new Parser();
 
-        it('convert properly other URLs', function() {
-            var parser = new Parser();
+    test.assertEquals(parser.normaliseUrl('/?b=2', 'http://www.example.com/?a=1'), 'http://www.example.com/?b=2', 'strips querystring when baseUrl contains a querystring');
 
-            parser.normaliseUrl('/', 'http://www.example.com').should.be.equal('http://www.example.com/');
-            parser.normaliseUrl('/#', 'http://www.example.com').should.be.equal('http://www.example.com/#');
-            parser.normaliseUrl('/?param=value', 'http://www.example.com').should.be.equal('http://www.example.com/?param=value');
-            parser.normaliseUrl('/?param=value#', 'http://www.example.com').should.be.equal('http://www.example.com/?param=value#');
-            parser.normaliseUrl('/', 'http://www.example.com/#').should.be.equal('http://www.example.com/');
-            parser.normaliseUrl('/#', 'http://www.example.com/#').should.be.equal('http://www.example.com/#');
-            parser.normaliseUrl('/?param=value', 'http://www.example.com/#').should.be.equal('http://www.example.com/?param=value');
-            parser.normaliseUrl('/?param=value#', 'http://www.example.com/#').should.be.equal('http://www.example.com/?param=value#');
-            parser.normaliseUrl('/', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/');
-            parser.normaliseUrl('/#', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/#');
-            parser.normaliseUrl('/?param=value', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value');
-            parser.normaliseUrl('/?param=value#', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value#');
-            parser.normaliseUrl('?param=value', 'http://www.example.com/').should.be.equal('http://www.example.com/?param=value');
-            parser.normaliseUrl('?param=value', 'http://www.example.com/#').should.be.equal('http://www.example.com/?param=value');
-            parser.normaliseUrl('?param=value', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value');
-            parser.normaliseUrl('?param=value', 'http://www.example.com/?param=value#').should.be.equal('http://www.example.com/?param=value');
-            parser.normaliseUrl('#', 'http://www.example.com/').should.be.equal('http://www.example.com/#');
-            parser.normaliseUrl('#', 'http://www.example.com/#').should.be.equal('http://www.example.com/#');
-            parser.normaliseUrl('#', 'http://www.example.com/?param=value').should.be.equal('http://www.example.com/?param=value#');
-            parser.normaliseUrl('#', 'http://www.example.com/?param=value#').should.be.equal('http://www.example.com/?param=value#');
-            parser.normaliseUrl('', 'http://www.example.com/').should.be.equal('http://www.example.com/');
-            parser.normaliseUrl('http://www.example.com/', 'http://www.example.com/').should.be.equal('http://www.example.com/');
-            parser.normaliseUrl('http://www.example2.com/', 'http://www.example.com/').should.be.equal('http://www.example2.com/');
-        });
-    });
+    var parser = new Parser();
+
+    test.assertEquals(parser.normaliseUrl('/#def', 'http://www.example.com/#abc'), 'http://www.example.com/#def', 'strips hash when baseUrl contains an hash');
+
+    var parser = new Parser();
+
+    test.assertEquals(parser.normaliseUrl('/', 'http://www.example.com'), 'http://www.example.com/', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/#', 'http://www.example.com'), 'http://www.example.com/#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/?param=value', 'http://www.example.com'), 'http://www.example.com/?param=value', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/?param=value#', 'http://www.example.com'), 'http://www.example.com/?param=value#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/', 'http://www.example.com/#'), 'http://www.example.com/', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/#', 'http://www.example.com/#'), 'http://www.example.com/#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/?param=value', 'http://www.example.com/#'), 'http://www.example.com/?param=value', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/?param=value#', 'http://www.example.com/#'), 'http://www.example.com/?param=value#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/', 'http://www.example.com/?param=value'), 'http://www.example.com/', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/#', 'http://www.example.com/?param=value'), 'http://www.example.com/#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/?param=value', 'http://www.example.com/?param=value'), 'http://www.example.com/?param=value', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('/?param=value#', 'http://www.example.com/?param=value'), 'http://www.example.com/?param=value#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('?param=value', 'http://www.example.com/'), 'http://www.example.com/?param=value', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('?param=value', 'http://www.example.com/#'), 'http://www.example.com/?param=value', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('?param=value', 'http://www.example.com/?param=value'), 'http://www.example.com/?param=value', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('?param=value', 'http://www.example.com/?param=value#'), 'http://www.example.com/?param=value', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('#', 'http://www.example.com/'), 'http://www.example.com/#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('#', 'http://www.example.com/#'), 'http://www.example.com/#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('#', 'http://www.example.com/?param=value'), 'http://www.example.com/?param=value#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('#', 'http://www.example.com/?param=value#'), 'http://www.example.com/?param=value#', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('', 'http://www.example.com/'), 'http://www.example.com/', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('http://www.example.com/', 'http://www.example.com/'), 'http://www.example.com/', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('http://www.example2.com/', 'http://www.example.com/'), 'http://www.example2.com/', 'convert properly other URLs');
+
+    test.done();
 });

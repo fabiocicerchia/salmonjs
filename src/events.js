@@ -136,7 +136,7 @@ var EventContainer = function () {
 
         var identifier = currentEventContainer.getXPath(element);
         if (identifier === '') {
-            identifier = element.identifier; // TODO: FIX THIS HACK
+            identifier = element.identifier;
         }
 
         if (currentEventContainer.container[type][signature].indexOf(identifier) === -1) {

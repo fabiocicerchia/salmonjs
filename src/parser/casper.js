@@ -239,7 +239,7 @@ var CasperParser = function () {
     this.onConfirm = function(msg) {
         currentParser.report.confirms.push(msg);
         // `true` === pressing the "OK" button, `false` === pressing the "Cancel" button
-        return true; // TODO: Trying to hit both and parse again the page.
+        return true;
     };
 
     /**
@@ -252,7 +252,7 @@ var CasperParser = function () {
      */
     this.onPrompt = function(msg, defaultVal) {
         currentParser.report.confirms.push({msg: msg, defaultVal: defaultVal});
-        return defaultVal; // TODO: Generate a test case for this scenario.
+        return defaultVal;
     };
 
     /**

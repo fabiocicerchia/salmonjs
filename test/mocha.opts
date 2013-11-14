@@ -1,7 +1,0 @@
---check-leaks
---colors
---recursive
---require chai
---reporter spec
---timeout 5500
---ui bdd

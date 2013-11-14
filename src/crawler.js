@@ -452,7 +452,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
 
-            if (require('optimist').argv.$0.indexOf('mocha') === -1) {
+            if (optimist.argv.$0.indexOf('casperjs') === -1) {
                 process.exit();
             }
 

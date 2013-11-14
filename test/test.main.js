@@ -27,14 +27,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+var fs       = require('fs'),
+    glob     = require('../src/glob'),
+    basePath = fs.absolute('.') + '/test/assets/';
 
-var chai, should;
+casper.options.onPageInitialized = function () {
+    casper.page.injectJs(basePath + '../../src/sha1.js');
+    casper.page.injectJs(basePath + '../../src/events.js');
+};
 
-chai   = chai || require('chai');
-should = chai.should();
+casper.on('remote.message', function(msg) {
+    console.log('CONSOLE.LOG: ' + msg);
+});
 
-describe('Main', function() {
-    it('should\'nt be tested', function() {
-        true.should.equal(true);
-    });
+casper.test.begin('Main', function(test) {
+    test.done();
 });

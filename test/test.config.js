@@ -28,81 +28,41 @@
  * SOFTWARE.
  */
 
-var chai, should, libpath, config;
+var fs       = require('fs'),
+    glob     = require('../src/glob'),
+    basePath = fs.absolute('.') + '/test/assets/';
 
-chai   = chai || require('chai');
-should = chai.should();
-if (config === undefined) {
-    libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src';
-    config  = require(libpath + '/config');
-}
+casper.options.onPageInitialized = function () {
+    casper.page.injectJs(basePath + '../../src/sha1.js');
+    casper.page.injectJs(basePath + '../../src/events.js');
+};
 
-describe('Config', function() {
-    describe('#redis', function() {
-        it('should be an object', function() {
-            should.exist(config.redis);
-            config.redis.should.be.a('object');
-        });
+casper.on('remote.message', function(msg) {
+    console.log('CONSOLE.LOG: ' + msg);
+});
 
-        it('contains "port" element', function() {
-            should.exist(config.redis.port);
-            config.redis.port.should.be.an('number');
-        });
+casper.test.begin('Config', function(test) {
+    var config = require('../src/config');
 
-        it('contains "hostname" element', function() {
-            should.exist(config.redis.hostname);
-            config.redis.hostname.should.be.a('string');
-        });
-    });
+    // REDIS
+    test.assertType(config.redis, 'object', 'it should be an object');
+    test.assertType(config.redis.port, 'number', 'it contains "port" element');
+    test.assertType(config.redis.hostname, 'string', 'it contains "hostname" element');
 
-    describe('#logging', function() {
-        it('should be an object', function() {
-            should.exist(config.logging);
-            config.logging.should.be.a('object');
-        });
+    // LOGGING
+    test.assertType(config.logging, 'object', 'it should be an object');
+    test.assertType(config.logging.level, 'string', 'it contains "level" element');
+    test.assertType(config.logging.silent, 'boolean', 'it contains "silent" element');
 
-        it('contains "level" element', function() {
-            should.exist(config.logging.level);
-            config.logging.level.should.be.a('string');
-        });
+    // PARSER
+    test.assertType(config.parser, 'object', 'it should be an object');
+    test.assertType(config.parser.interface, 'string', 'it contains "interface" element');
+    test.assertType(config.parser.timeout, 'number', 'it contains "timeout" element');
 
-        it('contains "silent" element', function() {
-            should.exist(config.logging.silent);
-            config.logging.silent.should.be.a('boolean');
-        });
-    });
+    // CRAWLER
+    test.assertType(config.crawler, 'object', 'it should be an object');
+    test.assertType(config.crawler.attempts, 'number', 'it contains "attempts" element');
+    test.assertType(config.crawler.delay, 'number', 'it contains "delay" element');
 
-    describe('#parser', function() {
-        it('should be an object', function() {
-            should.exist(config.parser);
-            config.parser.should.be.a('object');
-        });
-
-        it('contains "interface" element', function() {
-            should.exist(config.parser.interface);
-            config.parser.interface.should.be.a('string');
-        });
-
-        it('contains "timeout" element', function() {
-            should.exist(config.parser.timeout);
-            config.parser.timeout.should.be.an('number');
-        });
-    });
-
-    describe('#crawler', function() {
-        it('should be an object', function() {
-            should.exist(config.crawler);
-            config.crawler.should.be.a('object');
-        });
-
-        it('contains "attempts" element', function() {
-            should.exist(config.crawler.attempts);
-            config.crawler.attempts.should.be.an('number');
-        });
-
-        it('contains "delay" element', function() {
-            should.exist(config.crawler.delay);
-            config.crawler.delay.should.be.an('number');
-        });
-    });
+    test.done();
 });

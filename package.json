@@ -31,10 +31,7 @@
     "winston": "0.7",
     "glob": "3.2.7"
   },
-  "devDependencies": {
-    "mocha": "1.14.0",
-    "chai": "1.8.1"
-  },
+  "devDependencies": {},
   "analyze": false,
   "scripts": {
     "test": "make test"

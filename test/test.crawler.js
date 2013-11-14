@@ -28,481 +28,466 @@
  * SOFTWARE.
  */
 
-var assert, chai, should, libpath, Crawler;
 
-var config    = require('../src/config'),
-    winston   = require('winston'),
-    fs        = require('fs'),
-    redis     = require('redis'),
-    client    = redis.createClient(config.redis.port, config.redis.hostname),
-    spawn     = require('child_process').spawn,
-    crypto    = require('crypto'),
-    glob      = require('glob'),
-    optimist  = require('optimist'),
-    Test      = require('../src/test'),
-    test      = new Test(fs, glob),
-    phantomjs = require('phantomjs'),
-    argv;
+var fs       = require('fs'),
+    glob     = require('../src/glob'),
+    basePath = fs.absolute('.') + '/test/assets/';
 
-chai   = chai || require('chai');
-assert = chai.assert;
-should = chai.should();
-if (Crawler === undefined) {
-    libpath = process.env['SPIDEY_COV'] ? '../src-cov' : '../src';
-    Crawler  = require(libpath + '/crawler');
-}
+casper.options.onPageInitialized = function () {
+    casper.page.injectJs(basePath + '../../src/sha1.js');
+    casper.page.injectJs(basePath + '../../src/events.js');
+};
 
-describe('Crawler', function() {
-    describe('#serialise()', function() {
-        it('encode entities properly', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.serialise({}).should.equal('');
-            crawler.serialise({a: 1, b: 2}).should.equal('a=1&b=2');
-            crawler.serialise([]).should.equal('');
-            crawler.serialise(['a', 'b']).should.equal('0=a&1=b');
-        });
-
-        it('doesn\'t process a string', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.serialise('').should.equal('');
-            crawler.serialise('test').should.equal('');
-        });
-
-        it('doesn\'t process an integer', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.serialise(1).should.equal('');
-            crawler.serialise(-1).should.equal('');
-            crawler.serialise(0).should.equal('');
-        });
-    });
-
-    describe('#execPhantomjs()', function() {
-        it('runs', function(done) {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.onStdOut = function() {};
-            crawler.onStdErr = function() {};
-            crawler.onExit = function() {
-                done();
-            };
-
-            crawler.execPhantomjs();
-        });
-    });
-
-    describe('#run()', function() {
-        it('runs', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.execPhantomjs = function () { return 'OK' };
-
-            crawler.run('', '', '', '', '').should.be.equal('OK');
-        });
-    });
-
-    describe('#analiseRedisResponse()', function() {
-        it('runs', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-            false.should.equal(true, 'TBD');
-        });
-    });
-
-    describe('#checkAndRun()', function() {
-        it('runs', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-            false.should.equal(true, 'TBD');
-        });
-    });
-
-    describe('#checkRunningCrawlers()', function() {
-        it('doesn\'t exit when there are running crawlers', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.possibleCrawlers = 1;
-            crawler.checkRunningCrawlers().should.be.equal(true);
-        });
-
-        it('exits when there are no running crawlers', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.possibleCrawlers = 0;
-            crawler.checkRunningCrawlers().should.be.equal(false);
-        });
-    });
-
-    describe('#onStdOut()', function() {
-        it('collect the data from response', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.processOutput = '';
-            crawler.onStdOut('test\n');
-            crawler.processOutput.should.equal('test\n');
-
-            crawler.onStdOut('test2\n');
-            crawler.processOutput.should.equal('test\ntest2\n');
-        });
-    });
-
-    describe('#onStdErr()', function() {
-        it('runs', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.handleError = function() {};
-
-            var resp = crawler.onStdErr('');
-            assert.equal(undefined, resp);
-        });
-    });
-
-    describe('#handleError()', function() {
-        it('tries to run another crawler if max attempts is not reached', function(done) {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.run = function () {
-                done();
-            };
-
-            crawler.tries = 0;
-            crawler.handleError().should.be.equal(true);
-        });
-
-        it('doesn\'t try to run another crawler if max attempts is reached', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.tries = 10;
-            crawler.handleError().should.be.equal(false);
-        });
-    });
-
-    describe('#onExit()', function() {
-        it('runs', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.processPage = function () { return true; };
-
-            crawler.onExit().should.be.equal(true);
-        });
-    });
-
-    describe('#htmlEscape()', function() {
-        it('escape "ampersand" correctly', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.htmlEscape('&').should.be.equal('&amp;');
-        });
-
-        it('escape "double quote" correctly', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.htmlEscape('"').should.be.equal('&quot;');
-        });
-
-        it('escape "single quote" correctly', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.htmlEscape('\'').should.be.equal('&#39;');
-        });
-
-        it('escape "less than" correctly', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.htmlEscape('<').should.be.equal('&lt;');
-        });
-
-        it('escape "greater than" correctly', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            crawler.htmlEscape('>').should.be.equal('&gt;');
-        });
-
-        it('doesn\'t escape anything else', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            var unescaped = 'abcdefghijklmnopqrstuvwxyz0123456789\\|!£$%/()=?^[]{}@#;,:.-_+';
-            crawler.htmlEscape(unescaped).should.be.equal(unescaped);
-        });
-    });
-
-    describe('#storeDetailsToFile()', function() {
-        it('save properly a report file', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-            false.should.equal(true, 'TBD');
-        });
-    });
-
-    describe('#processPage()', function() {
-        it('process an empty page', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            var data = {
-                idCrawler: '',
-                links:     {
-                    anchors: [],
-                    links:   [],
-                    scripts: [],
-                    forms:   [],
-                    events:  []
-                },
-                report:    {
-                    errors:     [],
-                    alerts:     [],
-                    confirms:   [],
-                    console:    [],
-                    resources:  {},
-                    time:       { start: 0, end: 0, total: 0 },
-                    content:    '',
-                    httpMethod: '',
-                    event:      '',
-                    xPath:      '',
-                    data:       {}
-                }
-            };
-            var content = '###' + JSON.stringify(data);
-
-            crawler.checkRunningCrawlers = function () { return 'OK'; };
-            crawler.checkAndRun          = function () {};
-
-            crawler.processPage(content).should.be.equal('OK');
-            crawler.possibleCrawlers.should.be.equal(0);
-        });
-
-        it('process a page with 1 link', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            var data = {
-                idCrawler: '',
-                links:     {
-                    anchors: ['#'],
-                    links:   [],
-                    scripts: [],
-                    forms:   [],
-                    events:  []
-                },
-                report:    {
-                    errors:     [],
-                    alerts:     [],
-                    confirms:   [],
-                    console:    [],
-                    resources:  {},
-                    time:       { start: 0, end: 0, total: 0 },
-                    content:    '',
-                    httpMethod: '',
-                    event:      '',
-                    xPath:      '',
-                    data:       {}
-                }
-            };
-            var content = '###' + JSON.stringify(data);
-
-            crawler.checkRunningCrawlers = function () { return 'OK'; };
-            crawler.checkAndRun          = function () {};
-
-            crawler.processPage(content).should.be.equal('OK');
-            crawler.possibleCrawlers.should.be.equal(1);
-        });
-
-        it('process a page with 2 links', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            var data = {
-                idCrawler: '',
-                links:     {
-                    anchors: ['#', '/'],
-                    links:   [],
-                    scripts: [],
-                    forms:   [],
-                    events:  []
-                },
-                report:    {
-                    errors:     [],
-                    alerts:     [],
-                    confirms:   [],
-                    console:    [],
-                    resources:  {},
-                    time:       { start: 0, end: 0, total: 0 },
-                    content:    '',
-                    httpMethod: '',
-                    event:      '',
-                    xPath:      '',
-                    data:       {}
-                }
-            };
-            var content = '###' + JSON.stringify(data);
-
-            crawler.checkRunningCrawlers = function () { return 'OK'; };
-            crawler.checkAndRun          = function () {};
-
-            crawler.processPage(content).should.be.equal('OK');
-            crawler.possibleCrawlers.should.be.equal(2);
-        });
-
-        it('process a page with 1 event', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            var data = {
-                idCrawler: '',
-                links:     {
-                    anchors: [],
-                    links:   [],
-                    scripts: [],
-                    forms:   [],
-                    events:  {
-                        click: {
-                            da39a3ee5e6b4b0d3255bfef95601890afd80709: [
-                                '//whatever'
-                            ]
-                        }
-                    }
-                },
-                report:    {
-                    errors:     [],
-                    alerts:     [],
-                    confirms:   [],
-                    console:    [],
-                    resources:  {},
-                    time:       { start: 0, end: 0, total: 0 },
-                    content:    '',
-                    httpMethod: '',
-                    event:      '',
-                    xPath:      '',
-                    data:       {}
-                }
-            };
-            var content = '###' + JSON.stringify(data);
-
-            crawler.checkRunningCrawlers = function () { return 'OK'; };
-            crawler.checkAndRun          = function () {};
-
-            crawler.processPage(content).should.be.equal('OK');
-            crawler.possibleCrawlers.should.be.equal(1);
-        });
-
-        it('process a page with 2 events', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            var data = {
-                idCrawler: '',
-                links:     {
-                    anchors: [],
-                    links:   [],
-                    scripts: [],
-                    forms:   [],
-                    events:  {
-                        click: {
-                            da39a3ee5e6b4b0d3255bfef95601890afd80709: [
-                                '//whatever',
-                                '//whatever2'
-                            ]
-                        }
-                    }
-                },
-                report:    {
-                    errors:     [],
-                    alerts:     [],
-                    confirms:   [],
-                    console:    [],
-                    resources:  {},
-                    time:       { start: 0, end: 0, total: 0 },
-                    content:    '',
-                    httpMethod: '',
-                    event:      '',
-                    xPath:      '',
-                    data:       {}
-                }
-            };
-            var content = '###' + JSON.stringify(data);
-
-            crawler.checkRunningCrawlers = function () { return 'OK'; };
-            crawler.checkAndRun          = function () {};
-
-            crawler.processPage(content).should.be.equal('OK');
-            crawler.possibleCrawlers.should.be.equal(2);
-        });
-
-        it('process a page with 1 link and 1 event', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            var data = {
-                idCrawler: '',
-                links:     {
-                    anchors: ['#'],
-                    links:   [],
-                    scripts: [],
-                    forms:   [],
-                    events:  {
-                        click: {
-                            da39a3ee5e6b4b0d3255bfef95601890afd80709: [
-                                '//whatever'
-                            ]
-                        }
-                    }
-                },
-                report:    {
-                    errors:     [],
-                    alerts:     [],
-                    confirms:   [],
-                    console:    [],
-                    resources:  {},
-                    time:       { start: 0, end: 0, total: 0 },
-                    content:    '',
-                    httpMethod: '',
-                    event:      '',
-                    xPath:      '',
-                    data:       {}
-                }
-            };
-            var content = '###' + JSON.stringify(data);
-
-            crawler.checkRunningCrawlers = function () { return 'OK'; };
-            crawler.checkAndRun          = function () {};
-
-            crawler.processPage(content).should.be.equal('OK');
-            crawler.possibleCrawlers.should.be.equal(2);
-        });
-
-        it('process a page with 2 links and 2 events', function() {
-            var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-
-            var data = {
-                idCrawler: '',
-                links:     {
-                    anchors: ['#', '/'],
-                    links:   [],
-                    scripts: [],
-                    forms:   [],
-                    events:  {
-                        click: {
-                            da39a3ee5e6b4b0d3255bfef95601890afd80709: [
-                                '//whatever',
-                                '//whatever2'
-                            ]
-                        }
-                    }
-                },
-                report:    {
-                    errors:     [],
-                    alerts:     [],
-                    confirms:   [],
-                    console:    [],
-                    resources:  {},
-                    time:       { start: 0, end: 0, total: 0 },
-                    content:    '',
-                    httpMethod: '',
-                    event:      '',
-                    xPath:      '',
-                    data:       {}
-                }
-            };
-            var content = '###' + JSON.stringify(data);
-
-            crawler.checkRunningCrawlers = function () { return 'OK'; };
-            crawler.checkAndRun          = function () {};
-
-            crawler.processPage(content).should.be.equal('OK');
-            crawler.possibleCrawlers.should.be.equal(4);
-        });
-    });
+casper.on('remote.message', function(msg) {
+    console.log('CONSOLE.LOG: ' + msg);
 });
+
+casper.test.begin('Crawler', function(test) {
+    var Crawler  = require('../src/crawler'),
+        config   = require('../src/config'),
+        spawn    = {},
+        crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''}}}}; }},
+        testObj  = require('../src/test'),
+        client   = {},
+        winston  = {error:function(){},info:function(){},warn:function(){}},
+        fs       = require('../src/fs'),
+        optimist = {argv: {$0: ['casperjs']}};
+
+    // serialise
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    test.assertEquals(crawler.serialise({}), '', 'encode entities properly');
+    test.assertEquals(crawler.serialise({a: 1, b: 2}), 'a=1&b=2', 'encode entities properly');
+    test.assertEquals(crawler.serialise([]), '', 'encode entities properly');
+    test.assertEquals(crawler.serialise(['a', 'b']), '0=a&1=b', 'encode entities properly');
+
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    test.assertEquals(crawler.serialise(''), '', 'doesn\'t process a string');
+    test.assertEquals(crawler.serialise('test'), '', 'doesn\'t process a string');
+
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    test.assertEquals(crawler.serialise(1), '', 'doesn\'t process an integer');
+    test.assertEquals(crawler.serialise(-1), '', 'doesn\'t process an integer');
+    test.assertEquals(crawler.serialise(0), '', 'doesn\'t process an integer');
+
+    // run
+    // runs
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    config.parser.interface = 'phantom';
+    crawler.execPhantomjs = function () { return 'OK' };
+
+    test.assertEquals(crawler.run('', '', '', '', ''), 'OK');
+
+    // analiseRedisResponse
+    // runs
+    //var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    //test.assertEquals(false, true);
+
+    // checkAndRun
+    // runs
+    //var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    //test.assertEquals(false, true);
+
+    // checkRunningCrawlers
+    // doesn\'t exit when there are running crawlers
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    crawler.possibleCrawlers = 1;
+    test.assertEquals(crawler.checkRunningCrawlers(), true);
+
+    // exits when there are no running crawlers
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    crawler.possibleCrawlers = 0;
+    test.assertEquals(crawler.checkRunningCrawlers(), false);
+
+    // onStdOut
+    // collect the data from response
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    crawler.processOutput = '';
+    crawler.onStdOut('test\n');
+    test.assertEquals(crawler.processOutput, 'test\n');
+
+    crawler.onStdOut('test2\n');
+    test.assertEquals(crawler.processOutput, 'test\ntest2\n');
+
+    // onStdErr
+    // runs
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    crawler.handleError = function() {};
+
+    var resp = crawler.onStdErr('');
+    test.assertEquals(undefined, resp);
+
+    // handleError
+    // doesn\'t try to run another crawler if max attempts is reached
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    crawler.tries = 10;
+    test.assertEquals(crawler.handleError(), false);
+
+    // onExit
+    // runs
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    crawler.processPage = function () { return true; };
+
+    test.assertEquals(crawler.onExit(), true);
+
+    // htmlEscape
+    // escape "ampersand" correctly
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.htmlEscape('&'), '&amp;');
+
+    // escape "double quote" correctly
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.htmlEscape('"'), '&quot;');
+
+    // escape "single quote" correctly
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.htmlEscape('\''), '&#39;');
+
+    // escape "less than" correctly
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.htmlEscape('<'), '&lt;');
+
+    // escape "greater than" correctly
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.htmlEscape('>'), '&gt;');
+
+    // doesn\'t escape anything else
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    var unescaped = 'abcdefghijklmnopqrstuvwxyz0123456789\\|!£$%/()=?^[]{}@#;,:.-_+';
+    test.assertEquals(crawler.htmlEscape(unescaped), unescaped);
+
+    // storeDetailsToFile
+    // save properly a report file
+    //var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    //test.assertEquals(false, true);
+
+    // processPage
+    // process an empty page
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    var data = {
+        idCrawler: '',
+        links:     {
+            a:      [],
+            link:   [],
+            script: [],
+            form:   [],
+            events: []
+        },
+        report:    {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            console:    [],
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        }
+    };
+    var content = '###' + JSON.stringify(data);
+
+    crawler.checkRunningCrawlers = function () { return 'OK'; };
+    crawler.checkAndRun          = function () {};
+
+    test.assertEquals(crawler.processPage(content), 'OK');
+    test.assertEquals(crawler.possibleCrawlers, 0);
+
+    // process a page with 1 link
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    var data = {
+        idCrawler: '',
+        links:     {
+            a:      ['#'],
+            link:   [],
+            script: [],
+            form:   [],
+            events: []
+        },
+        report:    {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            console:    [],
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        }
+    };
+    var content = '###' + JSON.stringify(data);
+
+    crawler.checkRunningCrawlers = function () { return 'OK'; };
+    crawler.checkAndRun          = function () {};
+
+    test.assertEquals(crawler.processPage(content), 'OK');
+    test.assertEquals(crawler.possibleCrawlers, 1);
+
+    // process a page with 2 links
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    var data = {
+        idCrawler: '',
+        links:     {
+            a:      ['#', '/'],
+            link:   [],
+            script: [],
+            form:   [],
+            events: []
+        },
+        report:    {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            console:    [],
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        }
+    };
+    var content = '###' + JSON.stringify(data);
+
+    crawler.checkRunningCrawlers = function () { return 'OK'; };
+    crawler.checkAndRun          = function () {};
+
+    test.assertEquals(crawler.processPage(content), 'OK');
+    test.assertEquals(crawler.possibleCrawlers, 2);
+
+    // process a page with 1 event
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    var data = {
+        idCrawler: '',
+        links:     {
+            a:      [],
+            link:   [],
+            script: [],
+            form:   [],
+            events: {
+                click: {
+                    da39a3ee5e6b4b0d3255bfef95601890afd80709: [
+                        '//whatever'
+                    ]
+                }
+            }
+        },
+        report:    {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            console:    [],
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        }
+    };
+    var content = '###' + JSON.stringify(data);
+
+    crawler.checkRunningCrawlers = function () { return 'OK'; };
+    crawler.checkAndRun          = function () {};
+
+    test.assertEquals(crawler.processPage(content), 'OK');
+    test.assertEquals(crawler.possibleCrawlers, 1);
+
+    // process a page with 2 events
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    var data = {
+        idCrawler: '',
+        links:     {
+            a:      [],
+            link:   [],
+            script: [],
+            form:   [],
+            events: {
+                click: {
+                    da39a3ee5e6b4b0d3255bfef95601890afd80709: [
+                        '//whatever',
+                        '//whatever2'
+                    ]
+                }
+            }
+        },
+        report:    {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            console:    [],
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        }
+    };
+    var content = '###' + JSON.stringify(data);
+
+    crawler.checkRunningCrawlers = function () { return 'OK'; };
+    crawler.checkAndRun          = function () {};
+
+    test.assertEquals(crawler.processPage(content), 'OK');
+    test.assertEquals(crawler.possibleCrawlers, 2);
+
+    // process a page with 1 link and 1 event
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    var data = {
+        idCrawler: '',
+        links:     {
+            a:      ['#'],
+            link:   [],
+            script: [],
+            form:   [],
+            events: {
+                click: {
+                    da39a3ee5e6b4b0d3255bfef95601890afd80709: [
+                        '//whatever'
+                    ]
+                }
+            }
+        },
+        report:    {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            console:    [],
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        }
+    };
+    var content = '###' + JSON.stringify(data);
+
+    crawler.checkRunningCrawlers = function () { return 'OK'; };
+    crawler.checkAndRun          = function () {};
+
+    test.assertEquals(crawler.processPage(content), 'OK');
+    test.assertEquals(crawler.possibleCrawlers, 2);
+
+    // process a page with 2 links and 2 events
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    var data = {
+        idCrawler: '',
+        links:     {
+            a:      ['#', '/'],
+            link:   [],
+            script: [],
+            form:   [],
+            events: {
+                click: {
+                    da39a3ee5e6b4b0d3255bfef95601890afd80709: [
+                        '//whatever',
+                        '//whatever2'
+                    ]
+                }
+            }
+        },
+        report:    {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            console:    [],
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        }
+    };
+    var content = '###' + JSON.stringify(data);
+
+    crawler.checkRunningCrawlers = function () { return 'OK'; };
+    crawler.checkAndRun          = function () {};
+
+    test.assertEquals(crawler.processPage(content), 'OK');
+    test.assertEquals(crawler.possibleCrawlers, 4);
+
+    test.done();
+});
+
+/*
+// TODO: Not working
+casper.test.begin('Crawler Async', function(test) {
+    var Crawler  = require('../src/crawler'),
+        config   = require('../src/config'),
+        spawn    = {
+            stdout: function() { return {on:function(){}}},
+            stderr: function() { return {on:function(){}}},
+            on: function() { return {on:function(param, callback){ if (param ==='exit') { callback(); }}}}
+        },
+        crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''}}}}; }},
+        testObj  = require('../src/test'),
+        client   = {},
+        winston  = {error:function(){},info:function(){},warn:function(){}},
+        fs       = require('../src/fs'),
+        optimist = {argv: {$0: []}};
+
+    // execPhantomjs
+    // runs
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    crawler.onStdOut = function() {};
+    crawler.onStdErr = function() {};
+    crawler.onExit = function() {
+        test.done();
+    };
+
+    config.parser.interface = 'phantom';
+    crawler.execPhantomjs();
+});
+
+casper.test.begin('Crawler Async #2', function(test) {
+    var Crawler  = require('../src/crawler'),
+        config   = require('../src/config'),
+        spawn    = {},
+        crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''}}}}; }},
+        testObj  = require('../src/test'),
+        client   = {},
+        winston  = {error:function(){},info:function(){},warn:function(){}},
+        fs       = require('../src/fs'),
+        optimist = {argv: {$0: []}};
+
+    // handleError
+    // tries to run another crawler if max attempts is not reached
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    crawler.run = function () {
+        test.done();
+    };
+    crawler.tries = 0;
+    test.assertEquals(crawler.handleError(), true);
+});
+*/

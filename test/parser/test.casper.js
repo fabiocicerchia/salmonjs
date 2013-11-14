@@ -41,13 +41,13 @@ casper.on('remote.message', function(msg) {
     console.log('CONSOLE.LOG: ' + msg);
 });
 
-casper.test.begin('PhantomParser', function(test) {
+casper.test.begin('CasperParser', function(test) {
 /*
     // setUpPage
     // has been set up properly
-    var phantom = new PhantomParser();
+    var casper = new CasperParser();
 
-    // phantom.setUpPage();
+    // casper.setUpPage();
 
     //page.settings.resourceTimeout = config.parser.timeout;
     //page.onResourceTimeout        = this.onResourceTimeout;
