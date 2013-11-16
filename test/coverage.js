@@ -44,8 +44,8 @@ for (file in ncov) {
 }
 html += '</body></html>';
 
-fs.write('coverage.json', JSON.stringify(ncov));
-fs.write('coverage.html', html);
-console.log('JSON code coverage saved in: ' + fs.absolute('coverage.json'));
-console.log('HTML code coverage saved in: ' + fs.absolute('coverage.html'));
+fs.write('report/coverage.json', JSON.stringify(ncov));
+fs.write('report/coverage.html', html);
+console.log('JSON code coverage saved in: ' + fs.absolute('report/coverage.json'));
+console.log('HTML code coverage saved in: ' + fs.absolute('report/coverage.html'));
 casper.test.done();
