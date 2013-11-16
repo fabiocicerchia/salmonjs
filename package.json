@@ -36,7 +36,7 @@
   },
   "analyze": false,
   "scripts": {
-    "test": "make test"
+    "test": "make test",
     "coverage": "make coverage"
   },
   "license": "MIT",
