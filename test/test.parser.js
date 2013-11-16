@@ -28,13 +28,15 @@
  * SOFTWARE.
  */
 
-var fs       = require('fs'),
-    glob     = require('../src/glob'),
+var casper   = casper || {},
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
+    fs       = require('fs'),
+    glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/test/assets/';
 
 casper.options.onPageInitialized = function () {
-    casper.page.injectJs(basePath + '../../src/sha1.js');
-    casper.page.injectJs(basePath + '../../src/events.js');
+    casper.page.injectJs(srcdir + '/sha1.js');
+    casper.page.injectJs(srcdir + '/events.js');
 };
 
 casper.on('remote.message', function(msg) {
@@ -42,7 +44,7 @@ casper.on('remote.message', function(msg) {
 });
 
 casper.test.begin('Parser', function(test) {
-    var Parser = require('../src/parser');
+    var Parser = require(srcdir + '/parser');
 
     // parse
     var parser = new Parser();
@@ -69,12 +71,11 @@ casper.test.begin('Parser', function(test) {
     test.assertEquals(parser.event, '', 'parses a POST request');
     test.assertEquals(parser.xPath, '', 'parses a POST request');
 
-    // doesn\'t parse anything else
     var parser = new Parser();
 
     parser.initReport = function () {};
 
-    test.assertEquals(parser.parse('', 'HEAD', '', '', ''), undefined);
+    test.assertEquals(parser.parse('', 'HEAD', '', '', ''), undefined, 'doesn\'t parse anything else');
 
     // initReport
     var parser = new Parser();

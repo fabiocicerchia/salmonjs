@@ -29,8 +29,8 @@
  */
 
 var fs       = require('fs'),
-    glob     = require('../src/glob'),
-    basePath = fs.absolute('.') + '/test/assets/';
+    glob     = require('../../src/glob'),
+    basePath = fs.absolute('.') + '/../test/assets/';
 
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(basePath + '../../../src/sha1.js');
@@ -42,14 +42,15 @@ casper.on('remote.message', function(msg) {
 });
 
 casper.test.begin('PhantomParser', function(test) {
-/*
+    var PhantomParser = require('../../src/parser/phantom'),
+        config        = require('../../src/config');
+
     // setUpPage
-    // has been set up properly
     var phantom = new PhantomParser();
 
-    // phantom.setUpPage();
+    //phantom.setUpPage();
 
-    //page.settings.resourceTimeout = config.parser.timeout;
+    //test.assertEquals(phantom.page.settings.resourceTimeout, config.parser.timeout, 'it has been set up properly');
     //page.onResourceTimeout        = this.onResourceTimeout;
     //page.onError                  = this.onError;
     //page.onInitialized            = this.onInitialized;
@@ -58,8 +59,8 @@ casper.test.begin('PhantomParser', function(test) {
     //page.onConfirm                = this.onConfirm;
     //page.onPrompt                 = this.onPrompt;
     //page.onConsoleMessage         = this.onConsoleMessage;
-    test.assertEquals(false, true);
 
+/*
     // parseGet
     // TBD
     test.assertEquals(false, true);

@@ -28,13 +28,15 @@
  * SOFTWARE.
  */
 
-var fs       = require('fs'),
-    glob     = require('../src/glob'),
+var casper   = casper || {},
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
+    fs       = require('fs'),
+    glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/test/assets/';
 
 casper.options.onPageInitialized = function () {
-    casper.page.injectJs(basePath + '../../src/sha1.js');
-    casper.page.injectJs(basePath + '../../src/events.js');
+    casper.page.injectJs(srcdir + '/sha1.js');
+    casper.page.injectJs(srcdir + '/events.js');
 };
 
 casper.on('remote.message', function(msg) {
@@ -42,7 +44,7 @@ casper.on('remote.message', function(msg) {
 });
 
 casper.test.begin('Config', function(test) {
-    var config = require('../src/config');
+    var config = require(srcdir + '/config');
 
     // REDIS
     test.assertType(config.redis, 'object', 'it should be an object');

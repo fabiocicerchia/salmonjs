@@ -393,4 +393,8 @@ var PhantomParser = function () {
 };
 
 PhantomParser.prototype = new Parser();
-new PhantomParser().parse(url, type, data, evt, xPath);
+if (require('system').args.join(' ').indexOf('casperjs') === -1) {
+    new PhantomParser().parse(url, type, data, evt, xPath);
+} else {
+    module.exports = PhantomParser;
+}

@@ -30,12 +30,12 @@ install-coverage:
 	git clone https://github.com/visionmedia/node-jscoverage.git
 
 test:
-	./casperjs/bin/casperjs test test/casper.js
+	./casperjs/bin/casperjs test test/test.*.js test/*/test.*.js
 
-#coverage:
-#	rm -rf src-cov 2> /dev/null
-#	./node-jscoverage/jscoverage src src-cov
-#	SPIDEY_COV=1 ./node_modules/.bin/mocha -R html-cov > coverage.html
-#	rm -rf src-cov
+coverage:
+	rm -rf src-cov 2> /dev/null
+	./node-jscoverage/jscoverage src src-cov
+	./casperjs/bin/casperjs test test/test.*.js test/*/test.*.js --post=test/coverage.js --coverage --concise
+	rm -rf src-cov
 
 .PHONY: test

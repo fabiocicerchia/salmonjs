@@ -28,14 +28,15 @@
  * SOFTWARE.
  */
 
-
-var fs       = require('fs'),
-    glob     = require('../src/glob'),
+var casper   = casper || {},
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
+    fs       = require('fs'),
+    glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/test/assets/';
 
 casper.options.onPageInitialized = function () {
-    casper.page.injectJs(basePath + '../../src/sha1.js');
-    casper.page.injectJs(basePath + '../../src/events.js');
+    casper.page.injectJs(srcdir + '/sha1.js');
+    casper.page.injectJs(srcdir + '/events.js');
 };
 
 casper.on('remote.message', function(msg) {
@@ -43,14 +44,14 @@ casper.on('remote.message', function(msg) {
 });
 
 casper.test.begin('Crawler', function(test) {
-    var Crawler  = require('../src/crawler'),
-        config   = require('../src/config'),
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
         spawn    = {},
         crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''}}}}; }},
-        testObj  = require('../src/test'),
+        testObj  = require(srcdir + '/test'),
         client   = {},
         winston  = {error:function(){},info:function(){},warn:function(){}},
-        fs       = require('../src/fs'),
+        fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs']}};
 
     // serialise
@@ -77,103 +78,90 @@ casper.test.begin('Crawler', function(test) {
 
     test.assertEquals(crawler.run('', '', '', '', ''), 'OK');
 
+    // TODO: do it
     // analiseRedisResponse
-    // runs
     //var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
-    //test.assertEquals(false, true);
+    //test.assertEquals(false, true, 'runs');
 
+    // TODO: do it
     // checkAndRun
-    // runs
     //var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
-    //test.assertEquals(false, true);
+    //test.assertEquals(false, true, 'runs');
 
     // checkRunningCrawlers
-    // doesn\'t exit when there are running crawlers
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     crawler.possibleCrawlers = 1;
-    test.assertEquals(crawler.checkRunningCrawlers(), true);
+    test.assertEquals(crawler.checkRunningCrawlers(), true, 'doesn\'t exit when there are running crawlers');
 
-    // exits when there are no running crawlers
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     crawler.possibleCrawlers = 0;
-    test.assertEquals(crawler.checkRunningCrawlers(), false);
+    test.assertEquals(crawler.checkRunningCrawlers(), false, 'exits when there are no running crawlers');
 
     // onStdOut
-    // collect the data from response
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     crawler.processOutput = '';
     crawler.onStdOut('test\n');
-    test.assertEquals(crawler.processOutput, 'test\n');
+    test.assertEquals(crawler.processOutput, 'test\n', 'collect the data from response');
 
     crawler.onStdOut('test2\n');
-    test.assertEquals(crawler.processOutput, 'test\ntest2\n');
+    test.assertEquals(crawler.processOutput, 'test\ntest2\n', 'collect the data from response');
 
     // onStdErr
-    // runs
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     crawler.handleError = function() {};
 
     var resp = crawler.onStdErr('');
-    test.assertEquals(undefined, resp);
+    test.assertEquals(undefined, resp, 'runs');
 
     // handleError
-    // doesn\'t try to run another crawler if max attempts is reached
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     crawler.tries = 10;
-    test.assertEquals(crawler.handleError(), false);
+    test.assertEquals(crawler.handleError(), false, 'doesn\'t try to run another crawler if max attempts is reached');
 
     // onExit
-    // runs
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     crawler.processPage = function () { return true; };
 
-    test.assertEquals(crawler.onExit(), true);
+    test.assertEquals(crawler.onExit(), true, 'runs');
 
     // htmlEscape
-    // escape "ampersand" correctly
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
-    test.assertEquals(crawler.htmlEscape('&'), '&amp;');
+    test.assertEquals(crawler.htmlEscape('&'), '&amp;', 'escape "ampersand" correctly');
 
-    // escape "double quote" correctly
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
-    test.assertEquals(crawler.htmlEscape('"'), '&quot;');
+    test.assertEquals(crawler.htmlEscape('"'), '&quot;', 'escape "double quote" correctly');
 
-    // escape "single quote" correctly
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
-    test.assertEquals(crawler.htmlEscape('\''), '&#39;');
+    test.assertEquals(crawler.htmlEscape('\''), '&#39;', 'escape "single quote" correctly');
 
-    // escape "less than" correctly
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
-    test.assertEquals(crawler.htmlEscape('<'), '&lt;');
+    test.assertEquals(crawler.htmlEscape('<'), '&lt;', 'escape "less than" correctly');
 
-    // escape "greater than" correctly
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
-    test.assertEquals(crawler.htmlEscape('>'), '&gt;');
+    test.assertEquals(crawler.htmlEscape('>'), '&gt;', 'escape "greater than" correctly');
 
-    // doesn\'t escape anything else
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     var unescaped = 'abcdefghijklmnopqrstuvwxyz0123456789\\|!£$%/()=?^[]{}@#;,:.-_+';
-    test.assertEquals(crawler.htmlEscape(unescaped), unescaped);
+    test.assertEquals(crawler.htmlEscape(unescaped), unescaped, 'doesn\'t escape anything else');
 
+    // TODO: do it
     // storeDetailsToFile
-    // save properly a report file
     //var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
-    //test.assertEquals(false, true);
+    //test.assertEquals(false, true, 'save properly a report file);
 
     // processPage
-    // process an empty page
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     var data = {
@@ -204,10 +192,9 @@ casper.test.begin('Crawler', function(test) {
     crawler.checkRunningCrawlers = function () { return 'OK'; };
     crawler.checkAndRun          = function () {};
 
-    test.assertEquals(crawler.processPage(content), 'OK');
-    test.assertEquals(crawler.possibleCrawlers, 0);
+    test.assertEquals(crawler.processPage(content), 'OK', 'process an empty page');
+    test.assertEquals(crawler.possibleCrawlers, 0, 'process an empty page');
 
-    // process a page with 1 link
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     var data = {
@@ -238,10 +225,9 @@ casper.test.begin('Crawler', function(test) {
     crawler.checkRunningCrawlers = function () { return 'OK'; };
     crawler.checkAndRun          = function () {};
 
-    test.assertEquals(crawler.processPage(content), 'OK');
-    test.assertEquals(crawler.possibleCrawlers, 1);
+    test.assertEquals(crawler.processPage(content), 'OK', 'process a page with 1 link');
+    test.assertEquals(crawler.possibleCrawlers, 1, 'process a page with 1 link');
 
-    // process a page with 2 links
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     var data = {
@@ -272,10 +258,9 @@ casper.test.begin('Crawler', function(test) {
     crawler.checkRunningCrawlers = function () { return 'OK'; };
     crawler.checkAndRun          = function () {};
 
-    test.assertEquals(crawler.processPage(content), 'OK');
-    test.assertEquals(crawler.possibleCrawlers, 2);
+    test.assertEquals(crawler.processPage(content), 'OK', 'process a page with 2 links');
+    test.assertEquals(crawler.possibleCrawlers, 2, 'process a page with 2 links');
 
-    // process a page with 1 event
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     var data = {
@@ -312,10 +297,9 @@ casper.test.begin('Crawler', function(test) {
     crawler.checkRunningCrawlers = function () { return 'OK'; };
     crawler.checkAndRun          = function () {};
 
-    test.assertEquals(crawler.processPage(content), 'OK');
-    test.assertEquals(crawler.possibleCrawlers, 1);
+    test.assertEquals(crawler.processPage(content), 'OK', 'process a page with 1 event');
+    test.assertEquals(crawler.possibleCrawlers, 1, 'process a page with 1 event');
 
-    // process a page with 2 events
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     var data = {
@@ -353,10 +337,9 @@ casper.test.begin('Crawler', function(test) {
     crawler.checkRunningCrawlers = function () { return 'OK'; };
     crawler.checkAndRun          = function () {};
 
-    test.assertEquals(crawler.processPage(content), 'OK');
-    test.assertEquals(crawler.possibleCrawlers, 2);
+    test.assertEquals(crawler.processPage(content), 'OK', 'process a page with 2 events');
+    test.assertEquals(crawler.possibleCrawlers, 2, 'process a page with 2 events');
 
-    // process a page with 1 link and 1 event
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     var data = {
@@ -393,10 +376,9 @@ casper.test.begin('Crawler', function(test) {
     crawler.checkRunningCrawlers = function () { return 'OK'; };
     crawler.checkAndRun          = function () {};
 
-    test.assertEquals(crawler.processPage(content), 'OK');
-    test.assertEquals(crawler.possibleCrawlers, 2);
+    test.assertEquals(crawler.processPage(content), 'OK', 'process a page with 1 link and 1 event');
+    test.assertEquals(crawler.possibleCrawlers, 2, 'process a page with 1 link and 1 event');
 
-    // process a page with 2 links and 2 events
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
 
     var data = {
@@ -434,8 +416,8 @@ casper.test.begin('Crawler', function(test) {
     crawler.checkRunningCrawlers = function () { return 'OK'; };
     crawler.checkAndRun          = function () {};
 
-    test.assertEquals(crawler.processPage(content), 'OK');
-    test.assertEquals(crawler.possibleCrawlers, 4);
+    test.assertEquals(crawler.processPage(content), 'OK', 'process a page with 2 links and 2 events');
+    test.assertEquals(crawler.possibleCrawlers, 4, 'process a page with 2 links and 2 events');
 
     test.done();
 });
@@ -443,18 +425,18 @@ casper.test.begin('Crawler', function(test) {
 /*
 // TODO: Not working
 casper.test.begin('Crawler Async', function(test) {
-    var Crawler  = require('../src/crawler'),
-        config   = require('../src/config'),
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
         spawn    = {
             stdout: function() { return {on:function(){}}},
             stderr: function() { return {on:function(){}}},
             on: function() { return {on:function(param, callback){ if (param ==='exit') { callback(); }}}}
         },
         crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''}}}}; }},
-        testObj  = require('../src/test'),
+        testObj  = require(srcdir + '/test'),
         client   = {},
         winston  = {error:function(){},info:function(){},warn:function(){}},
-        fs       = require('../src/fs'),
+        fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: []}};
 
     // execPhantomjs
@@ -471,14 +453,14 @@ casper.test.begin('Crawler Async', function(test) {
 });
 
 casper.test.begin('Crawler Async #2', function(test) {
-    var Crawler  = require('../src/crawler'),
-        config   = require('../src/config'),
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
         spawn    = {},
         crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''}}}}; }},
-        testObj  = require('../src/test'),
+        testObj  = require(srcdir + '/test'),
         client   = {},
         winston  = {error:function(){},info:function(){},warn:function(){}},
-        fs       = require('../src/fs'),
+        fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: []}};
 
     // handleError
