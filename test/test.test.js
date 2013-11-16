@@ -29,7 +29,7 @@
  */
 
 var casper   = casper || {},
-    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src' : '/src'), // TODO: Issue with the coverage file
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
     fs       = require('fs'),
     glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/test/assets/';
@@ -46,13 +46,13 @@ casper.on('remote.message', function(msg) {
 casper.test.begin('Test', function(test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir);
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
 
     // create
     testObj.create('', 'test', {a: 1}, function() {
         var content;
         try {
-            content = fs.read(srcdir + testObj.TEST_CASE_DIRECTORY + 'test.tst');
+            content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'test.tst');
         } catch (err) {}
 
         test.assertEquals(content, undefined, 'doesn\'t create a file if url is empty');
@@ -61,58 +61,60 @@ casper.test.begin('Test', function(test) {
     testObj.create('http://www.example.com', '', {a: 1}, function() {
         var content;
         try {
-            content = fs.read(srcdir + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/.tst');
+            content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/.tst');
         } catch (err) {}
 
         test.assertEquals(content, undefined, 'doesn\'t create a file if name is empty');
     });
 
-    testObj = new Test(fsWrapper, glob, srcdir);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..');
     testObj.create('http://www.example.com', 'test', {}, function() {
         var content;
         try {
-            content = fs.read(srcdir + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
+            content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
         } catch (err) {}
 
         test.assertEquals(content, undefined, 'doesn\'t create a file if data is empty');
     });
 
-    testObj = new Test(fsWrapper, glob, srcdir);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..');
     testObj.create('http://www.example.com', 'test', {a: 1, b: 2}, function() {
         var content;
         try {
-            content = fs.read(srcdir + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
-            fs.unlink(srcdir + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
+            content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
+            fs.remove(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
         } catch (err) {}
 
         test.assertEquals(content, 'a=1\nb=2\n', 'creates a file if url, name and data is not empty');
     });
 
     // getCases
-    testObj = new Test(fsWrapper, glob, srcdir);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..');
     testObj.parseCase = function () { return {}; };
 
     test.assertEquals(testObj.getCases(''), [], 'doesn\'t return anything if there are no matches');
     test.assertEquals(testObj.getCases('non-existent'), [], 'doesn\'t return anything if there are no matches');
 
-    fs.write(srcdir + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst', 'a=1\nb=2\n');
-    testObj = new Test(fsWrapper, glob, srcdir);
+    fs.write(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst', 'a=1\nb=2\n');
+    testObj = new Test(fsWrapper, glob, srcdir + '/..');
     testObj.parseCase = function () { return {a: 1, b: 2}; };
 
     test.assertEquals(testObj.getCases('http___www_example_com'), [{a: 1, b: 2}], 'returns something if there are matches');
-    fs.remove(srcdir + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
+    fs.remove(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
 
     // parseCase
-    testObj = new Test(fsWrapper, glob, srcdir);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..');
     test.assertEquals(testObj.parseCase('non-existent'), {}, 'doesn\'t parse a non existent file');
 
-    testObj = new Test(fsWrapper, glob, srcdir);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..');
     test.assertEquals(testObj.parseCase('empty-file'), {}, 'parses an empty file');
 
-    testObj = new Test(fsWrapper, glob, srcdir);
-    fs.write(srcdir + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst', 'a=1\nb=2\n');
-    test.assertEquals(testObj.parseCase(srcdir + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst'), {a: '1', b: '2'}, 'parses a not empty file');
-    fs.remove(srcdir + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst');
+    testObj = new Test(fsWrapper, glob, srcdir + '/..');
+    fs.write(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst', 'a=1\nb=2\n');
+    test.assertEquals(testObj.parseCase(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst'), {a: '1', b: '2'}, 'parses a not empty file');
+    fs.remove(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst');
+
+    fs.removeTree(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com');
 
     test.done();
 });

@@ -112,7 +112,7 @@ Options:
 [user@hostname ~]$ spidey --uri "file.html"
 ```
 
-### Tests
+## Tests
 
 ```
 [user@hostname ~/spidey]$ npm test

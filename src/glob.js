@@ -110,7 +110,8 @@ var glob = {
      * @return undefined
      */
     list: function (dir, done) {
-        var fsWrapper = new (require('../src/fs'));
+        var FSWrapper = require('./fs');
+        var fsWrapper = new FSWrapper;
         var results = [];
 
         var list = fsWrapper.readdirSync(dir);
