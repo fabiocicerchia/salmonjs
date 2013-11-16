@@ -28,19 +28,21 @@
  * SOFTWARE.
  */
 
-var Parser    = require('../../src/parser'),
-    config    = require('../../src/config'),
+var Parser    = require('../parser'),
+    config    = require('../config'),
     fs        = require('fs'),
-    idCrawler = require('system').args[4],
-    execId    = require('system').args[5],
-    idRequest = require('system').args[6],
-    username  = require('system').args[7],
-    password  = require('system').args[8],
-    url       = require('system').args[9],
-    type      = require('system').args[10],
-    data      = require('system').args[11],
-    evt       = require('system').args[12],
-    xPath     = require('system').args[13],
+    system    = require('system'),
+    args      = system.args,
+    idCrawler = args[4],
+    execId    = args[5],
+    idRequest = args[6],
+    username  = args[7],
+    password  = args[8],
+    url       = args[9],
+    type      = args[10],
+    data      = args[11],
+    evt       = args[12],
+    xPath     = args[13],
     casper    = require('casper').create();
 
 /**
@@ -49,7 +51,7 @@ var Parser    = require('../../src/parser'),
  * @class CasperParser
  * @extends Parser
  */
-var CasperParser = function () {
+var CasperParser = function (page) {
     /**
      * Current instance.
      *
@@ -59,6 +61,50 @@ var CasperParser = function () {
      */
     var currentParser = this;
 
+    // TODO: Duplicated!
+    /**
+     * Mapping between HTML tag name and attributes that may contain URIs.
+     *
+     * @property tags
+     * @type {Object}
+     * @default {Object}
+     */
+    this.tags = {
+        // HTML 4
+        a: 'href',
+        area: 'href',
+        //applet: 'archive',
+        //applet: 'codebase',
+        base: 'href',
+        //blockquote: 'cite',
+        // frame.longdesc',
+        frame: 'src',
+        // iframe.longdesc',
+        iframe: 'src',
+        // img.longdesc',
+        img: 'src',
+        input: 'src', // Possible exception: only when type="image"
+        link: 'href',
+        // object.archive',
+        // object.classid',
+        // object.codebase',
+        // q.cite',
+        script: 'href'
+        // HTML 5
+        // audio: 'src',
+        // button: 'formaction',
+        // del: 'cite',
+        // embed: 'src',
+        // html: 'manifest',
+        // input: 'formaction',
+        // ins: 'cite',
+        // object: 'data',
+        // source: 'src',
+        // track: 'src',
+        // video: 'poster',
+        // video: 'src'
+    };
+
     /**
      * Configure all the callbacks for CasperJS.
      *
@@ -66,15 +112,15 @@ var CasperParser = function () {
      * @return undefined
      */
     this.setUpPage = function () {
-        casper.resourceTimeout    = config.parser.timeout;
-        casper.onTimeout          = this.onResourceTimeout;
-        casper.onError            = this.onError;
-        casper.onPageInitialized  = this.onInitialized;
-        casper.onResourceReceived = this.onResourceReceived;
-        casper.onAlert            = this.onAlert;
-        casper.on('page.confirm', this.onConfirm);
-        casper.on('page.prompt', this.onPrompt);
-        casper.on('remote.message', this.onConsoleMessage);
+        casper.resourceTimeout            = config.parser.timeout;
+        casper.options.onTimeout          = currentParser.onResourceTimeout;
+        casper.options.onError            = currentParser.onError;
+        casper.options.onPageInitialized  = currentParser.onInitialized;
+        casper.options.onResourceReceived = currentParser.onResourceReceived;
+        casper.options.onAlert            = currentParser.onAlert;
+        casper.on('page.confirm',   currentParser.onConfirm);
+        casper.on('page.prompt',    currentParser.onPrompt);
+        casper.on('remote.message', currentParser.onConsoleMessage);
     };
 
     /**
@@ -199,8 +245,8 @@ var CasperParser = function () {
      * @return undefined
      */
     this.onInitialized = function() {
-        casper.page.injectJs('../sha1.js');
-        casper.page.injectJs('../events.js');
+        casper.page.injectJs(fs.absolute('.') + '/src/sha1.js');
+        casper.page.injectJs(fs.absolute('.') + '/src/events.js');
     };
 
     /**
@@ -305,7 +351,7 @@ var CasperParser = function () {
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
         casper.capture(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
-        links = casper.evaluate(currentParser.onEvaluate, currentParser);
+        links = casper.evaluate(currentParser.onEvaluate, { currentParser: currentParser });
 
         links.events = casper.evaluate(function () {
             return window.eventContainer.getEvents();
@@ -348,9 +394,10 @@ var CasperParser = function () {
      * Callback fired to evaluate the page content.
      *
      * @method onEvaluate
+     * @param {Object} currentParser The current parser instance
      * @return {Object} A list of links (anchors, links, scripts and forms).
      */
-    this.onEvaluate = function () {
+    this.onEvaluate = function (currentParser) {
         var urls = {
                 a:      [],
                 link:   [],
@@ -361,8 +408,8 @@ var CasperParser = function () {
             currentUrl = document.location.href,
             attribute, tag;
 
-        for (tag in arguments[0].tags) {
-            attribute = arguments[0].tags[tag];
+        for (tag in currentParser.tags) {
+            attribute = currentParser.tags[tag];
             urls[tag] = [].map.call(document.querySelectorAll(tag), function(item) { return item.getAttribute(attribute); });
         }
 
@@ -393,4 +440,8 @@ var CasperParser = function () {
 };
 
 CasperParser.prototype = new Parser();
-new CasperParser().parse(url, type, data, evt, xPath);
+//if (args.join(' ').indexOf('casperjs') === -1) {
+    new CasperParser(casper.page).parse(url, type, data, evt, xPath);
+//} else {
+//    module.exports = CasperParser;
+//}

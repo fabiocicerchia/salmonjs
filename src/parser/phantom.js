@@ -28,19 +28,21 @@
  * SOFTWARE.
  */
 
-var Parser    = require('../../src/parser'),
-    config    = require('../../src/config'),
+var Parser    = require('../parser'),
+    config    = require('../config'),
     fs        = require('fs'),
-    idCrawler = require('system').args[1],
-    execId    = require('system').args[2],
-    idRequest = require('system').args[3],
-    username  = require('system').args[4],
-    password  = require('system').args[5],
-    url       = require('system').args[6],
-    type      = require('system').args[7],
-    data      = require('system').args[8],
-    evt       = require('system').args[9],
-    xPath     = require('system').args[10],
+    system    = require('system'),
+    args      = system.args,
+    idCrawler = args[1],
+    execId    = args[2],
+    idRequest = args[3],
+    username  = args[4],
+    password  = args[5],
+    url       = args[6],
+    type      = args[7],
+    data      = args[8],
+    evt       = args[9],
+    xPath     = args[10],
     page      = require('webpage').create();
 
 if (username !== undefined && password !== undefined) {
@@ -55,7 +57,60 @@ if (username !== undefined && password !== undefined) {
  * @class PhantomParser
  * @extends Parser
  */
-var PhantomParser = function () {
+var PhantomParser = function (page) {
+    /**
+     * The WebPage element.
+     *
+     * @property page
+     * @type {Object}
+     * @default {Object}
+     */
+    this.page = page;
+
+    // TODO: Duplicated!
+    /**
+     * Mapping between HTML tag name and attributes that may contain URIs.
+     *
+     * @property tags
+     * @type {Object}
+     * @default {Object}
+     */
+    this.tags = {
+        // HTML 4
+        a: 'href',
+        area: 'href',
+        //applet: 'archive',
+        //applet: 'codebase',
+        base: 'href',
+        //blockquote: 'cite',
+        // frame.longdesc',
+        frame: 'src',
+        // iframe.longdesc',
+        iframe: 'src',
+        // img.longdesc',
+        img: 'src',
+        input: 'src', // Possible exception: only when type="image"
+        link: 'href',
+        // object.archive',
+        // object.classid',
+        // object.codebase',
+        // q.cite',
+        script: 'href'
+        // HTML 5
+        // audio: 'src',
+        // button: 'formaction',
+        // del: 'cite',
+        // embed: 'src',
+        // html: 'manifest',
+        // input: 'formaction',
+        // ins: 'cite',
+        // object: 'data',
+        // source: 'src',
+        // track: 'src',
+        // video: 'poster',
+        // video: 'src'
+    };
+
     /**
      * Current instance.
      *
@@ -72,15 +127,15 @@ var PhantomParser = function () {
      * @return undefined
      */
     this.setUpPage = function () {
-        page.settings.resourceTimeout = config.parser.timeout;
-        page.onResourceTimeout        = this.onResourceTimeout;
-        page.onError                  = this.onError;
-        page.onInitialized            = this.onInitialized;
-        page.onResourceReceived       = this.onResourceReceived;
-        page.onAlert                  = this.onAlert;
-        page.onConfirm                = this.onConfirm;
-        page.onPrompt                 = this.onPrompt;
-        page.onConsoleMessage         = this.onConsoleMessage;
+        this.page.settings.resourceTimeout = config.parser.timeout;
+        this.page.onResourceTimeout        = this.onResourceTimeout;
+        this.page.onError                  = this.onError;
+        this.page.onInitialized            = this.onInitialized;
+        this.page.onResourceReceived       = this.onResourceReceived;
+        this.page.onAlert                  = this.onAlert;
+        this.page.onConfirm                = this.onConfirm;
+        this.page.onPrompt                 = this.onPrompt;
+        this.page.onConsoleMessage         = this.onConsoleMessage;
     };
 
     /**
@@ -92,8 +147,8 @@ var PhantomParser = function () {
     this.parseGet = function () {
         this.setUpPage();
 
-        page.open(this.url + this.data, this.onOpen);
-        page.onLoadFinished = this.onLoadFinished;
+        this.page.open(this.url + this.data, this.onOpen);
+        this.page.onLoadFinished = this.onLoadFinished;
     };
 
     /**
@@ -105,8 +160,8 @@ var PhantomParser = function () {
     this.parsePost = function () {
         this.setUpPage();
 
-        page.open(this.url, 'post', this.data, this.onOpen);
-        page.onLoadFinished = this.onLoadFinished;
+        this.page.open(this.url, 'post', this.data, this.onOpen);
+        this.page.onLoadFinished = this.onLoadFinished;
     };
 
     /**
@@ -156,7 +211,7 @@ var PhantomParser = function () {
         currentParser.report.time.total = currentParser.report.time.end - currentParser.report.time.start;
 
         if (status === 'success') {
-            page.navigationLocked = true;
+            currentParser.page.navigationLocked = true;
         }
     };
 
@@ -199,8 +254,8 @@ var PhantomParser = function () {
      * @return undefined
      */
     this.onInitialized = function() {
-        page.injectJs('../sha1.js');
-        page.injectJs('../events.js');
+        currentParser.page.injectJs('../sha1.js');
+        currentParser.page.injectJs('../events.js');
     };
 
     /**
@@ -278,9 +333,9 @@ var PhantomParser = function () {
     this.onLoadFinished = function () {
         if (currentParser.event !== '' && currentParser.xPath !== '') {
             if (currentParser.xPath[0] !== '/') {
-                page.evaluate(currentParser.fireEventObject, currentParser);
+                currentParser.page.evaluate(currentParser.fireEventObject, currentParser);
             } else {
-                page.evaluate(currentParser.fireEventDOM, currentParser);
+                currentParser.page.evaluate(currentParser.fireEventDOM, currentParser);
             }
         }
 
@@ -296,18 +351,18 @@ var PhantomParser = function () {
     this.parsePage = function () {
         var url, links, response;
 
-        currentParser.report.content = page.content;
+        currentParser.report.content = currentParser.page.content;
 
-        url = page.evaluate(function () {
+        url = currentParser.page.evaluate(function () {
             return document.location.href;
         });
 
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
         page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
-        links = page.evaluate(currentParser.onEvaluate, currentParser);
+        links = currentParser.page.evaluate(currentParser.onEvaluate, currentParser);
 
-        links.events = page.evaluate(function () {
+        links.events = currentParser.page.evaluate(function () {
             return window.eventContainer.getEvents();
         });
 
@@ -366,7 +421,7 @@ var PhantomParser = function () {
             urls[tag] = [].map.call(document.querySelectorAll(tag), function(item) { return item.getAttribute(attribute); });
         }
 
-        urls.form   = [].map.call(document.querySelectorAll('form'), function (item) {
+        urls.form = [].map.call(document.querySelectorAll('form'), function (item) {
             var input, select, textarea;
 
             input = [].map.call(item.getElementsByTagName('input'), function (item) {
@@ -393,8 +448,8 @@ var PhantomParser = function () {
 };
 
 PhantomParser.prototype = new Parser();
-if (require('system').args.join(' ').indexOf('casperjs') === -1) {
-    new PhantomParser().parse(url, type, data, evt, xPath);
+if (args.join(' ').indexOf('casperjs') === -1) {
+    new PhantomParser(page).parse(url, type, data, evt, xPath);
 } else {
     module.exports = PhantomParser;
 }
