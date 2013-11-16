@@ -48,6 +48,7 @@ ioc.add('crypto',    require('crypto'));
 ioc.add('redis',     redis);
 ioc.add('client',    client);
 ioc.add('winston',   winston);
+ioc.add('optimist',  require('optimist'));
 ioc.add('fs',        fs);
 ioc.add('glob',      require('glob'));
 ioc.add('dirName',   __dirname);
