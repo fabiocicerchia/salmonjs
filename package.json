@@ -31,10 +31,13 @@
     "winston": "0.7",
     "glob": "3.2.7"
   },
-  "devDependencies": {},
+  "devDependencies": {
+      "visionmedia-jscoverage": "1.0.0"
+  },
   "analyze": false,
   "scripts": {
     "test": "make test"
+    "coverage": "make coverage"
   },
   "license": "MIT",
   "engines": {

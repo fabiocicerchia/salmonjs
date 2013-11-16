@@ -26,16 +26,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-install-coverage:
-	git clone https://github.com/visionmedia/node-jscoverage.git
+CASPERJS=./casperjs/bin/casperjs
+JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
 
 test:
-	./casperjs/bin/casperjs test test/test.*.js test/*/test.*.js
+	$(CASPERJS) test test/test.*.js test/*/test.*.js
 
 coverage:
 	rm -rf src-cov 2> /dev/null
-	./node-jscoverage/jscoverage src src-cov
-	./casperjs/bin/casperjs test test/test.*.js test/*/test.*.js --post=test/coverage.js --coverage --concise
+	$(JSCOVERAGE) src src-cov
+	$(CASPERJS) test test/test.*.js test/*/test.*.js --post=test/coverage.js --coverage --concise
 	rm -rf src-cov
 
 .PHONY: test
