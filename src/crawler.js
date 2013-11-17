@@ -453,7 +453,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
 
             if (optimist.argv.$0.indexOf('casperjs') === -1) {
-                process.exit();
+                // TODO: This is called at the wrong time.
+                //process.exit();
             }
 
             return false;
