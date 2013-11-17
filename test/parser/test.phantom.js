@@ -28,13 +28,15 @@
  * SOFTWARE.
  */
 
-var fs       = require('fs'),
-    glob     = require('../../src/glob'),
+var casper   = casper || {},
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
+    fs       = require('fs'),
+    glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/../test/assets/';
 
 casper.options.onPageInitialized = function () {
-    casper.page.injectJs(basePath + '../../../src/sha1.js');
-    casper.page.injectJs(basePath + '../../../src/events.js');
+    casper.page.injectJs(srcdir + '/sha1.js');
+    casper.page.injectJs(srcdir + '/events.js');
 };
 
 casper.on('remote.message', function(msg) {
@@ -42,25 +44,24 @@ casper.on('remote.message', function(msg) {
 });
 
 casper.test.begin('PhantomParser', function(test) {
-    var PhantomParser = require('../../src/parser/phantom'),
-        config        = require('../../src/config');
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config');
 
     // setUpPage
-    var phantom = new PhantomParser();
+    var phantom = new PhantomParser(require('webpage').create());
 
-    //phantom.setUpPage();
+    phantom.setUpPage();
 
-    //test.assertEquals(phantom.page.settings.resourceTimeout, config.parser.timeout, 'it has been set up properly');
-    //page.onResourceTimeout        = this.onResourceTimeout;
-    //page.onError                  = this.onError;
-    //page.onInitialized            = this.onInitialized;
-    //page.onResourceReceived       = this.onResourceReceived;
-    //page.onAlert                  = this.onAlert;
-    //page.onConfirm                = this.onConfirm;
-    //page.onPrompt                 = this.onPrompt;
-    //page.onConsoleMessage         = this.onConsoleMessage;
+    test.assertEquals(phantom.page.settings.resourceTimeout, config.parser.timeout, 'it has been set up properly');
+    test.assertEquals(phantom.page.onResourceTimeout,        phantom.onResourceTimeout, 'it has been set up properly');
+    test.assertEquals(phantom.page.onError,                  phantom.onError, 'it has been set up properly');
+    test.assertEquals(phantom.page.onInitialized,            phantom.onInitialized, 'it has been set up properly');
+    test.assertEquals(phantom.page.onResourceReceived,       phantom.onResourceReceived, 'it has been set up properly');
+    test.assertEquals(phantom.page.onAlert,                  phantom.onAlert, 'it has been set up properly');
+    test.assertEquals(phantom.page.onConfirm,                phantom.onConfirm, 'it has been set up properly');
+    test.assertEquals(phantom.page.onPrompt,                 phantom.onPrompt, 'it has been set up properly');
+    test.assertEquals(phantom.page.onConsoleMessage,         phantom.onConsoleMessage, 'it has been set up properly');
 
-/*
     // parseGet
     // TBD
     test.assertEquals(false, true);
@@ -129,7 +130,6 @@ casper.test.begin('PhantomParser', function(test) {
     // onEvaluate
     // TBD
     test.assertEquals(false, true);
-*/
 
     test.done();
 });
