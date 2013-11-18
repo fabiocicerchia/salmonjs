@@ -24,8 +24,16 @@ for (file in cov) {
 }
 
 var html = '<html><style>pre span.lineno { display: inline-block; } pre span.line { display: inline-block; } pre span.line.grey { color: grey; } pre span.line.green { color: green; } pre span.line.red { color: red; }</style><body><h1>Code Coverage</h1>';
+html += '<ul>';
+var coverage = 0;
 for (file in ncov) {
-    html += '<h2>' + file + ' (' + ncov[file].percentage.toFixed(2) + '%)</h2>';
+    coverage += ncov[file].percentage;
+    html += '<li><a href="#' + file.replace(/[^a-zA-Z0-9]/g, '_') + '">' + file + ' (' + ncov[file].percentage.toFixed(2) + '%)</a></li>';
+}
+html += '</ul>';
+html += '<strong>Coverage: ' + (coverage / Object.keys(ncov).length).toFixed(2) + '%</strong>';
+for (file in ncov) {
+    html += '<h2 id="' + file.replace(/[^a-zA-Z0-9]/g, '_') + '">' + file + ' (' + ncov[file].percentage.toFixed(2) + '%)</h2>';
     html += '<pre>';
     for (line in ncov[file].source) {
         len = ncov[file].lines.toString().length;
