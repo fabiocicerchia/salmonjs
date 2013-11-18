@@ -35,7 +35,7 @@ Few suggestion about its usage:
 
 ## Features
 
- * Commander Line Interface
+ * Command Line Interface
  * Reorder query string params for get and post for uniqueness
  * HTTP authentication
  * Handle events bound with `addEventListener`, HTML attributes (`on*`)
@@ -120,18 +120,7 @@ Options:
 
 ## Bugs
 
- * jQuery is working within PhantomJS only if the version <= 1.8.3.
- * Not processing $.on().
- * jQuery is not inserting any script at runtime.
-
-## Todo
-
- * Handle `confirm` calling it twice, returning `true` and `false`.
- * Handle `prompt` using a test case file.
- * Handle Uploads
- * Create test case files for GET querystring
- * Use async (https://github.com/caolan/async)
- * Use underscorejs (http://underscorejs.org/)
+For a list of bugs please go to the [GitHub Issue Page](https://github.com/fabiocicerchia/spidey/issues?labels=Bug&page=1&state=open).
 
 ## Licence
 
