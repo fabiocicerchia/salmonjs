@@ -158,7 +158,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      *
      * @property idCrawler
      * @type {String}
-     * @default """
+     * @default ""
      */
     this.idCrawler = '';
 
@@ -192,7 +192,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             process.exit(1);
         });
 
-        this.idCrawler = currentCrawler.sha1(JSON.stringify(this) + Date.now()).substr(0, 4);
+        this.idCrawler = process.pid.toString();
         winston.info('Started new crawler: %s'.magenta, this.idCrawler);
     };
 
@@ -317,7 +317,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @return undefined
      */
     this.run = function (url, type, data, evt, xPath) {
-        this.url   = url.action || url;
+        this.url   = url;
         this.type  = type || 'GET';
         this.data  = data || {};
         this.evt   = evt || '';
@@ -330,7 +330,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         winston.info(
             '%s Launching crawler to parse "%s" - %s on %s ...',
             winstonCrawlerId,
-            this.url.green,
+            ('' + this.url).green,
             (this.evt === '' ? 'N/A'.grey : this.evt.blue),
             (this.xPath === '' ? 'N/A'.grey : this.xPath.green)
         );
@@ -364,7 +364,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             throw err;
         }
 
-        currentCrawler.possibleCrawlers--;
         // reply is null when the key is missing
         if (reply !== null) {
             winston.info(
@@ -375,6 +374,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 container.xPath
             );
 
+            currentCrawler.possibleCrawlers--;
             currentCrawler.checkRunningCrawlers('No items left to be processed');
             return;
         }
@@ -382,21 +382,25 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         newId = currentCrawler.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath).substr(0, 8);
 
         winston.info(
-            '%s' + ' Match not found in Redis. Continue. Continue (%s)'.grey,
+            '%s' + ' Match not found in Redis. Continue (%s)'.grey,
             winstonCrawlerId,
             newId
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
-        crawler.init();
-        crawler.timeStart    = currentCrawler.timeStart;
-        crawler.username     = currentCrawler.username;
-        crawler.password     = currentCrawler.password;
-        crawler.storeDetails = currentCrawler.storeDetails;
-        crawler.run(container.url, container.type, container.container, container.evt, container.xPath);
+        var args = [
+            __dirname + '/worker.js',
+            currentCrawler.timeStart, currentCrawler.username, currentCrawler.password, currentCrawler.storeDetails,
+            container.url, container.type, JSON.stringify(container.container), container.evt, container.xPath
+        ];
 
-        currentCrawler.checkRunningCrawlers('No items left to be processed');
+        var childProcess = require('child_process').spawn('node', args, { detached: true });
+        childProcess.stdout.on('data', spawnStdout);
+        childProcess.stderr.on('data', spawnStderr);
+        childProcess.on('exit', function () {
+            currentCrawler.possibleCrawlers--;
+            currentCrawler.checkRunningCrawlers('No items left to be processed');
+        });
     };
 
     /**
@@ -454,7 +458,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
             if (optimist.argv.$0.indexOf('casperjs') === -1) {
                 // TODO: This is called at the wrong time.
-                //process.exit();
+                process.exit();
             }
 
             return false;
@@ -748,10 +752,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             currentCrawler.possibleCrawlers += cases.length;
             for (j in cases) {
                 if (cases.hasOwnProperty(j)) {
-                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), []);
+                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
 
                     cases[j] = currentCrawler.normaliseData(cases[j]);
-                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), cases[j]);
+                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]);
                 }
             }
 
@@ -773,5 +777,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         return currentCrawler.checkRunningCrawlers('No links in the page');
     };
 };
+
+function spawnStdout(data) { data = data.toString(); console.log(data.substr(0, data.length - 1)); };
+function spawnStderr(data) { data = data.toString(); console.log(data.substr(0, data.length - 1).red); };
 
 module.exports = Crawler;

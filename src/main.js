@@ -28,14 +28,13 @@
  * SOFTWARE.
  */
 
-var IOC       = require('./ioc'),
-    config    = require('../src/config'),
-    Crawler   = require('../src/crawler'),
-    winston   = require('winston'),
-    fs        = require('fs'),
-    path      = require('path'),
-    redis     = require('redis'),
-    client    = redis.createClient(config.redis.port, config.redis.hostname),
+var IOC     = require('./ioc'),
+    config  = require('../src/config'),
+    winston = require('winston'),
+    fs      = require('fs'),
+    path    = require('path'),
+    redis   = require('redis'),
+    client  = redis.createClient(config.redis.port, config.redis.hostname),
     argv;
 
 require('path');
@@ -102,6 +101,9 @@ argv = require('optimist')
     .default('d', false)
     .argv;
 
+function spawnStdout(data) { data = data.toString(); console.log(data.substr(0, data.length - 1)); };
+function spawnStderr(data) { data = data.toString(); console.log(data.substr(0, data.length - 1).red); };
+
 if (argv.help !== undefined || argv.uri === undefined) {
     argv.showHelp();
 } else {
@@ -116,15 +118,20 @@ if (argv.help !== undefined || argv.uri === undefined) {
         }
     }
 
-    winston.info('Start processing "' + uri + '"...');
+    winston.info('Start processing "' + uri.green + '"...');
 
     client.send_command('FLUSHDB', []);
 
-    var crawler = ioc.get(Crawler);
-    crawler.init();
-    crawler.timeStart    = Date.now();
-    crawler.username     = argv.username;
-    crawler.password     = argv.password;
-    crawler.storeDetails = argv.details;
-    crawler.run(uri, 'GET');
+    var args = [
+        __dirname + '/worker.js',
+        Date.now(), argv.username, argv.password, argv.details,
+        uri, 'GET'
+    ];
+
+    var childProcess = require('child_process').spawn('node', args);
+    childProcess.stdout.on('data', spawnStdout);
+    childProcess.stderr.on('data', spawnStderr);
+    childProcess.on('exit', function () {
+        process.exit();
+    });
 }
