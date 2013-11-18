@@ -297,7 +297,8 @@ module.exports = function Parser() {
      * @return {String} The normalised URL.
      */
     this.normaliseUrl = function (url, baseUrl) {
-        var normalised;
+        var normalised,
+            baseDomain = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/.*$/, 'http$1://$2/');
 
         if (url.substr(0, 2) === '//') {
             url = baseUrl.split(':')[0] + ':' + url;
@@ -308,14 +309,14 @@ module.exports = function Parser() {
         }
 
         if (url.indexOf('/') === 0) {
-            normalised = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/.*$/, 'http$1://$2') + url;
+            normalised = baseDomain + url;
         } else if (url.indexOf('?') === 0) {
-            normalised = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/.*$/, 'http$1://$2/') + url;
+            normalised = baseDomain + url;
         } else if (url.indexOf('#') === 0) {
             normalised = baseUrl.replace(/#.*$/, '') + url;
         } else if (url === baseUrl || url === '') {
             normalised = baseUrl;
-        } else if (url.indexOf('://') !== -1) {
+        } else if (url.indexOf('://') !== -1 && url.indexOf(baseDomain) === 0) {
             normalised = url;
         }
 

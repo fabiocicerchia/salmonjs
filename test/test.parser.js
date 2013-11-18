@@ -190,7 +190,7 @@ casper.test.begin('Parser', function(test) {
     test.assertEquals(parser.normaliseUrl('#', 'http://www.example.com/?param=value#'), 'http://www.example.com/?param=value#', 'convert properly other URLs');
     test.assertEquals(parser.normaliseUrl('', 'http://www.example.com/'), 'http://www.example.com/', 'convert properly other URLs');
     test.assertEquals(parser.normaliseUrl('http://www.example.com/', 'http://www.example.com/'), 'http://www.example.com/', 'convert properly other URLs');
-    test.assertEquals(parser.normaliseUrl('http://www.example2.com/', 'http://www.example.com/'), 'http://www.example2.com/', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('http://www.example2.com/', 'http://www.example.com/'), undefined, 'convert properly other URLs');
 
     test.done();
 });
