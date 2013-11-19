@@ -81,7 +81,7 @@ or you can download the source code from GitHub and run these commands:
 |_____|   __||__||_____||_____|___  |
       |__|                    |_____|
 
-SPIDEY v0.1.2
+SPIDEY v0.1.3
 
 Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
 

@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.2
+ * SPIDEY v0.1.3
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -425,7 +425,7 @@ module.exports = function Crawler() {
         winston.info('%s Retrieved response', winstonCrawlerId);
         winston.error(data.toString().red);
 
-        this.handleError();
+        currentCrawler.handleError();
     };
 
     /**

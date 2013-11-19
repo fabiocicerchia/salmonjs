@@ -1,7 +1,7 @@
 {
   "name": "spidey",
   "preferGlobal": true,
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Fabio Cicerchia <info@fabiocicerchia.it>",
   "description": "Web Crawler in Node.js to spider dynamically whole websites.",
   "contributors": [
