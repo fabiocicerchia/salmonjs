@@ -93,6 +93,7 @@ module.exports = function Parser() {
         errors:     [],
         alerts:     [],
         confirms:   [],
+        prompts:    [],
         console:    [],
         resources:  {},
         time:       { start: 0, end: 0, total: 0 },

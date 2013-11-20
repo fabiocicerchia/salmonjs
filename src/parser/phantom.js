@@ -222,7 +222,11 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.onResourceTimeout = function () {
-        phantom.exit();
+        if (args.join(' ').indexOf('casperjs') === -1) {
+            phantom.exit();
+        }
+
+        return true;
     };
 
     /**
@@ -306,7 +310,7 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.onPrompt = function(msg, defaultVal) {
-        currentParser.report.confirms.push({msg: msg, defaultVal: defaultVal});
+        currentParser.report.prompts.push({msg: msg, defaultVal: defaultVal});
         return defaultVal;
     };
 
@@ -448,7 +452,7 @@ var PhantomParser = function (page) {
 };
 
 PhantomParser.prototype = new Parser();
-if (args.join(' ').indexOf('casperjs') === -1) {
+if (args.join(' ').indexOf('casperjs --cli test') === -1) {
     new PhantomParser(page).parse(url, type, data, evt, xPath);
 } else {
     module.exports = PhantomParser;
