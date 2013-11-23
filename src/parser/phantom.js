@@ -136,6 +136,7 @@ var PhantomParser = function (page) {
         this.page.onConfirm                = this.onConfirm;
         this.page.onPrompt                 = this.onPrompt;
         this.page.onConsoleMessage         = this.onConsoleMessage;
+        this.page.viewportSize             = { width: 1024, height: 800 };
     };
 
     /**

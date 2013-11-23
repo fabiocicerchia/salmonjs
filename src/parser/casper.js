@@ -211,6 +211,8 @@ var CasperParser = function (engine) {
             currentParser.engine.setHttpAuth(username, password);
         }
 
+        currentParser.engine.viewport(1024, 800);
+
         //if (this.status(true) === 'success') {
         //    this.page.navigationLocked = true;
         //}
@@ -358,9 +360,7 @@ var CasperParser = function (engine) {
     this.parsePage = function () {
         var url, links, response;
 
-        currentParser.report.content = currentParser.engine.evaluate(function () {
-            return this.getPageContent();
-        });
+        currentParser.report.content = currentParser.engine.page.content;
 
         url = currentParser.engine.evaluate(function () {
             return document.location.href;
