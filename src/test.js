@@ -72,6 +72,9 @@ var Test = function (fsWrapper, glob, mainDir) {
             return (callback !== undefined) ? callback() : undefined;
         }
 
+        content += '; url = ' + url + '\n';
+        content += '; id = ' + name + '\n';
+
         for (k in data) {
             if (data.hasOwnProperty(k)) {
                 content += k + '=' + data[k] + "\n";
@@ -135,7 +138,7 @@ var Test = function (fsWrapper, glob, mainDir) {
         lines   = content.split("\n");
 
         for (i in lines) {
-            if (lines[i] !== '') {
+            if (lines[i] !== '' && lines[i][0] !== ';') {
                 value = lines[i].split(/=/, 2);
                 data[value[0]] = value[1];
             }

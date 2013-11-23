@@ -53,6 +53,7 @@ var reporter = function() {
         html += '    <body>\n';
         html += '        <div class="container">\n';
         html += '            <h1>' + currentCrawler.url + '</h1>\n';
+        html += '            <h2>ID: ' + reportName + '</h2>\n';
         html += '            <img src="./' + reportName + '.png" />\n';
         html += '\n';
         html += '            <h2>Request Information</h2>\n';
