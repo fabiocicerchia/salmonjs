@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  *               __     __
  * .-----.-----.|__|.--|  |.-----.--.--.
@@ -29,4 +28,21 @@
  * SOFTWARE.
  */
 
-require('../src/main');
+var casper   = casper || {},
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
+    fs       = require('fs'),
+    glob     = require(srcdir + '/glob'),
+    basePath = fs.absolute('.') + '/test/assets/';
+
+casper.options.onPageInitialized = function () {
+    casper.page.injectJs(srcdir + '/sha1.js');
+    casper.page.injectJs(srcdir + '/events.js');
+};
+
+casper.on('remote.message', function(msg) {
+    console.log('CONSOLE.LOG: ' + msg);
+});
+
+casper.test.begin('Main', function(test) {
+    test.done();
+});

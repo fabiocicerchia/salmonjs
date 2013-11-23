@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.3
+ * SPIDEY v0.2.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -93,6 +93,7 @@ module.exports = function Parser() {
         errors:     [],
         alerts:     [],
         confirms:   [],
+        prompts:    [],
         console:    [],
         resources:  {},
         time:       { start: 0, end: 0, total: 0 },
@@ -101,6 +102,49 @@ module.exports = function Parser() {
         event:      '',
         xPath:      '',
         data:       {}
+    };
+
+    /**
+     * Mapping between HTML tag name and attributes that may contain URIs.
+     *
+     * @property tags
+     * @type {Object}
+     * @default {Object}
+     */
+    this.tags = {
+        // HTML 4
+        a: 'href',
+        area: 'href',
+        //applet: 'archive',
+        //applet: 'codebase',
+        base: 'href',
+        //blockquote: 'cite',
+        // frame.longdesc',
+        frame: 'src',
+        // iframe.longdesc',
+        iframe: 'src',
+        // img.longdesc',
+        img: 'src',
+        input: 'src', // Possible exception: only when type="image"
+        link: 'href',
+        // object.archive',
+        // object.classid',
+        // object.codebase',
+        // q.cite',
+        script: 'href'
+        // HTML 5
+        // audio: 'src',
+        // button: 'formaction',
+        // del: 'cite',
+        // embed: 'src',
+        // html: 'manifest',
+        // input: 'formaction',
+        // ins: 'cite',
+        // object: 'data',
+        // source: 'src',
+        // track: 'src',
+        // video: 'poster',
+        // video: 'src'
     };
 
     /**
@@ -118,16 +162,18 @@ module.exports = function Parser() {
         this.url   = url || '';
         this.type  = type || 'GET';
         this.data  = data || '';
-        this.event = evt;
-        this.xPath = xPath;
+        this.event = evt || '';
+        this.xPath = xPath || '';
 
         this.initReport();
 
         if (this.type === 'POST') {
-            this.parsePost();
-        } else {
-            this.parseGet();
+            return this.parsePost();
+        } else if (this.type === 'GET') {
+            return this.parseGet();
         }
+
+        return undefined;
     };
 
     /**
@@ -181,7 +227,7 @@ module.exports = function Parser() {
      * Normalise the data, ordering the array.
      *
      * @method normaliseData
-     * @param {Object} data The data to be normalised.
+     * @param {String} data The data to be normalised.
      * @return {Object}
      */
     this.normaliseData = function (data) {
@@ -189,7 +235,15 @@ module.exports = function Parser() {
             keys = [],
             sorted = {};
 
+        if (typeof data !== 'string') {
+            return {};
+        }
+
         vars = data.replace(/.+\?/, '').split('&');
+
+        if (vars.length === 0 || vars[0] === '') {
+            return {};
+        }
 
         for (i = 0; i < vars.length; i++) {
             pair = vars[i].split('=');
@@ -211,19 +265,28 @@ module.exports = function Parser() {
      * Convert an array to a querystring.
      *
      * @method arrayToQuery
-     * @param {Object} data The data returned by the parser.
+     * @param {Object} obj    The obj to be converted.
+     * @param {String} prefix The eventual prefix to be concatenated if array.
      * @return {String}
      */
-    this.arrayToQuery = function (arr) {
-        var k, string = [];
+    this.arrayToQuery = function (obj, prefix) {
+        var p, k, v, str = [];
 
-        for (k in arr) {
-            if (arr.hasOwnProperty(k)) {
-                string.push(k + '=' + arr[k]);
-            }
+        if (typeof obj !== 'object') {
+            return '';
         }
 
-        return string.join('&');
+        for (p in obj) {
+            k = prefix ? prefix + '[' + p + ']' : p
+            v = obj[p];
+            str.push(
+                typeof v == 'object' ?
+                this.arrayToQuery(v, k) :
+                encodeURIComponent(k) + '=' + encodeURIComponent(v)
+            );
+        }
+
+        return str.join('&');
     };
 
     /**
@@ -235,24 +298,32 @@ module.exports = function Parser() {
      * @return {String} The normalised URL.
      */
     this.normaliseUrl = function (url, baseUrl) {
-        var normalised;
+        var normalised,
+            baseDomain = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, 'http$1://$2/');
 
         if (url.substr(0, 2) === '//') {
             url = baseUrl.split(':')[0] + ':' + url;
         }
 
-        if ((url + '/').indexOf(baseUrl) === 0) {
-            normalised = url;
+        if (baseUrl.substr(0, 7) !== 'file://' && baseUrl.substr(baseUrl.length - 1, 1) !== '/' && baseUrl.indexOf('?') === -1 && baseUrl.indexOf('#') === -1) {
+            baseUrl += '/';
+        }
+
+        if (url.indexOf('/') === 0) {
+            normalised = baseDomain.substr(0, baseDomain.length - 1) + url;
         } else if (url.indexOf('?') === 0) {
-            normalised = baseUrl.replace(/\?.+$/, '') + url;
-        } else if (url.indexOf('/') === 0) {
-            normalised = baseUrl.replace(/#.*$/, '') + url.substr(1);
+            normalised = baseDomain + url;
         } else if (url.indexOf('#') === 0) {
             normalised = baseUrl.replace(/#.*$/, '') + url;
+        } else if (url === baseUrl || url === '') {
+            normalised = baseUrl;
+        } else if (url.indexOf('://') !== -1 && url.indexOf(baseDomain) === 0) {
+            normalised = url;
         }
 
         if (normalised !== undefined && normalised.indexOf('?') > 0) {
-            normalised = normalised.replace(/\?.+/, '?' + this.arrayToQuery(this.normaliseData(normalised)));
+            var qs = normalised.replace(/\?(.+)(#.*)?/, '$1');
+            normalised = normalised.replace(qs, '?' + this.arrayToQuery(this.normaliseData(qs)));
         }
 
         return normalised;

@@ -8,6 +8,7 @@
         <script>
             $(document).ready(function() {
                 $('body').css('background-color', 'red');
+                // BUG: This won't be recognised
                 $('a').on('mouseover', function () {
                     $('body').css('background-color', 'green');
                 });

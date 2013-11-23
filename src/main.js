@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.3
+ * SPIDEY v0.2.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -28,9 +28,8 @@
  * SOFTWARE.
  */
 
-var prompt  = require('prompt'),
+var IOC     = require('./ioc'),
     config  = require('../src/config'),
-    Crawler = require('../src/crawler'),
     winston = require('winston'),
     fs      = require('fs'),
     path    = require('path'),
@@ -38,7 +37,23 @@ var prompt  = require('prompt'),
     client  = redis.createClient(config.redis.port, config.redis.hostname),
     argv;
 
+require('path');
 require('colors');
+
+var ioc = new IOC();
+ioc.add('config',    config);
+ioc.add('spawn',     require('child_process').spawn);
+ioc.add('crypto',    require('crypto'));
+ioc.add('redis',     redis);
+ioc.add('client',    client);
+ioc.add('winston',   winston);
+ioc.add('optimist',  require('optimist'));
+ioc.add('fs',        fs);
+ioc.add('glob',      require('glob'));
+ioc.add('dirName',   __dirname);
+ioc.add('mainDir',   __dirname + '/..');
+ioc.add('fsWrapper', ioc.get(require('../src/fs')));
+ioc.add('test',      ioc.get(require('../src/test')));
 
 /**
  * Redis error handler
@@ -66,7 +81,7 @@ console.log('|__ --|  _  ||  ||  _  ||  -__|  |  |'.yellow);
 console.log('|_____|   __||__||_____||_____|___  |'.yellow);
 console.log('      |__|                    |_____|'.yellow);
 console.log('');
-console.log('SPIDEY v0.1.2'.grey);
+console.log('SPIDEY v0.2.0'.grey);
 console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
 console.log('');
 
@@ -86,6 +101,9 @@ argv = require('optimist')
     .default('d', false)
     .argv;
 
+function spawnStdout(data) { data = data.toString(); console.log(data.substr(0, data.length - 1)); };
+function spawnStderr(data) { data = data.toString(); console.log(data.substr(0, data.length - 1).red); };
+
 if (argv.help !== undefined || argv.uri === undefined) {
     argv.showHelp();
 } else {
@@ -100,14 +118,20 @@ if (argv.help !== undefined || argv.uri === undefined) {
         }
     }
 
-    winston.info('Start mapper.parse(' + uri + ')');
+    winston.info('Start processing "' + uri.green + '"...');
 
     client.send_command('FLUSHDB', []);
 
-    var crawler = new Crawler();
-    crawler.timeStart    = Date.now();
-    crawler.username     = argv.username;
-    crawler.password     = argv.password;
-    crawler.storeDetails = argv.details;
-    crawler.run(uri, 'GET');
+    var args = [
+        __dirname + '/worker.js',
+        Date.now(), argv.username, argv.password, argv.details,
+        uri, 'GET'
+    ];
+
+    var childProcess = require('child_process').spawn('node', args);
+    childProcess.stdout.on('data', spawnStdout);
+    childProcess.stderr.on('data', spawnStderr);
+    childProcess.on('exit', function () {
+        process.exit();
+    });
 }

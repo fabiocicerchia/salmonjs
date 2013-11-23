@@ -33,31 +33,28 @@ var Parser    = require('../parser'),
     fs        = require('fs'),
     system    = require('system'),
     args      = system.args,
-    idCrawler = args[1],
-    execId    = args[2],
-    idRequest = args[3],
-    username  = args[4],
-    password  = args[5],
-    url       = args[6],
-    type      = args[7],
-    data      = args[8],
-    evt       = args[9],
-    xPath     = args[10],
-    page      = require('webpage').create();
+    idCrawler = args[4],
+    execId    = args[5],
+    idRequest = args[6],
+    username  = args[7],
+    password  = args[8],
+    url       = args[9],
+    type      = args[10],
+    data      = args[11],
+    evt       = args[12],
+    xPath     = args[13];
 
-if (username !== undefined && password !== undefined) {
-    page.customHeaders = {
-        'Authorization': 'Basic ' + btoa(username + ':' + password)
-    };
+if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+    var casper = require('casper').create();
 }
 
 /**
- * PhantomParser Class.
+ * CasperParser Class.
  *
- * @class PhantomParser
+ * @class CasperParser
  * @extends Parser
  */
-var PhantomParser = function (page) {
+var CasperParser = function (engine) {
     /**
      * The WebPage element.
      *
@@ -65,7 +62,7 @@ var PhantomParser = function (page) {
      * @type {Object}
      * @default {Object}
      */
-    this.page = page;
+    this.engine = engine;
 
     // TODO: Duplicated!
     /**
@@ -121,22 +118,21 @@ var PhantomParser = function (page) {
     var currentParser = this;
 
     /**
-     * Configure all the callbacks for PhantomJS.
+     * Configure all the callbacks for CasperJS.
      *
      * @method setUpPage
      * @return undefined
      */
     this.setUpPage = function () {
-        this.page.settings.resourceTimeout = config.parser.timeout;
-        this.page.onResourceTimeout        = this.onResourceTimeout;
-        this.page.onError                  = this.onError;
-        this.page.onInitialized            = this.onInitialized;
-        this.page.onResourceReceived       = this.onResourceReceived;
-        this.page.onAlert                  = this.onAlert;
-        this.page.onConfirm                = this.onConfirm;
-        this.page.onPrompt                 = this.onPrompt;
-        this.page.onConsoleMessage         = this.onConsoleMessage;
-        this.page.viewportSize             = { width: 1024, height: 800 };
+        currentParser.engine.resourceTimeout            = config.parser.timeout;
+        currentParser.engine.options.onTimeout          = currentParser.onResourceTimeout;
+        currentParser.engine.options.onError            = currentParser.onError;
+        currentParser.engine.options.onPageInitialized  = currentParser.onInitialized;
+        currentParser.engine.options.onResourceReceived = currentParser.onResourceReceived;
+        currentParser.engine.options.onAlert            = currentParser.onAlert;
+        currentParser.engine.on('page.confirm',   currentParser.onConfirm);
+        currentParser.engine.on('page.prompt',    currentParser.onPrompt);
+        currentParser.engine.on('remote.message', currentParser.onConsoleMessage);
     };
 
     /**
@@ -148,8 +144,8 @@ var PhantomParser = function (page) {
     this.parseGet = function () {
         this.setUpPage();
 
-        this.page.open(this.url + this.data, this.onOpen);
-        this.page.onLoadFinished = this.onLoadFinished;
+        this.engine.start(this.url + this.data, this.onOpen);
+        this.engine.run();
     };
 
     /**
@@ -161,8 +157,8 @@ var PhantomParser = function (page) {
     this.parsePost = function () {
         this.setUpPage();
 
-        this.page.open(this.url, 'post', this.data, this.onOpen);
-        this.page.onLoadFinished = this.onLoadFinished;
+        this.engine.start(this.url, 'post', this.data, this.onOpen);
+        this.engine.run();
     };
 
     /**
@@ -207,13 +203,21 @@ var PhantomParser = function (page) {
      * @param {String} status The page return status
      * @return undefined
      */
-    this.onOpen = function (status) {
+    this.onOpen = function () {
         currentParser.report.time.end = Date.now();
         currentParser.report.time.total = currentParser.report.time.end - currentParser.report.time.start;
 
-        if (status === 'success') {
-            currentParser.page.navigationLocked = true;
+        if (username !== undefined && password !== undefined) {
+            currentParser.engine.setHttpAuth(username, password);
         }
+
+        currentParser.engine.viewport(1024, 800);
+
+        //if (this.status(true) === 'success') {
+        //    this.page.navigationLocked = true;
+        //}
+
+        currentParser.onLoadFinished();
     };
 
     /**
@@ -223,8 +227,8 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.onResourceTimeout = function () {
-        if (args.join(' ').indexOf('casperjs') === -1) {
-            phantom.exit();
+        if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+            currentParser.engine.exit();
         }
 
         return true;
@@ -259,8 +263,8 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.onInitialized = function() {
-        currentParser.page.injectJs('../sha1.js');
-        currentParser.page.injectJs('../events.js');
+        this.engine.page.injectJs(fs.absolute('.') + '/src/sha1.js');
+        this.engine.page.injectJs(fs.absolute('.') + '/src/events.js');
     };
 
     /**
@@ -338,9 +342,9 @@ var PhantomParser = function (page) {
     this.onLoadFinished = function () {
         if (currentParser.event !== '' && currentParser.xPath !== '') {
             if (currentParser.xPath[0] !== '/') {
-                currentParser.page.evaluate(currentParser.fireEventObject, currentParser);
+                currentParser.engine.evaluate(currentParser.fireEventObject, currentParser);
             } else {
-                currentParser.page.evaluate(currentParser.fireEventDOM, currentParser);
+                currentParser.engine.evaluate(currentParser.fireEventDOM, currentParser);
             }
         }
 
@@ -356,18 +360,18 @@ var PhantomParser = function (page) {
     this.parsePage = function () {
         var url, links, response;
 
-        currentParser.report.content = currentParser.page.content;
+        currentParser.report.content = currentParser.engine.page.content;
 
-        url = currentParser.page.evaluate(function () {
+        url = currentParser.engine.evaluate(function () {
             return document.location.href;
         });
 
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
-        page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
+        currentParser.engine.capture(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
-        links = currentParser.page.evaluate(currentParser.onEvaluate, currentParser);
+        links = currentParser.engine.evaluate(currentParser.onEvaluate, {tags: currentParser.tags});
 
-        links.events = currentParser.page.evaluate(function () {
+        links.events = currentParser.engine.evaluate(function () {
             return window.eventContainer.getEvents();
         });
 
@@ -401,16 +405,19 @@ var PhantomParser = function (page) {
         };
 
         console.log('###' + JSON.stringify(response));
-        phantom.exit();
+        if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+            currentParser.engine.exit();
+        }
     };
 
     /**
      * Callback fired to evaluate the page content.
      *
      * @method onEvaluate
+     * @param {Object} currentParser The current parser instance
      * @return {Object} A list of links (anchors, links, scripts and forms).
      */
-    this.onEvaluate = function () {
+    this.onEvaluate = function (tags) {
         var urls = {
                 a:      [],
                 link:   [],
@@ -421,8 +428,8 @@ var PhantomParser = function (page) {
             currentUrl = document.location.href,
             attribute, tag;
 
-        for (tag in arguments[0].tags) {
-            attribute = arguments[0].tags[tag];
+        for (tag in tags) {
+            attribute = tags[tag];
             urls[tag] = [].map.call(document.querySelectorAll(tag), function(item) { return item.getAttribute(attribute); });
         }
 
@@ -452,9 +459,9 @@ var PhantomParser = function (page) {
     };
 };
 
-PhantomParser.prototype = new Parser();
+CasperParser.prototype = new Parser();
 if (args.join(' ').indexOf('casperjs --cli test') === -1) {
-    new PhantomParser(page).parse(url, type, data, evt, xPath);
+    new CasperParser(casper).parse(url, type, data, evt, xPath);
 } else {
-    module.exports = PhantomParser;
+    module.exports = CasperParser;
 }

@@ -1,7 +1,12 @@
 # SPIDEY
 
+[![Build Status](https://travis-ci.org/fabiocicerchia/spidey.png)](https://travis-ci.org/fabiocicerchia/spidey)
 [![Dependency Status](https://gemnasium.com/fabiocicerchia/spidey.png)](https://gemnasium.com/fabiocicerchia/spidey)
-[![NPM](https://nodei.co/npm/spidey.png?downloads=true)](https://nodei.co/npm/spidey/)
+[![Coverage Status](https://coveralls.io/repos/fabiocicerchia/spidey/badge.png)](https://coveralls.io/r/fabiocicerchia/spidey)
+
+[![NPM](https://nodei.co/npm/spidey.png?downloads=true&stars=true)](https://nodei.co/npm/spidey/)
+
+[![Spidey - Web Crawler in Node.js to spider dynamically whole websites.](http://jpillora.com/github-twitter-button/img/tweet.png)](https://twitter.com/intent/tweet?text=Spidey+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&url=https%3A%2F%2Fgithub.com%2Ffabiocicerchia%2Fspidey&hashtags=spidey&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton)
 
 Web Crawler in Node.js to spider dynamically whole websites.
 
@@ -30,7 +35,7 @@ Few suggestion about its usage:
 
 ## Features
 
- * Commander Line Interface
+ * Command Line Interface
  * Reorder query string params for get and post for uniqueness
  * HTTP authentication
  * Handle events bound with `addEventListener`, HTML attributes (`on*`)
@@ -50,27 +55,29 @@ Few suggestion about its usage:
 
 ## Dependencies
 
+Here the list of main dependencies:
+
  * [Node.js](http://nodejs.org/download/)
- * [PhantomJS](http://phantomjs.org/download.html)
+ * [PhantomJS](http://phantomjs.org/download.html) / [CasperJS](http://casperjs.org/)
  * [Redis](http://redis.io/download)
-
-## Configuration
-
-Change the file `src/config.js` accordingly to your needs.
 
 ## Installation
 
 You can install it directly from npm:
 
 ```
-[user@hostname /tmp/spidey]$ npm install spidey
+[user@hostname ~]$ npm install spidey -g
 ```
 
 or you can download the source code from GitHub and run these commands:
 
 ```
-[user@hostname /tmp/spidey]$ npm install
+[user@hostname ~/spidey]$ npm install
 ```
+
+## Configuration
+
+Change the file `src/config.js` accordingly to your needs.
 
 ## Usage
 
@@ -81,7 +88,7 @@ or you can download the source code from GitHub and run these commands:
 |_____|   __||__||_____||_____|___  |
       |__|                    |_____|
 
-SPIDEY v0.1.3
+SPIDEY v0.2.0
 
 Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
 
@@ -99,27 +106,21 @@ Options:
 ## Examples
 
 ```
-[user@hostname /tmp/spidey]$ ./bin/spidey --uri "http://www.google.com"
-[user@hostname /tmp/spidey]$ ./bin/spidey --uri "www.google.com"
-[user@hostname /tmp/spidey]$ ./bin/spidey --uri "/tmp/file.html"
-[user@hostname /tmp/spidey]$ ./bin/spidey --uri "file.html"
+[user@hostname ~]$ spidey --uri "http://www.google.com"
+[user@hostname ~]$ spidey --uri "www.google.com"
+[user@hostname ~]$ spidey --uri "/tmp/file.html"
+[user@hostname ~]$ spidey --uri "file.html"
 ```
 
-## BUGS
+## Tests
 
- * jQuery is working within PhantomJS only if the version <= 1.8.3.
- * Not processing $.on().
- * jQuery is not inserting any script at runtime.
+```
+[user@hostname ~/spidey]$ npm test
+```
 
-## TODO
+## Bugs
 
- * Tests with Mocha
- * Handle `confirm` calling it twice, returning `true` and `false`.
- * Handle `prompt` using a test case file.
- * Handle Uploads
- * Create test case files for GET querystring
- * Use async (https://github.com/caolan/async)
- * Use underscorejs (http://underscorejs.org/)
+For a list of bugs please go to the [GitHub Issue Page](https://github.com/fabiocicerchia/spidey/issues?labels=Bug&page=1&state=open).
 
 ## Licence
 

@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.3
+ * SPIDEY v0.2.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -28,10 +28,6 @@
  * SOFTWARE.
  */
 
-var fs   = require('fs');
-var glob = require('glob');
-require('path');
-
 /**
  * Test Module
  *
@@ -39,7 +35,7 @@ require('path');
  *
  * @module Test
  */
-module.exports = function Test() {
+var Test = function (fsWrapper, glob, mainDir) {
     /**
      * Test case directory.
      *
@@ -47,7 +43,7 @@ module.exports = function Test() {
      * @type {String}
      * @default "/../tests/cases/"
      */
-    this.TEST_CASE_DIRECTORY = '/../tests/cases/';
+    this.TEST_CASE_DIRECTORY = '/tests/cases/';
 
     /**
      * Current instance.
@@ -62,14 +58,20 @@ module.exports = function Test() {
      * Create test case file.
      *
      * @method create
-     * @param  {String} The name of the test case.
-     * @param  {String} The data of the test case.
+     * @param  {String}   name     The name of the test case.
+     * @param  {String}   data     The data of the test case.
+     * @param  {Function} callback The data of the test case.
      * @return undefined
      */
-    this.create = function (name, data) {
+    this.create = function (url, name, data, callback) {
         var content      = '',
-            testCaseFile = __dirname + this.TEST_CASE_DIRECTORY + name + '.tst',
+            testCaseFile = mainDir + this.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_') + '/' + name + '.tst',
             k;
+
+        if (url === '' || name === '' || Object.keys(data).length === 0) {
+            if (callback !== undefined) return callback();
+            return;
+        }
 
         for (k in data) {
             if (data.hasOwnProperty(k)) {
@@ -77,25 +79,40 @@ module.exports = function Test() {
             }
         }
 
-        fs.mkdir(__dirname + this.TEST_CASE_DIRECTORY, '0777', function () {
-            fs.writeFileSync(testCaseFile, content);
-        });
+        if (!fsWrapper.existsSync(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'))) {
+            fsWrapper.mkdirSync(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'), '0777');
+        }
+
+        fsWrapper.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
+        if (callback !== undefined) callback();
     };
 
     /**
      * Returns a list of test cases based on the URL.
      *
      * @method getCases
-     * @param  {String} The URL for the test cases.
+     * @param  {String} url The URL for the test cases.
      * @return {Object}
      */
     this.getCases = function (url) {
-        var cases = [],
-            files = glob.sync(__dirname + this.TEST_CASE_DIRECTORY + url + '*.tst');
+        if (url === '' || !fsWrapper.existsSync(mainDir + this.TEST_CASE_DIRECTORY + url)) {
+            return [];
+        }
 
-        files.forEach(function (filename) {
-            cases.push(currentTest.parseCase(filename));
-        });
+        var cases = [],
+            filename,
+            testCase,
+            files = glob.sync(mainDir + this.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_') + '/*.tst');
+
+        for (filename in files) {
+            if (files.hasOwnProperty(filename)) {
+                testCase = currentTest.parseCase(filename);
+
+                if (testCase !== {}) {
+                    cases.push(testCase);
+                }
+            }
+        }
 
         return cases;
     };
@@ -109,9 +126,13 @@ module.exports = function Test() {
      */
     this.parseCase = function (file) {
         var i, value, content, lines,
-            data = [];
+            data = {};
 
-        content = fs.readFileSync(file).toString();
+        if (!fsWrapper.existsSync(file)) {
+            return {};
+        }
+
+        content = fsWrapper.readFileSync(file).toString();
         lines   = content.split("\n");
 
         for (i in lines) {
@@ -124,3 +145,5 @@ module.exports = function Test() {
         return data;
     };
 };
+
+module.exports = Test;

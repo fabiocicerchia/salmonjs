@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.1.3
+ * SPIDEY v0.2.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -28,34 +28,12 @@
  * SOFTWARE.
  */
 
-var config    = require('./config'),
-    spawn     = require('child_process').spawn,
-    crypto    = require('crypto'),
-    Test      = require('../src/test'),
-    redis     = require("redis"),
-    client    = redis.createClient(config.redis.port, config.redis.hostname),
-    winston   = require('winston'),
-    fs        = require('fs'),
-    phantomjs = require('phantomjs');
-
-require('colors');
-require('path');
-
-/**
- * Redis error handler
- */
-client.on('error', function (err) {
-    winston.error('REDIS - %s'.red, err.toString());
-    // TODO: Is it really good to exit?
-    process.exit(1);
-});
-
 /**
  * Crawler Module
  *
  * @module Crawler
  */
-module.exports = function Crawler() {
+var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist) {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -166,9 +144,23 @@ module.exports = function Crawler() {
     this.processing = false;
 
     /**
-     * TBW
+     * Number of possible crawlers to be launched based on the number of links
+     * and events in the current page.
+     *
+     * @property possibleCrawlers
+     * @type {Integer}
+     * @default 0
      */
     this.possibleCrawlers = 0;
+
+    /**
+     * Crawler ID.
+     *
+     * @property idCrawler
+     * @type {String}
+     * @default ""
+     */
+    this.idCrawler = '';
 
     /**
      * Current instance.
@@ -177,12 +169,32 @@ module.exports = function Crawler() {
      * @type {Object}
      * @default this
      */
-    var currentCrawler = this,
-        sha1          = crypto.createHash('sha1'),
-        plainText     = JSON.stringify(this) + Date.now();
+    var currentCrawler = this;
 
-    this.idCrawler    = sha1.update(plainText).digest('hex').substr(0, 4);
-    console.log(('Started new crawler: ' + this.idCrawler).magenta);
+    if (typeof optimist !== 'undefined' && typeof winston !== 'undefined') {
+        if (optimist.argv.$0.indexOf('mocha') !== -1) {
+            try { winston.remove(winston.transports.Console); } catch (err) {}
+        }
+    }
+    /**
+     * Initialise the crawler.
+     *
+     * @method init
+     * @return undefined
+     */
+    this.init = function () {
+        /**
+         * Redis error handler
+         */
+        client.on('error', function (err) {
+            winston.error('REDIS - %s'.red, err.toString());
+            // TODO: Is it really good to exit?
+            process.exit(1);
+        });
+
+        this.idCrawler = process.pid.toString();
+        winston.info('Started new crawler: %s'.magenta, this.idCrawler);
+    };
 
     /**
      * Serialise an object as questring.
@@ -194,6 +206,10 @@ module.exports = function Crawler() {
     this.serialise = function (obj) {
         var str = [], p;
 
+        if (typeof obj !== 'object') {
+            return '';
+        }
+
         for (p in obj) {
             if (obj.hasOwnProperty(p)) {
                 str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
@@ -204,15 +220,24 @@ module.exports = function Crawler() {
     };
 
     /**
+     * Hash a string with SHA1.
+     *
+     * @method hashString
+     * @param {String} plainText The string to be converted to hash
+     * @return {String}
+     */
+    this.sha1 = function  (plainText) {
+        return crypto.createHash('sha1').update(plainText).digest('hex');
+    };
+
+    /**
      * Execute PhantomJS.
      *
      * @method execPhantomjs
      * @return undefined
      */
     this.execPhantomjs = function () {
-        sha1          = crypto.createHash('sha1'),
-        plainText     = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
-        var idRequest = sha1.update(plainText).digest('hex');
+        var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath);
 
         var phantom,
             params  = [
@@ -231,11 +256,48 @@ module.exports = function Crawler() {
             ];
 
         try {
-            phantom = spawn(phantomjs.path, params);
+            phantom = spawn(config.parser.cmd, params);
 
             phantom.stdout.on('data', this.onStdOut);
             phantom.stderr.on('data', this.onStdErr);
             phantom.on('exit', this.onExit);
+        } catch (err) {
+            winston.error(err.message.red);
+            this.handleError();
+        }
+    };
+
+    /**
+     * Execute CasperJS.
+     *
+     * @method execCasperjs
+     * @return undefined
+     */
+    this.execCasperjs = function () {
+        var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath);
+
+        var casper,
+            params  = [
+                //'--debug=true',
+                './src/parser/' + config.parser.interface + '.js',
+                this.idUri,
+                this.timeStart,
+                idRequest,
+                this.username,
+                this.password,
+                this.url,
+                this.type,
+                this.serialise(this.data),
+                this.evt,
+                this.xPath
+            ];
+
+        try {
+            casper = spawn(config.parser.cmd, params);
+
+            casper.stdout.on('data', this.onStdOut);
+            casper.stderr.on('data', this.onStdErr);
+            casper.on('exit', this.onExit);
         } catch (err) {
             winston.error(err.message.red);
             this.handleError();
@@ -255,29 +317,31 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.run = function (url, type, data, evt, xPath) {
-        this.url   = url.action || url;
+        this.url   = url;
         this.type  = type || 'GET';
         this.data  = data || {};
         this.evt   = evt || '';
         this.xPath = xPath || '';
 
-        sha1       = crypto.createHash('sha1');
-        plainText  = this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath;
-        this.idUri = sha1.update(plainText).digest('hex').substr(0, 8);
+        this.idUri = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath).substr(0, 8);
 
         var winstonCrawlerId = '[' + this.idUri.cyan + '-' + this.idCrawler.magenta + ']';
 
         winston.info(
             '%s Launching crawler to parse "%s" - %s on %s ...',
             winstonCrawlerId,
-            this.url.green,
+            ('' + this.url).green,
             (this.evt === '' ? 'N/A'.grey : this.evt.blue),
             (this.xPath === '' ? 'N/A'.grey : this.xPath.green)
         );
 
         if (config.parser.interface === 'phantom') {
-            this.execPhantomjs();
+            return this.execPhantomjs();
+        } else if (config.parser.interface === 'casper') {
+            return this.execCasperjs();
         }
+
+        return undefined;
     };
 
     /**
@@ -300,7 +364,6 @@ module.exports = function Crawler() {
             throw err;
         }
 
-        currentCrawler.possibleCrawlers--;
         // reply is null when the key is missing
         if (reply !== null) {
             winston.info(
@@ -311,29 +374,33 @@ module.exports = function Crawler() {
                 container.xPath
             );
 
+            currentCrawler.possibleCrawlers--;
             currentCrawler.checkRunningCrawlers('No items left to be processed');
             return;
         }
 
-        sha1      = crypto.createHash('sha1');
-        plainText = container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath;
-        newId     = sha1.update(plainText).digest('hex').substr(0, 8);
+        newId = currentCrawler.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath).substr(0, 8);
 
         winston.info(
-            '%s' + ' Match not found in Redis. Continue. Continue (%s)'.grey,
+            '%s' + ' Match not found in Redis. Continue (%s)'.grey,
             winstonCrawlerId,
             newId
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        crawler = new Crawler();
-        crawler.timeStart    = currentCrawler.timeStart;
-        crawler.username     = currentCrawler.username;
-        crawler.password     = currentCrawler.password;
-        crawler.storeDetails = currentCrawler.storeDetails;
-        crawler.run(container.url, container.type, container.container, container.evt, container.xPath);
+        var args = [
+            __dirname + '/worker.js',
+            currentCrawler.timeStart, currentCrawler.username, currentCrawler.password, currentCrawler.storeDetails,
+            container.url, container.type, JSON.stringify(container.container), container.evt, container.xPath
+        ];
 
-        currentCrawler.checkRunningCrawlers('No items left to be processed');
+        var childProcess = require('child_process').spawn('node', args, { detached: true });
+        childProcess.stdout.on('data', spawnStdout);
+        childProcess.stderr.on('data', spawnStderr);
+        childProcess.on('exit', function () {
+            currentCrawler.possibleCrawlers--;
+            currentCrawler.checkRunningCrawlers('No items left to be processed');
+        });
     };
 
     /**
@@ -359,10 +426,8 @@ module.exports = function Crawler() {
         container.evt   = evt || '';
         container.xPath = xPath || '';
 
-        sha1      = crypto.createHash('sha1');
-        plainText = container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath;
-        redisId   = sha1.update(plainText).digest('hex');
-        id        = redisId.substr(0, 8);
+        redisId = currentCrawler.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath);
+        id      = redisId.substr(0, 8);
 
         winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
         winston.info(
@@ -384,14 +449,22 @@ module.exports = function Crawler() {
      *
      * @method checkRunningCrawlers
      * @param {String} reason The reason to terminate the execution
-     * @return undefined
+     * @return boolean
      */
     this.checkRunningCrawlers = function (reason) {
         if (currentCrawler.possibleCrawlers === 0) {
             var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
-            process.exit();
+
+            if (optimist.argv.$0.indexOf('casperjs') === -1) {
+                // TODO: This is called at the wrong time.
+                process.exit();
+            }
+
+            return false;
         }
+
+        return true;
     };
 
     /**
@@ -460,6 +533,8 @@ module.exports = function Crawler() {
                 );
             }), config.crawler.delay);
         }
+
+        return currentCrawler.tries < config.crawler.attempts;
     };
 
     /**
@@ -473,12 +548,12 @@ module.exports = function Crawler() {
         var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
         winston.info(
-            '%s Execution terminated with status: %d',
+            '%s Execution terminated with status: %s',
             winstonCrawlerId,
-            code
+            code === null ? 'null' : code
         );
 
-        currentCrawler.processPage(currentCrawler.processOutput);
+        return currentCrawler.processPage(currentCrawler.processOutput);
     };
 
     /**
@@ -505,25 +580,11 @@ module.exports = function Crawler() {
      * @return undefined
      */
     this.storeDetailsToFile = function (report) {
-        sha1          = crypto.createHash('sha1'),
-        plainText     = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + currentCrawler.evt + currentCrawler.xPath;
+        var reportName    = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + currentCrawler.evt + currentCrawler.xPath);
 
-        var reportName    = sha1.update(plainText).digest('hex');
-        var reportContent = fs.readFileSync(__dirname + '/../src/tpl.html').toString();
-
-        reportContent = reportContent.replace('%%URI%%',        currentCrawler.url);
-        reportContent = reportContent.replace('%%IMGNAME%%',    reportName);
-        reportContent = reportContent.replace('%%ERRORS%%',     JSON.stringify(report.errors, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%ALERTS%%',     JSON.stringify(report.alerts, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%CONFIRMS%%',   JSON.stringify(report.confirms, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%CONSOLE%%',    JSON.stringify(report.console, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%RESOURCES%%',  JSON.stringify(report.resources, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%TIME%%',       JSON.stringify(report.time, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%CONTENT%%',    currentCrawler.htmlEscape(report.content));
-        reportContent = reportContent.replace('%%HTTPMETHOD%%', report.httpMethod);
-        reportContent = reportContent.replace('%%EVENT%%',      report.event);
-        reportContent = reportContent.replace('%%XPATH%%',      report.xPath);
-        reportContent = reportContent.replace('%%DATA%%',       JSON.stringify(report.data));
+        var Reporter = require('./reporter/report');
+        var reporter = new Reporter();
+        var reportContent = reporter.generateHTML(currentCrawler, reportName, report);
 
         var indexContent = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
         indexContent    += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
@@ -535,6 +596,45 @@ module.exports = function Crawler() {
             fs.writeFileSync(reportFile, reportContent);
             fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
         });
+    };
+
+    // TODO: Duplicated!
+    /**
+     * Normalise the data, ordering the array.
+     *
+     * @method normaliseData
+     * @param {String} data The data to be normalised.
+     * @return {Object}
+     */
+    this.normaliseData = function (data) {
+        var i, pair, vars, dataContainer = {},
+            keys = [],
+            sorted = {};
+
+        if (typeof data !== 'string') {
+            return {};
+        }
+
+        vars = data.replace(/.+\?/, '').split('&');
+
+        if (vars.length === 0 || vars[0] === '') {
+            return {};
+        }
+
+        for (i = 0; i < vars.length; i++) {
+            pair = vars[i].split('=');
+            keys.push(decodeURIComponent(pair[0]));
+            dataContainer[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+        keys = keys.sort();
+
+        for (i in keys) {
+            if (keys.hasOwnProperty(i)) {
+                sorted[keys[i]] = dataContainer[keys[i]];
+            }
+        }
+
+        return sorted;
     };
 
     /**
@@ -583,9 +683,7 @@ module.exports = function Crawler() {
                             if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
                                 currentCrawler.possibleCrawlers++;
 
-                                sha1      = crypto.createHash('sha1');
-                                plainText = currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element];
-                                newId     = sha1.update(plainText).digest('hex').substr(0, 8);
+                                newId = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element]).substr(0, 8);
 
                                 winston.info(
                                     '%s Firing %s on "%s" (%s)...',
@@ -604,48 +702,49 @@ module.exports = function Crawler() {
             //currentCrawler.checkAndRun(element, 'GET', data);
         }
 
-        currentCrawler.possibleCrawlers += links.anchors.length;
-        links.anchors.forEach(function (element) {
+        currentCrawler.possibleCrawlers += links.a.length;
+        links.a.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
 
-        currentCrawler.possibleCrawlers += links.links.length;
-        links.links.forEach(function (element) {
+        currentCrawler.possibleCrawlers += links.link.length;
+        links.link.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
 
-        currentCrawler.possibleCrawlers += links.scripts.length;
-        links.scripts.forEach(function (element) {
+        currentCrawler.possibleCrawlers += links.script.length;
+        links.script.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });
 
-        links.forms.forEach(function (element) {
+        links.form.forEach(function (element) {
             var id        = element.action.toString().replace(/[^a-zA-Z0-9_]/g, '_'),
-                test      = new Test(),
                 fieldData = {},
                 cases,
                 i,
                 j;
 
-            // TODO: Sort this fields?
             for (i in element.fields) {
                 if (element.fields.hasOwnProperty(i)) {
                     fieldData[element.fields[i]] = '';
                 }
             }
-            test.create(id + '-' + element.type, fieldData);
+
+            test.create(element.action, id + '-' + element.type, fieldData);
             //test.create(id + '-' + 'get', fieldData);
             //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
 
-            cases = test.getCases(id + '-' + element.type);
+            cases = test.getCases(element.action); // TODO: Possible duplicates
             currentCrawler.possibleCrawlers += cases.length;
             for (j in cases) {
                 if (cases.hasOwnProperty(j)) {
-                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), []);
-                    currentCrawler.checkAndRun(element, element.type.toUpperCase(), cases[j]);
+                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
+
+                    cases[j] = currentCrawler.normaliseData(cases[j]);
+                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]);
                 }
             }
 
@@ -664,7 +763,11 @@ module.exports = function Crawler() {
             */
         });
 
-        // TODO: Potential issue if the forEach above are async.
-        currentCrawler.checkRunningCrawlers('No links in the page');
+        return currentCrawler.checkRunningCrawlers('No links in the page');
     };
 };
+
+function spawnStdout(data) { data = data.toString(); console.log(data.substr(0, data.length - 1)); };
+function spawnStderr(data) { data = data.toString(); console.log(data.substr(0, data.length - 1).red); };
+
+module.exports = Crawler;
