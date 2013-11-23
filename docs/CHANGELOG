@@ -1,0 +1,168 @@
+CHANGELOG
+----------------------
+
+[2013-11-23]
+
+ * improved tests, minor changes to the code
+ * improvement on the coverage report and page report
+ * fixed viewport size and page content
+
+[2013-11-20]
+
+ * improved coverage generation
+ * improved tests for parsers (and relative source code)
+
+[2013-11-18]
+
+ * updated
+ * improved coverage report
+ * fixed parser to remove duplicate slashes
+ * fixed bug with external urls
+ * improved the crawler using workers
+
+[2013-11-16]
+
+ * temporary disabled the process.exit
+ * partial test for phantom
+ * changed location for coverage reports
+ * fixed broken parsers
+ * added missing dependency for crawler
+ * fixed broken json
+ * code coverage
+ * fixed code coverage for test.test.js
+ * improved tests adding cove coverage
+
+[2013-11-14]
+
+ * improved tests with casperjs + remove some todo
+
+[2013-11-13]
+
+ * removed some todo + added documentation
+
+[2013-11-12]
+
+ * improved casper & phantom parsers + more tests with casperjs + new classes to emulate fs & glob + minor changes
+
+[2013-11-11]
+
+ * partially working
+ * fixed interface name
+ * fixed cmd
+ * fixed wrong values
+ * added tests with CasperJS for DOM interaction + draft for parser with CasperJS (broken at the moment)
+ * improved url normalisation
+ * added IOC
+ * minor changes
+
+[2013-11-10]
+
+ * updated package.json
+ * fixed form processing
+
+[2013-11-09]
+
+ * fixed fallback value when undefined for event and xPath properties
+ * fixed wrong comparison value for indexOf
+ * minor change
+ * minor improvement to test structure
+
+[2013-11-06]
+
+ * removed winston log from mocha tests
+ * improved tests for crawler and parser
+
+[2013-11-04]
+
+ * improved (a bit) the tests
+ * Update .travis.yml
+ * added tests with mocha & chai
+
+[2013-11-03]
+
+ * add dependecy phantomjs to npm
+
+[2013-11-02]
+
+ * changed version to 0.1.1
+ * updated package.json
+ * minor changes
+
+[2013-11-01]
+
+ * fixed bugged behaviour which was keeping open the node.js process
+ * Checked if the attributes ('on*') attached at runtime are handled correctly
+ * removed duplicated element
+ * fixed the issue when the 'Crawler.onStdOut' is executed after 'Crawler.onExit'
+ * better redis error handling
+ * updated
+ * removed duplicated code
+ * fixed bug with or condition
+ * minor changes + improved documentation
+
+[2013-10-31]
+
+ * added index file for report
+ * added screenshot feature
+ * fixed name after rebranding
+
+[2013-10-30]
+
+ * rebrand
+ * updated
+ * group reports by execution time
+ * dos2unix
+ * added html template for reports
+ * added support for report generation
+ * fix to get the whole output string rather than get a partial one each time
+ * fixed problem with output
+ * minor improvements
+ * crated a separate file for the console
+ * updated
+ * updated
+ * added http authentication
+ * updated
+
+[2013-10-29]
+
+ * fixed existsSync using the right node.js version
+ * fixed tests
+ * changed tests
+ * fixed to retrieve also the events attached as attribute
+ * fixed param in tests
+
+[2013-10-28]
+
+ * updated
+ * added and fixed tests
+ * added help
+ * fixed bug with empty url
+ * fixed winston logging
+ * updated
+ * fixed winston logging
+ * fixed bug about querystring parsing
+ * linted the code
+ * added sorting querystring parameters
+
+[2013-10-27]
+
+ * fixed indentation
+ * fixed file path uri
+
+[2013-10-26]
+
+ * added identifier to log messages + fixed problem launching and parsing properly the url
+ * improved to parse url and file path
+ * retrieving events bound to elements & process them + fix signature hash
+ * added title (ascii art)
+ * updated
+ * added tests
+
+[2013-10-18]
+
+ * Converted project from PHP to Node.js
+
+[2013-10-11]
+
+ * first draft (needs to be refactored and tested)
+ * Initial commit

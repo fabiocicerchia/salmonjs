@@ -32,7 +32,7 @@
     "glob": "3.2.7"
   },
   "devDependencies": {
-      "visionmedia-jscoverage": "1.0.0"
+    "visionmedia-jscoverage": "1.0.0"
   },
   "analyze": false,
   "scripts": {
