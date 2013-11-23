@@ -35,7 +35,7 @@ test:
 coverage:
 	rm -rf src-cov 2> /dev/null
 	$(JSCOVERAGE) src src-cov
-	$(CASPERJS) test test/test.*.js test/*/test.*.js --post=test/coverage.js --coverage --concise
+	$(CASPERJS) test test/test.*.js test/*/test.*.js --post=src/reporter/coverage.js --coverage --concise
 	rm -rf src-cov
 
 .PHONY: test

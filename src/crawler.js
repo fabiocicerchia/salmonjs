@@ -581,21 +581,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      */
     this.storeDetailsToFile = function (report) {
         var reportName    = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + currentCrawler.evt + currentCrawler.xPath);
-        var reportContent = fs.readFileSync(__dirname + '/../src/tpl.html').toString();
 
-        reportContent = reportContent.replace('%%URI%%',        currentCrawler.url);
-        reportContent = reportContent.replace('%%IMGNAME%%',    reportName);
-        reportContent = reportContent.replace('%%ERRORS%%',     JSON.stringify(report.errors, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%ALERTS%%',     JSON.stringify(report.alerts, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%CONFIRMS%%',   JSON.stringify(report.confirms, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%CONSOLE%%',    JSON.stringify(report.console, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%RESOURCES%%',  JSON.stringify(report.resources, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%TIME%%',       JSON.stringify(report.time, null, 4).replace(/\n/g, '<br />'));
-        reportContent = reportContent.replace('%%CONTENT%%',    currentCrawler.htmlEscape(report.content));
-        reportContent = reportContent.replace('%%HTTPMETHOD%%', report.httpMethod);
-        reportContent = reportContent.replace('%%EVENT%%',      report.event);
-        reportContent = reportContent.replace('%%XPATH%%',      report.xPath);
-        reportContent = reportContent.replace('%%DATA%%',       JSON.stringify(report.data));
+        var Reporter = require('./reporter/report');
+        var reporter = new Reporter();
+        var reportContent = reporter.generateHTML(currentCrawler, reportName, report);
 
         var indexContent = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
         indexContent    += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
