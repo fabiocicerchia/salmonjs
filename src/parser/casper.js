@@ -214,10 +214,10 @@ var CasperParser = function (engine) {
         currentParser.engine.viewport(1024, 800);
 
         //if (this.status(true) === 'success') {
-        //    this.page.navigationLocked = true;
+        //    currentParser.engine.page.navigationLocked = true;
         //}
 
-        currentParser.onLoadFinished();
+        return currentParser.onLoadFinished();
     };
 
     /**

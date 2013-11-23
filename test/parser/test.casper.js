@@ -70,26 +70,17 @@ casper.test.begin('CasperParser', function(test, casper) {
     */
 
     // onOpen
-    /*
     var cloneCasper = require('casper').create();
     var casperObj = new CasperParser(cloneCasper);
     casperObj.engine.start('about:blank', function() {});
-    casperObj.onOpen('failure');
+    casperObj.onLoadFinished = function() { return 'OK'; }
+    test.assertEquals(casperObj.onOpen(), 'OK');
 
     test.assertType(casperObj.report.time.start, 'number');
     test.assertType(casperObj.report.time.end, 'number');
     test.assertType(casperObj.report.time.total, 'number');
-    test.assertType(casperObj.page.navigationLocked, 'boolean');
-    test.assertEquals(casperObj.page.navigationLocked, false);
-
-    casperObj.onOpen('success');
-
-    test.assertType(casperObj.report.time.start, 'number');
-    test.assertType(casperObj.report.time.end, 'number');
-    test.assertType(casperObj.report.time.total, 'number');
-    test.assertType(casperObj.page.navigationLocked, 'boolean');
-    test.assertEquals(casperObj.page.navigationLocked, true);
-    */
+    //test.assertType(casperObj.page.navigationLocked, 'boolean');
+    //test.assertEquals(casperObj.page.navigationLocked, false);
 
     // onResourceTimeout
     var cloneCasper = require('casper').create();

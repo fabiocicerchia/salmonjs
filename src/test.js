@@ -69,8 +69,7 @@ var Test = function (fsWrapper, glob, mainDir) {
             k;
 
         if (url === '' || name === '' || Object.keys(data).length === 0) {
-            if (callback !== undefined) return callback();
-            return;
+            return (callback !== undefined) ? callback() : undefined;
         }
 
         for (k in data) {
