@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -49,7 +49,7 @@ ioc.add('client',    client);
 ioc.add('winston',   winston);
 ioc.add('optimist',  require('optimist'));
 ioc.add('fs',        fs);
-ioc.add('glob',      require('glob'));
+ioc.add('glob',      require('./glob'));
 ioc.add('dirName',   __dirname);
 ioc.add('mainDir',   __dirname + '/..');
 ioc.add('fsWrapper', ioc.get(require('../src/fs')));
@@ -81,7 +81,7 @@ console.log('|__ --|  _  ||  ||  _  ||  -__|  |  |'.yellow);
 console.log('|_____|   __||__||_____||_____|___  |'.yellow);
 console.log('      |__|                    |_____|'.yellow);
 console.log('');
-console.log('SPIDEY v0.2.0'.grey);
+console.log('SPIDEY v0.2.1'.grey);
 console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
 console.log('');
 

@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -53,6 +53,7 @@ var reporter = function() {
         html += '    <body>\n';
         html += '        <div class="container">\n';
         html += '            <h1>' + currentCrawler.url + '</h1>\n';
+        html += '            <h2>ID: ' + reportName + '</h2>\n';
         html += '            <img src="./' + reportName + '.png" />\n';
         html += '\n';
         html += '            <h2>Request Information</h2>\n';
@@ -156,7 +157,7 @@ var reporter = function() {
         html += currentCrawler.htmlEscape(report.content);
         html += '</pre>\n';
         html += '        </div>\n';
-        html += '        <div class="footer">Generated using <a href="https://github.com/fabiocicerchia/spidey">Spidey</a> version 0.2.0</div>\n';
+        html += '        <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/spidey">Spidey</a> version 0.2.1</div>\n';
         html += '    </body>\n';
         html += '</html>\n';
 

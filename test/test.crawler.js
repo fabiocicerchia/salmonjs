@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -71,12 +71,19 @@ casper.test.begin('Crawler', function(test) {
     test.assertEquals(crawler.serialise(0), '', 'doesn\'t process an integer');
 
     // run
-    // runs
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
     config.parser.interface = 'phantom';
     crawler.execPhantomjs = function () { return 'OK' };
+    test.assertEquals(crawler.run('', '', '', '', ''), 'OK', 'runs');
 
-    test.assertEquals(crawler.run('', '', '', '', ''), 'OK');
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    config.parser.interface = 'casper';
+    crawler.execCasperjs = function () { return 'OK' };
+    test.assertEquals(crawler.run('', '', '', '', ''), 'OK', 'runs');
+
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+    config.parser.interface = 'fake';
+    test.assertEquals(crawler.run('', '', '', '', ''), undefined, 'doesn\'t run');
 
     // TODO: do it
     // analiseRedisResponse
@@ -119,7 +126,6 @@ casper.test.begin('Crawler', function(test) {
 
     // handleError
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
-
     crawler.tries = 10;
     test.assertEquals(crawler.handleError(), false, 'doesn\'t try to run another crawler if max attempts is reached');
 
@@ -419,6 +425,27 @@ casper.test.begin('Crawler', function(test) {
     test.assertEquals(crawler.processPage(content), 'OK', 'process a page with 2 links and 2 events');
     test.assertEquals(crawler.possibleCrawlers, 4, 'process a page with 2 links and 2 events');
 
+    // normaliseData
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?%C3%A0=1'), {'à': '1'}, 'encodes correctly');
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?a=%3D'), {a: '='}, 'encodes correctly');
+
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?a=1&a=2'), {a: '2'}, 'removes duplicates');
+
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?b=1&a=2'), {a: '2', b: '1'}, 'orders alphabetically');
+
+    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?'), {}, 'returns empty array when input is not array');
+    test.assertEquals(crawler.normaliseData([]), {}, 'returns empty array when input is not array');
+    test.assertEquals(crawler.normaliseData({}), {}, 'returns empty array when input is not array');
+    test.assertEquals(crawler.normaliseData(1), {}, 'returns empty array when input is not array');
+
     test.done();
 });
 
@@ -451,6 +478,7 @@ casper.test.begin('Crawler Async', function(test) {
     config.parser.interface = 'phantom';
     crawler.execPhantomjs();
 });
+*/
 
 casper.test.begin('Crawler Async #2', function(test) {
     var Crawler  = require(srcdir + '/crawler'),
@@ -472,4 +500,3 @@ casper.test.begin('Crawler Async #2', function(test) {
     crawler.tries = 0;
     test.assertEquals(crawler.handleError(), true);
 });
-*/

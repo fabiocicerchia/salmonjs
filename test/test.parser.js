@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -191,6 +191,9 @@ casper.test.begin('Parser', function(test) {
     test.assertEquals(parser.normaliseUrl('', 'http://www.example.com/'), 'http://www.example.com/', 'convert properly other URLs');
     test.assertEquals(parser.normaliseUrl('http://www.example.com/', 'http://www.example.com/'), 'http://www.example.com/', 'convert properly other URLs');
     test.assertEquals(parser.normaliseUrl('http://www.example2.com/', 'http://www.example.com/'), undefined, 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('http://www.example.com/directory/', 'http://www.example.com/'), 'http://www.example.com/directory/', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('//www.example.com/directory', 'http://www.example.com/'), 'http://www.example.com/directory', 'convert properly other URLs');
+    test.assertEquals(parser.normaliseUrl('//www.example.com/directory', 'https://www.example.com/'), 'https://www.example.com/directory', 'convert properly other URLs');
 
     test.done();
 });

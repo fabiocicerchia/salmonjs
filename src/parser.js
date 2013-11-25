@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -131,7 +131,7 @@ module.exports = function Parser() {
         // object.classid',
         // object.codebase',
         // q.cite',
-        script: 'href'
+        script: 'src'
         // HTML 5
         // audio: 'src',
         // button: 'formaction',

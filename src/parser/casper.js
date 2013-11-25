@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -64,50 +64,6 @@ var CasperParser = function (engine) {
      */
     this.engine = engine;
 
-    // TODO: Duplicated!
-    /**
-     * Mapping between HTML tag name and attributes that may contain URIs.
-     *
-     * @property tags
-     * @type {Object}
-     * @default {Object}
-     */
-    this.tags = {
-        // HTML 4
-        a: 'href',
-        area: 'href',
-        //applet: 'archive',
-        //applet: 'codebase',
-        base: 'href',
-        //blockquote: 'cite',
-        // frame.longdesc',
-        frame: 'src',
-        // iframe.longdesc',
-        iframe: 'src',
-        // img.longdesc',
-        img: 'src',
-        input: 'src', // Possible exception: only when type="image"
-        link: 'href',
-        // object.archive',
-        // object.classid',
-        // object.codebase',
-        // q.cite',
-        script: 'href'
-        // HTML 5
-        // audio: 'src',
-        // button: 'formaction',
-        // del: 'cite',
-        // embed: 'src',
-        // html: 'manifest',
-        // input: 'formaction',
-        // ins: 'cite',
-        // object: 'data',
-        // source: 'src',
-        // track: 'src',
-        // video: 'poster',
-        // video: 'src'
-    };
-
     /**
      * Current instance.
      *
@@ -133,6 +89,7 @@ var CasperParser = function (engine) {
         currentParser.engine.on('page.confirm',   currentParser.onConfirm);
         currentParser.engine.on('page.prompt',    currentParser.onPrompt);
         currentParser.engine.on('remote.message', currentParser.onConsoleMessage);
+        currentParser.engine.userAgent('Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)');
     };
 
     /**
@@ -214,10 +171,10 @@ var CasperParser = function (engine) {
         currentParser.engine.viewport(1024, 800);
 
         //if (this.status(true) === 'success') {
-        //    this.page.navigationLocked = true;
+        //    currentParser.engine.page.navigationLocked = true;
         //}
 
-        currentParser.onLoadFinished();
+        return currentParser.onLoadFinished();
     };
 
     /**
@@ -263,18 +220,19 @@ var CasperParser = function (engine) {
      * @return undefined
      */
     this.onInitialized = function() {
-        this.engine.page.injectJs(fs.absolute('.') + '/src/sha1.js');
-        this.engine.page.injectJs(fs.absolute('.') + '/src/events.js');
+        currentParser.engine.page.injectJs(fs.absolute('.') + '/src/sha1.js');
+        currentParser.engine.page.injectJs(fs.absolute('.') + '/src/events.js');
     };
 
     /**
      * Callback invoked when the a resource requested by the page is received.
      *
      * @method onResourceReceived
+     * @param {Object} casper   The CasperJS instance
      * @param {Object} response The response metadata object
      * @return undefined
      */
-    this.onResourceReceived = function(response) {
+    this.onResourceReceived = function(casper, response) {
         if (response.stage === 'end') {
             currentParser.report.resources[response.url] = {
                 headers: response.headers

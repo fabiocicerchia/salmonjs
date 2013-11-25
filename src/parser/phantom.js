@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -67,50 +67,6 @@ var PhantomParser = function (page) {
      */
     this.page = page;
 
-    // TODO: Duplicated!
-    /**
-     * Mapping between HTML tag name and attributes that may contain URIs.
-     *
-     * @property tags
-     * @type {Object}
-     * @default {Object}
-     */
-    this.tags = {
-        // HTML 4
-        a: 'href',
-        area: 'href',
-        //applet: 'archive',
-        //applet: 'codebase',
-        base: 'href',
-        //blockquote: 'cite',
-        // frame.longdesc',
-        frame: 'src',
-        // iframe.longdesc',
-        iframe: 'src',
-        // img.longdesc',
-        img: 'src',
-        input: 'src', // Possible exception: only when type="image"
-        link: 'href',
-        // object.archive',
-        // object.classid',
-        // object.codebase',
-        // q.cite',
-        script: 'href'
-        // HTML 5
-        // audio: 'src',
-        // button: 'formaction',
-        // del: 'cite',
-        // embed: 'src',
-        // html: 'manifest',
-        // input: 'formaction',
-        // ins: 'cite',
-        // object: 'data',
-        // source: 'src',
-        // track: 'src',
-        // video: 'poster',
-        // video: 'src'
-    };
-
     /**
      * Current instance.
      *
@@ -137,6 +93,7 @@ var PhantomParser = function (page) {
         this.page.onPrompt                 = this.onPrompt;
         this.page.onConsoleMessage         = this.onConsoleMessage;
         this.page.viewportSize             = { width: 1024, height: 800 };
+        this.page.settings.userAgent       = 'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)';
     };
 
     /**
@@ -365,7 +322,7 @@ var PhantomParser = function (page) {
         fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
         page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
 
-        links = currentParser.page.evaluate(currentParser.onEvaluate, currentParser);
+        links = currentParser.page.evaluate(currentParser.onEvaluate, currentParser.tags);
 
         links.events = currentParser.page.evaluate(function () {
             return window.eventContainer.getEvents();
@@ -421,8 +378,8 @@ var PhantomParser = function (page) {
             currentUrl = document.location.href,
             attribute, tag;
 
-        for (tag in arguments[0].tags) {
-            attribute = arguments[0].tags[tag];
+        for (tag in arguments[0]) {
+            attribute = arguments[0][tag];
             urls[tag] = [].map.call(document.querySelectorAll(tag), function(item) { return item.getAttribute(attribute); });
         }
 

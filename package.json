@@ -1,8 +1,9 @@
 {
   "name": "spidey",
   "preferGlobal": true,
-  "version": "0.2.0",
-  "author": "Fabio Cicerchia <info@fabiocicerchia.it>",
+  "version": "0.2.1",
+  "author": "Fabio Cicerchia <info@fabiocicerchia.it> (http://www.fabiocicerchia.it)",
+  "homepage": "http://fabiocicerchia.github.io/spidey",
   "description": "Web Crawler in Node.js to spider dynamically whole websites.",
   "contributors": [
     "Fabio Cicerchia <info@fabiocicerchia.it>"
@@ -28,11 +29,10 @@
     "path": "0.4.9",
     "colors": "0.6.2",
     "redis": "0.9.0",
-    "winston": "0.7",
-    "glob": "3.2.7"
+    "winston": "0.7"
   },
   "devDependencies": {
-      "visionmedia-jscoverage": "1.0.0"
+    "visionmedia-jscoverage": "1.0.0"
   },
   "analyze": false,
   "scripts": {

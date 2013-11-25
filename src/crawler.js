@@ -5,7 +5,7 @@
  * |_____|   __||__||_____||_____|___  |
  *       |__|                    |_____|
  *
- * SPIDEY v0.2.0
+ * SPIDEY v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -743,8 +743,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 if (cases.hasOwnProperty(j)) {
                     currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
 
-                    cases[j] = currentCrawler.normaliseData(cases[j]);
-                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]);
+                    cases[j]['POST'] = currentCrawler.normaliseData(cases[j]['POST']);
+                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]['POST']);
                 }
             }
 
