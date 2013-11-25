@@ -1,8 +1,23 @@
 CHANGELOG
 ----------------------
 
+[2013-11-25]
+
+ * improved report
+ * fixed issue with top parent node (that has no parentNode)
+ * increased redis version
+ * updated url
+ * fixed attribute name for script tag (thanks to Ben Ellis)
+ * added custom user agent value + removed duplicate property 'tags'
+ * removed useless file
+ * improved test case file to use section (e.g.: POST, GET, ...)
+ * removed glob as external dependency
+ * increased minor version
+
 [2013-11-23]
 
+ * added report id and comments in test cases
+ * minor changes
  * improved tests, minor changes to the code
  * improvement on the coverage report and page report
  * fixed viewport size and page content
