@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640" />
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>Spidey by fabiocicerchia</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/fabiocicerchia/spidey">View on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>Spidey</h1>
+            <h2>[WIP] Web Crawler in Node.js to spider dynamically whole websites.</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/fabiocicerchia/spidey/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/fabiocicerchia/spidey/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+
+      <span class="banner-fix"></span>
+
+
+      <section id="main_content">
+        <h1>
+<a name="spidey" class="anchor" href="#spidey"><span class="octicon octicon-link"></span></a>SPIDEY</h1>
+
+<p><a href="https://travis-ci.org/fabiocicerchia/spidey"><img src="https://travis-ci.org/fabiocicerchia/spidey.png" alt="Build Status"></a>
+<a href="https://gemnasium.com/fabiocicerchia/spidey"><img src="https://gemnasium.com/fabiocicerchia/spidey.png" alt="Dependency Status"></a>
+<a href="https://coveralls.io/r/fabiocicerchia/spidey"><img src="https://coveralls.io/repos/fabiocicerchia/spidey/badge.png" alt="Coverage Status"></a></p>
+
+<p><a href="https://nodei.co/npm/spidey/"><img src="https://nodei.co/npm/spidey.png?downloads=true&amp;stars=true" alt="NPM"></a></p>
+
+<p><a href="https://twitter.com/intent/tweet?text=Spidey+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&amp;url=https%3A%2F%2Fgithub.com%2Ffabiocicerchia%2Fspidey&amp;hashtags=spidey&amp;original_referer=http%3A%2F%2Fgithub.com%2F&amp;tw_p=tweetbutton"><img src="http://jpillora.com/github-twitter-button/img/tweet.png" alt="Spidey - Web Crawler in Node.js to spider dynamically whole websites."></a></p>
+
+<p>Web Crawler in Node.js to spider dynamically whole websites.</p>
+
+<p>It helps you to map / process entire websites, spidering them and parsing each
+page in a smart way. It follows all the links and test several times the form
+objects. In this way is possible to check effectively the whole website.</p>
+
+<p>Few suggestion about its usage:</p>
+
+<ul>
+<li>Improve the legacy code
+
+<ul>
+<li>Check the dead code (enabling the code coverage server-side)</li>
+<li>Discover 500 Internal Server Errors</li>
+<li>Discover notices and warnings</li>
+</ul>
+</li>
+<li>Testing
+
+<ul>
+<li>Process forms (it'll create easy test cases to be manually compiled)</li>
+<li>Process automatically JS events attached to DOM nodes</li>
+</ul>
+</li>
+<li>Scraping
+
+<ul>
+<li>Get the page content for each URL</li>
+<li>Get the screenshot for each URL</li>
+</ul>
+</li>
+<li>Enumeration
+
+<ul>
+<li>URLs list</li>
+<li>Execution times</li>
+<li>Page output</li>
+<li>Page load</li>
+</ul>
+</li>
+<li>...</li>
+</ul><h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Command Line Interface</li>
+<li>Reorder query string params for get and post for uniqueness</li>
+<li>HTTP authentication</li>
+<li>Handle events bound with <code>addEventListener</code>, HTML attributes (<code>on*</code>)</li>
+<li>Exclude external URIs in the crawling</li>
+<li>Process the page using PhantomJS</li>
+<li>Generate report for each page crawled
+
+<ul>
+<li>Screenshot</li>
+<li>HTTP header</li>
+<li>HTTP method</li>
+<li>Data sent</li>
+<li>Page output</li>
+<li>Execution time</li>
+<li>Console messages</li>
+<li>Alerts, Confirmations &amp; Prompts</li>
+<li>Errors</li>
+<li>List of requests</li>
+</ul>
+</li>
+</ul><h2>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+
+<p>Here the list of main dependencies:</p>
+
+<ul>
+<li><a href="http://nodejs.org/download/">Node.js</a></li>
+<li>
+<a href="http://phantomjs.org/download.html">PhantomJS</a> / <a href="http://casperjs.org/">CasperJS</a>
+</li>
+<li><a href="http://redis.io/download">Redis</a></li>
+</ul><h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>You can install it directly from npm:</p>
+
+<pre><code>[user@hostname ~]$ npm install spidey -g
+</code></pre>
+
+<p>or you can download the source code from GitHub and run these commands:</p>
+
+<pre><code>[user@hostname ~/spidey]$ npm install
+</code></pre>
+
+<h2>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>Change the file <code>src/config.js</code> accordingly to your needs.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<pre><code>              __     __
+.-----.-----.|__|.--|  |.-----.--.--.
+|__ --|  _  ||  ||  _  ||  -__|  |  |
+|_____|   __||__||_____||_____|___  |
+      |__|                    |_____|
+
+SPIDEY v0.2.0
+
+Copyright (C) 2013 Fabio Cicerchia &lt;info@fabiocicerchia.it&gt;
+
+Web Crawler in Node.js to spider dynamically whole websites.
+Usage: ./bin/spidey
+
+Options:
+  --uri              The URI to be crawled             [required]
+  -u, --username     Username for HTTP authentication
+  -p, --password     Password for HTTP authentication
+  -d, --details      Store details for each page       [default: false]
+  --help             Show the help
+</code></pre>
+
+<h2>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<pre><code>[user@hostname ~]$ spidey --uri "http://www.google.com"
+[user@hostname ~]$ spidey --uri "www.google.com"
+[user@hostname ~]$ spidey --uri "/tmp/file.html"
+[user@hostname ~]$ spidey --uri "file.html"
+</code></pre>
+
+<h2>
+<a name="tests" class="anchor" href="#tests"><span class="octicon octicon-link"></span></a>Tests</h2>
+
+<pre><code>[user@hostname ~/spidey]$ npm test
+</code></pre>
+
+<h2>
+<a name="bugs" class="anchor" href="#bugs"><span class="octicon octicon-link"></span></a>Bugs</h2>
+
+<p>For a list of bugs please go to the <a href="https://github.com/fabiocicerchia/spidey/issues?labels=Bug&amp;page=1&amp;state=open">GitHub Issue Page</a>.</p>
+
+<h2>
+<a name="licence" class="anchor" href="#licence"><span class="octicon octicon-link"></span></a>Licence</h2>
+
+<p>Copyright (C) 2013 Fabio Cicerchia <a href="mailto:info@fabiocicerchia.it">info@fabiocicerchia.it</a></p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/fabiocicerchia">fabiocicerchia</a> can be found on <a href="https://github.com/fabiocicerchia/spidey">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
