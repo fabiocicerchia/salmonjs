@@ -2,7 +2,8 @@
   "name": "spidey",
   "preferGlobal": true,
   "version": "0.2.1",
-  "author": "Fabio Cicerchia <info@fabiocicerchia.it>",
+  "author": "Fabio Cicerchia <info@fabiocicerchia.it> (http://www.fabiocicerchia.it)",
+  "homepage": "http://fabiocicerchia.github.io/spidey",
   "description": "Web Crawler in Node.js to spider dynamically whole websites.",
   "contributors": [
     "Fabio Cicerchia <info@fabiocicerchia.it>"

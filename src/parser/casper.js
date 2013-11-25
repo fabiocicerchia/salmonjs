@@ -89,7 +89,7 @@ var CasperParser = function (engine) {
         currentParser.engine.on('page.confirm',   currentParser.onConfirm);
         currentParser.engine.on('page.prompt',    currentParser.onPrompt);
         currentParser.engine.on('remote.message', currentParser.onConsoleMessage);
-        currentParser.engine.userAgent('Spidey/0.2.1 (+https://github.com/fabiocicerchia/spidey)');
+        currentParser.engine.userAgent('Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)');
     };
 
     /**

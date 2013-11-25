@@ -93,7 +93,7 @@ var PhantomParser = function (page) {
         this.page.onPrompt                 = this.onPrompt;
         this.page.onConsoleMessage         = this.onConsoleMessage;
         this.page.viewportSize             = { width: 1024, height: 800 };
-        this.page.settings.userAgent       = 'Spidey/0.2.1 (+https://github.com/fabiocicerchia/spidey)';
+        this.page.settings.userAgent       = 'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)';
     };
 
     /**

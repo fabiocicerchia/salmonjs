@@ -166,7 +166,7 @@ for (file in cov.files) {
 }
 html += '           </tbody>\n';
 html += '       </table>\n';
-html += '       <div class="footer">Generated using <a href="https://github.com/fabiocicerchia/spidey">Spidey</a> version 0.2.0</div>\n';
+html += '       <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/spidey">Spidey</a> version 0.2.1</div>\n';
 html += '   </body>\n';
 html += '</html>';
 

@@ -6,7 +6,7 @@
 
 [![NPM](https://nodei.co/npm/spidey.png?downloads=true&stars=true)](https://nodei.co/npm/spidey/)
 
-[![Spidey - Web Crawler in Node.js to spider dynamically whole websites.](http://jpillora.com/github-twitter-button/img/tweet.png)](https://twitter.com/intent/tweet?text=Spidey+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&url=https%3A%2F%2Fgithub.com%2Ffabiocicerchia%2Fspidey&hashtags=spidey&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton)
+[![Spidey - Web Crawler in Node.js to spider dynamically whole websites.](http://jpillora.com/github-twitter-button/img/tweet.png)](https://twitter.com/intent/tweet?text=Spidey+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&url=https%3A%2F%2Ffabiocicerchia.github.io%2Fspidey&hashtags=spidey&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton)
 
 Web Crawler in Node.js to spider dynamically whole websites.
 
