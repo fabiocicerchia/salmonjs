@@ -74,13 +74,15 @@ var EventContainer = function () {
      */
     this.getXPath = function (element) {
         var xpath = '',
-            nodeList,
+            nodeList = [],
             id;
 
         for (; element && element.nodeType == 1; element = element.parentNode) {
-            nodeList = Array.prototype.slice.call(
-                element.parentNode.getElementsByTagName(element.tagName)
-            );
+            if (element.parentNode) {
+                nodeList = Array.prototype.slice.call(
+                    element.parentNode.getElementsByTagName(element.tagName)
+                );
+            }
 
             id = nodeList.indexOf(element) + 1;
             id = id > 1 ? ('[' + id + ']') : '';
