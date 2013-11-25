@@ -68,7 +68,7 @@ var reporter = function() {
         html += '            <ul>\n';
         html += '                <li><strong>Start:</strong> ' + new Date(report.time.start).toUTCString() + '</li>\n';
         html += '                <li><strong>End:</strong> ' + new Date(report.time.end).toUTCString() + '</li>\n';
-        html += '                <li><strong>Total:</strong> ' + report.time.total + '</li>\n';
+        html += '                <li><strong>Total:</strong> ' + (report.time.total / 1000).toFixed(2) + ' seconds</li>\n';
         html += '            </ul>\n';
         html += '\n';
         html += '            <h2>Errors</h2>\n';
@@ -98,6 +98,7 @@ var reporter = function() {
         html += '            </ul>\n';
         html += '\n';
         html += '            <h2>Confirms</h2>\n';
+        html += '            <ul>\n';
         if (report.confirms.length > 0) {
             for (var i in report.confirms) {
                 html += '                <li>\n';
@@ -109,7 +110,8 @@ var reporter = function() {
         }
         html += '            </ul>\n';
         html += '\n';
-        html += '            <h2>Prompts</h2>\n'
+        html += '            <h2>Prompts</h2>\n';
+        html += '            <ul>\n';
         if (report.prompts.length > 0) {
             for (var i in report.prompts) {
                 html += '                <li>\n';
