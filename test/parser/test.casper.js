@@ -104,7 +104,7 @@ casper.test.begin('CasperParser', function(test, casper) {
     // onResourceReceived
     var cloneCasper = require('casper').create();
     var casperObj = new CasperParser(cloneCasper);
-    casperObj.onResourceReceived({stage: 'end', url: 'about:blank', headers: []});
+    casperObj.onResourceReceived({}, {stage: 'end', url: 'about:blank', headers: []});
     test.assertEquals(casperObj.report.resources, { 'about:blank': { headers: [] } });
 
     // onAlert
