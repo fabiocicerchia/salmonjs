@@ -131,7 +131,7 @@ module.exports = function Parser() {
         // object.classid',
         // object.codebase',
         // q.cite',
-        script: 'href'
+        script: 'src'
         // HTML 5
         // audio: 'src',
         // button: 'formaction',
