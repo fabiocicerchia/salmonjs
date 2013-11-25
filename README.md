@@ -88,7 +88,7 @@ Change the file `src/config.js` accordingly to your needs.
 |_____|   __||__||_____||_____|___  |
       |__|                    |_____|
 
-SPIDEY v0.2.0
+SPIDEY v0.2.1
 
 Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
 
