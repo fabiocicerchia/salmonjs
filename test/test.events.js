@@ -233,6 +233,9 @@ casper.test.begin("Test #11", function (test) {
 // TEST #12 --------------------------------------------------------------------
 casper.test.begin("Test #12", function (test) {
     casper.start(basePath + 'test_12.html', function () {
+        // TODO: Is this related to onNavigationRequest? Why it's needed to lock the navigation?
+        this.page.navigationLocked = true;
+
         test.assertEvalEquals(
             function () {
                 return JSON.stringify(window.eventContainer.getEvents());
@@ -250,6 +253,8 @@ casper.test.begin("Test #12", function (test) {
 // TEST #13 --------------------------------------------------------------------
 casper.test.begin("Test #13", function (test) {
     casper.start(basePath + 'test_13.html', function () {
+        this.page.navigationLocked = false;
+
         test.assertEvalEquals(
             function () {
                 return JSON.stringify(window.eventContainer.getEvents());
