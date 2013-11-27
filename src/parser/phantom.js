@@ -28,22 +28,26 @@
  * SOFTWARE.
  */
 
-var Parser    = require('../parser'),
-    config    = require('../config'),
-    fs        = require('fs'),
-    system    = require('system'),
-    args      = system.args,
-    idCrawler = args[1],
-    execId    = args[2],
-    idRequest = args[3],
-    username  = args[4],
-    password  = args[5],
-    url       = args[6],
-    type      = args[7],
-    data      = args[8],
-    evt       = args[9],
-    xPath     = args[10],
-    page      = require('webpage').create();
+var Parser          = require('../parser'),
+    config          = require('../config'),
+    fs              = require('fs'),
+    system          = require('system'),
+    args            = system.args,
+    testing         = args.join(' ').indexOf('casperjs --cli test'),
+    input           = !testing ? JSON.parse(args[1]) : [],
+    idCrawler       = input[0],
+    execId          = input[1],
+    idRequest       = input[2],
+    username        = input[3],
+    password        = input[4],
+    url             = input[5],
+    type            = input[6],
+    data            = input[7],
+    evt             = input[8],
+    xPath           = input[9],
+    storeDetails    = input[10],
+    followRedirects = input[11],
+    page            = require('webpage').create();
 
 if (username !== undefined && password !== undefined) {
     page.customHeaders = {
@@ -92,6 +96,7 @@ var PhantomParser = function (page) {
         this.page.onConfirm                = this.onConfirm;
         this.page.onPrompt                 = this.onPrompt;
         this.page.onConsoleMessage         = this.onConsoleMessage;
+        this.page.onNavigationRequested    = this.onNavigationRequested;
         this.page.viewportSize             = { width: 1024, height: 800 };
         this.page.settings.userAgent       = 'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)';
     };
@@ -120,6 +125,31 @@ var PhantomParser = function (page) {
 
         this.page.open(this.url, 'post', this.data, this.onOpen);
         this.page.onLoadFinished = this.onLoadFinished;
+    };
+
+    /**
+     * Handle the request to change the current URL.
+     *
+     * @method onNavigationRequested
+     * @param {String}  url          The target URL of this navigation event
+     * @param {String}  type         Type of navigation: 'Undefined', 'LinkClicked', 'FormSubmitted', 'BackOrForward', 'Reload', 'FormResubmitted', 'Other'
+     * @param {Boolean} willNavigate Flag to determine whether the navigation will happen
+     * @param {Boolean} main         Flag to determine whether this event comes from the main frame
+     * @return undefined
+     */
+    this.onNavigationRequested = function (url, type, willNavigate, main) {
+        if (!followRedirects && url !== currentParser.url) {
+            var response = {
+                idCrawler: idCrawler, // TODO: It might be empty
+                links:     {},
+                report:    currentParser.report
+            };
+
+            console.log('###' + JSON.stringify(response));
+            if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+                phantom.exit(); // TODO: This will crash PhantomJS
+            }
+        }
     };
 
     /**
@@ -344,6 +374,10 @@ var PhantomParser = function (page) {
             return currentParser.normaliseUrl(item, url);
         }).filter(currentParser.onlyUnique);
 
+        links.meta = [].map.call(links.meta, function (item) {
+            return currentParser.normaliseUrl(item, url);
+        }).filter(currentParser.onlyUnique);
+
         links.form = [].map.call(links.form, function (item) {
             item.action = item.action || url;
             item.action = currentParser.normaliseUrl(item.action, url);
@@ -356,7 +390,7 @@ var PhantomParser = function (page) {
         }).filter(currentParser.onlyUnique);
 
         response = {
-            idCrawler: idCrawler,
+            idCrawler: idCrawler, // TODO: It might be empty
             links:     links,
             report:    currentParser.report
         };
@@ -376,6 +410,7 @@ var PhantomParser = function (page) {
                 a:      [],
                 link:   [],
                 script: [],
+                meta:   [],
                 form:   [],
                 events: []
             },
@@ -390,6 +425,14 @@ var PhantomParser = function (page) {
                 urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) { return item.getAttribute(attribute); });
             }
         }
+
+        urls.meta = [].map.call(document.querySelectorAll('meta'), function (item) {
+           if (item.getAttribute('http-equiv') === 'refresh') {
+               return item.getAttribute('content').split(/=/, 2)[1];
+           }
+
+           return undefined;
+        });
 
         urls.form = [].map.call(document.querySelectorAll('form'), function (item) {
             var input, select, textarea;

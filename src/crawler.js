@@ -107,6 +107,15 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.storeDetails = false;
 
     /**
+     * Flag to decide whether follow redirects.
+     *
+     * @property followRedirects
+     * @type {Boolean}
+     * @default false
+     */
+    this.followRedirects = false;
+
+    /**
      * The report directory.
      *
      * @property REPORT_DIRECTORY
@@ -241,8 +250,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
             phantom,
             params  = [
-                //'--debug=true',
-                './src/parser/' + config.parser.interface + '.js',
                 this.idUri,
                 this.timeStart,
                 idRequest,
@@ -252,11 +259,17 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 this.type,
                 this.serialise(this.data),
                 this.evt,
-                this.xPath
+                this.xPath,
+                this.storeDetails,
+                this.followRedirects
             ];
 
         try {
-            phantom = spawn(config.parser.cmd, params);
+            phantom = spawn(config.parser.cmd, [
+                //'--debug=true',
+                './src/parser/' + config.parser.interface + '.js',
+                JSON.stringify(params)
+            ]);
 
             phantom.stdout.on('data', this.onStdOut);
             phantom.stderr.on('data', this.onStdErr);
@@ -277,8 +290,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
             casper,
             params  = [
-                //'--debug=true',
-                './src/parser/' + config.parser.interface + '.js',
                 this.idUri,
                 this.timeStart,
                 idRequest,
@@ -288,11 +299,17 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 this.type,
                 this.serialise(this.data),
                 this.evt,
-                this.xPath
+                this.xPath,
+                this.storeDetails,
+                this.followRedirects
             ];
 
         try {
-            casper = spawn(config.parser.cmd, params);
+            casper = spawn(config.parser.cmd,  [
+                //'--debug=true',
+                './src/parser/' + config.parser.interface + '.js',
+                JSON.stringify(params)
+            ]);
 
             casper.stdout.on('data', this.onStdOut);
             casper.stderr.on('data', this.onStdErr);
@@ -390,7 +407,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         args = [
             __dirname + '/worker.js',
-            currentCrawler.timeStart, currentCrawler.username, currentCrawler.password, currentCrawler.storeDetails,
+            currentCrawler.timeStart, currentCrawler.username, currentCrawler.password, currentCrawler.storeDetails, currentCrawler.followRedirects,
             container.url, container.type, JSON.stringify(container.container), container.evt, container.xPath
         ];
 
@@ -718,6 +735,12 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         currentCrawler.possibleCrawlers += links.script.length;
         links.script.forEach(function (element) {
+            currentCrawler.checkAndRun(element, 'GET');
+            //currentCrawler.checkAndRun(element, 'GET', data);
+        });
+
+        currentCrawler.possibleCrawlers += links.meta.length;
+        links.meta.forEach(function (element) {
             currentCrawler.checkAndRun(element, 'GET');
             //currentCrawler.checkAndRun(element, 'GET', data);
         });

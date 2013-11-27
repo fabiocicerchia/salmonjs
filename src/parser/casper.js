@@ -28,23 +28,27 @@
  * SOFTWARE.
  */
 
-var Parser    = require('../parser'),
-    config    = require('../config'),
-    fs        = require('fs'),
-    system    = require('system'),
-    args      = system.args,
-    idCrawler = args[4],
-    execId    = args[5],
-    idRequest = args[6],
-    username  = args[7],
-    password  = args[8],
-    url       = args[9],
-    type      = args[10],
-    data      = args[11],
-    evt       = args[12],
-    xPath     = args[13];
+var Parser          = require('../parser'),
+    config          = require('../config'),
+    fs              = require('fs'),
+    system          = require('system'),
+    args            = system.args,
+    testing         = args.join(' ').indexOf('casperjs --cli test'),
+    input           = !testing ? JSON.parse(args[4]) : [],
+    idCrawler       = input[0],
+    execId          = input[1],
+    idRequest       = input[2],
+    username        = input[3],
+    password        = input[4],
+    url             = input[5],
+    type            = input[6],
+    data            = input[7],
+    evt             = input[8],
+    xPath           = input[9],
+    storeDetails    = input[10],
+    followRedirects = input[11];
 
-if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+if (testing === -1) {
     var casper = require('casper').create();
 }
 
@@ -86,9 +90,10 @@ var CasperParser = function (engine) {
         currentParser.engine.options.onPageInitialized  = currentParser.onInitialized;
         currentParser.engine.options.onResourceReceived = currentParser.onResourceReceived;
         currentParser.engine.options.onAlert            = currentParser.onAlert;
-        currentParser.engine.on('page.confirm',   currentParser.onConfirm);
-        currentParser.engine.on('page.prompt',    currentParser.onPrompt);
-        currentParser.engine.on('remote.message', currentParser.onConsoleMessage);
+        currentParser.engine.on('page.confirm',          currentParser.onConfirm);
+        currentParser.engine.on('page.prompt',           currentParser.onPrompt);
+        currentParser.engine.on('remote.message',        currentParser.onConsoleMessage);
+        currentParser.engine.on('navigation.requested',  currentParser.onNavigationRequested);
         currentParser.engine.userAgent('Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)');
     };
 
@@ -116,6 +121,31 @@ var CasperParser = function (engine) {
 
         this.engine.start(this.url, 'post', this.data, this.onOpen);
         this.engine.run();
+    };
+
+    /**
+     * Handle the request to change the current URL.
+     *
+     * @method onNavigationRequested
+     * @param {String}  url              The target URL of this navigation event
+     * @param {String}  navigationType   Type of navigation: 'Undefined', 'LinkClicked', 'FormSubmitted', 'BackOrForward', 'Reload', 'FormResubmitted', 'Other'
+     * @param {Boolean} navigationLocked Flag to determine whether the navigation will happen
+     * @param {Boolean} isMainFrame      Flag to determine whether this event comes from the main frame
+     * @return undefined
+     */
+    this.onNavigationRequested = function (url, navigationType, navigationLocked, isMainFrame) {
+        if (!followRedirects && url !== currentParser.url) {
+            var response = {
+                idCrawler: idCrawler, // TODO: It might be empty
+                links:     {},
+                report:    currentParser.report
+            };
+
+            console.log('###' + JSON.stringify(response));
+            if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+                currentParser.engine.exit();
+            }
+        }
     };
 
     /**
@@ -349,6 +379,10 @@ var CasperParser = function (engine) {
             return currentParser.normaliseUrl(item, url);
         }).filter(currentParser.onlyUnique);
 
+        links.meta = [].map.call(links.meta, function (item) {
+            return currentParser.normaliseUrl(item, url);
+        }).filter(currentParser.onlyUnique);
+
         links.form = [].map.call(links.form, function (item) {
             item.action = item.action || url;
             item.action = currentParser.normaliseUrl(item.action, url);
@@ -397,6 +431,14 @@ var CasperParser = function (engine) {
                 urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) { return item.getAttribute(attribute); });
             }
         }
+
+        urls.meta = [].map.call(document.querySelectorAll('meta'), function (item) {
+           if (item.getAttribute('http-equiv') === 'refresh') {
+               return item.getAttribute('content').split(/=/, 2)[1];
+           }
+
+           return undefined;
+        });
 
         urls.form = [].map.call(document.querySelectorAll('form'), function (item) {
             var input, select, textarea;

@@ -57,9 +57,11 @@ casper.test.begin('CasperParser', function (test, casper) {
     test.assertEquals(casperObj.engine.options.onPageInitialized,  casperObj.onInitialized, 'it has been set up properly');
     test.assertEquals(casperObj.engine.options.onResourceReceived, casperObj.onResourceReceived, 'it has been set up properly');
     test.assertEquals(casperObj.engine.options.onAlert,            casperObj.onAlert, 'it has been set up properly');
-    //currentParser.engine.on('page.confirm',   currentParser.onConfirm);
-    //currentParser.engine.on('page.prompt',    currentParser.onPrompt);
-    //currentParser.engine.on('remote.message', currentParser.onConsoleMessage);
+    //currentParser.engine.on('page.confirm',         currentParser.onConfirm);
+    //currentParser.engine.on('page.prompt',          currentParser.onPrompt);
+    //currentParser.engine.on('remote.message',       currentParser.onConsoleMessage);
+    //currentParser.engine.on('navigation.requested', currentParser.onNavigationRequested);
+    //test.assertEquals(casperObj.engine.page.settings.userAgent,    'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)', 'it has been set up properly');
 
     /*
     // fireEventObject
@@ -83,6 +85,7 @@ casper.test.begin('CasperParser', function (test, casper) {
     test.assertType(casperObj.report.time.total, 'number');
     //test.assertType(casperObj.page.navigationLocked, 'boolean');
     //test.assertEquals(casperObj.page.navigationLocked, false);
+    //test.assertType(casperObj.viewportSize, {width: 1024, height: 800});
 
     // onResourceTimeout
     cloneCasper = require('casper').create();

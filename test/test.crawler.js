@@ -181,6 +181,7 @@ casper.test.begin('Crawler', function (test) {
             a:      [],
             link:   [],
             script: [],
+            meta:   [],
             form:   [],
             events: []
         },
@@ -214,6 +215,7 @@ casper.test.begin('Crawler', function (test) {
             a:      ['#'],
             link:   [],
             script: [],
+            meta:   [],
             form:   [],
             events: []
         },
@@ -247,6 +249,7 @@ casper.test.begin('Crawler', function (test) {
             a:      ['#', '/'],
             link:   [],
             script: [],
+            meta:   [],
             form:   [],
             events: []
         },
@@ -280,6 +283,7 @@ casper.test.begin('Crawler', function (test) {
             a:      [],
             link:   [],
             script: [],
+            meta:   [],
             form:   [],
             events: {
                 click: {
@@ -319,6 +323,7 @@ casper.test.begin('Crawler', function (test) {
             a:      [],
             link:   [],
             script: [],
+            meta:   [],
             form:   [],
             events: {
                 click: {
@@ -359,6 +364,7 @@ casper.test.begin('Crawler', function (test) {
             a:      ['#'],
             link:   [],
             script: [],
+            meta:   [],
             form:   [],
             events: {
                 click: {
@@ -398,6 +404,7 @@ casper.test.begin('Crawler', function (test) {
             a:      ['#', '/'],
             link:   [],
             script: [],
+            meta:   [],
             form:   [],
             events: {
                 click: {

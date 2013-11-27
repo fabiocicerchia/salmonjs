@@ -365,3 +365,20 @@ casper.test.begin("Test #19", function (test) {
         test.done();
     });
 });
+
+// TEST #20 --------------------------------------------------------------------
+casper.test.begin("Test #20", function (test) {
+    casper.start(basePath + 'test_20.html', function () {
+        test.assertEvalEquals(
+            function () {
+                return JSON.stringify(window.eventContainer.getEvents());
+            },
+            '{}',
+            'it should returns 0 events'
+        );
+    });
+
+    casper.run(function () {
+        test.done();
+    });
+});

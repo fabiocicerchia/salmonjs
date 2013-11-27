@@ -62,6 +62,9 @@ casper.test.begin('PhantomParser', function (test) {
     test.assertEquals(phantom.page.onConfirm,                phantom.onConfirm, 'it has been set up properly');
     test.assertEquals(phantom.page.onPrompt,                 phantom.onPrompt, 'it has been set up properly');
     test.assertEquals(phantom.page.onConsoleMessage,         phantom.onConsoleMessage, 'it has been set up properly');
+    test.assertEquals(phantom.page.onNavigationRequested,    phantom.onNavigationRequested, 'it has been set up properly');
+    test.assertEquals(phantom.page.viewportSize,             { width: 1024, height: 800 }, 'it has been set up properly');
+    test.assertEquals(phantom.page.settings.userAgent,      'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)', 'it has been set up properly');
 
     /*
     // fireEventObject

@@ -91,14 +91,18 @@ argv = require('optimist')
     .alias('u', 'username')
     .alias('p', 'password')
     .alias('d', 'details')
+    .alias('f', 'follow')
     .describe('uri', 'The URI to be crawled')
     .describe('u', 'Username for HTTP authentication')
     .describe('p', 'Password for HTTP authentication')
     .describe('d', 'Store details for each page')
+    .describe('f', 'Follows redirects')
     .describe('help', 'Show the help')
     .string('uri')
     .boolean('d')
+    .boolean('f')
     .default('d', false)
+    .default('f', false)
     .argv;
 
 function spawnStdout(data) {
@@ -131,7 +135,7 @@ if (argv.help !== undefined || argv.uri === undefined) {
 
     var args = [
         __dirname + '/worker.js',
-        Date.now(), argv.username, argv.password, argv.details,
+        Date.now(), argv.username, argv.password, argv.details, argv.follow,
         uri, 'GET'
     ];
 
