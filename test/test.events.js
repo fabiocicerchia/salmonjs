@@ -37,10 +37,16 @@ var casper   = casper || {},
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/sha1.js');
     casper.page.injectJs(srcdir + '/events.js');
+
+    casper.page.navigationLocked = true;
 };
 
 casper.on('remote.message', function (msg) {
     console.log('CONSOLE.LOG: ' + msg);
+});
+
+casper.on('run.complete', function () {
+    casper.page.navigationLocked = false;
 });
 
 // TEST #01 --------------------------------------------------------------------
@@ -233,8 +239,6 @@ casper.test.begin("Test #11", function (test) {
 // TEST #12 --------------------------------------------------------------------
 casper.test.begin("Test #12", function (test) {
     casper.start(basePath + 'test_12.html', function () {
-        // TODO: Is this related to onNavigationRequest? Why it's needed to lock the navigation?
-        this.page.navigationLocked = true;
 
         test.assertEvalEquals(
             function () {
@@ -253,8 +257,6 @@ casper.test.begin("Test #12", function (test) {
 // TEST #13 --------------------------------------------------------------------
 casper.test.begin("Test #13", function (test) {
     casper.start(basePath + 'test_13.html', function () {
-        this.page.navigationLocked = false;
-
         test.assertEvalEquals(
             function () {
                 return JSON.stringify(window.eventContainer.getEvents());
