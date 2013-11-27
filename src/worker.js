@@ -33,16 +33,17 @@ require('colors');
 var Crawler = require('./crawler');
 
 if (process.argv.join(' ').indexOf('worker.js') !== -1) {
-    var args         = process.argv,
-        timeStart    = args[2],
-        username     = args[3],
-        password     = args[4],
-        storeDetails = args[5],
-        url          = args[6],
-        type         = args[7],
-        container    = args[8],
-        evt          = args[9],
-        xPath        = args[10];
+    var args            = process.argv,
+        timeStart       = args[2],
+        username        = args[3],
+        password        = args[4],
+        storeDetails    = args[5],
+        followRedirects = args[6],
+        url             = args[7],
+        type            = args[8],
+        container       = args[9],
+        evt             = args[10],
+        xPath           = args[11];
 
     var config    = require('../src/config'),
         Crawler   = require('../src/crawler'),
@@ -71,10 +72,11 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
 
     var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
     crawler.init();
-    crawler.timeStart    = timeStart;
-    crawler.username     = username;
-    crawler.password     = password;
-    crawler.storeDetails = storeDetails;
+    crawler.timeStart       = timeStart;
+    crawler.username        = username;
+    crawler.password        = password;
+    crawler.storeDetails    = storeDetails;
+    crawler.followRedirects = followRedirects;
     var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
     crawler.run(url, type, data, evt, xPath);
 }
