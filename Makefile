@@ -32,6 +32,9 @@ GIT=git
 CASPERJS=./casperjs/bin/casperjs
 JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
 
+install-casper:
+	$(GIT) clone git://github.com/n1k0/casperjs.git
+
 test:
 	$(CASPERJS) test test/test.*.js test/*/test.*.js
 

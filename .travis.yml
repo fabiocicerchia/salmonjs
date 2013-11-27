@@ -9,4 +9,5 @@ branches:
     - master
 
 script:
+  - make install-casper
   - npm test
