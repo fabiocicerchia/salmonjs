@@ -28,7 +28,6 @@
  * SOFTWARE.
  */
 
-
 var casper   = casper || {},
     fs       = require('fs'),
     srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
@@ -42,12 +41,10 @@ casper.on('remote.message', function (msg) {
 casper.test.begin('CasperParser', function (test, casper) {
     var CasperParser = require(srcdir + '/parser/casper'),
         config       = require(srcdir + '/config'),
-        cloneCasper,
         casperObj;
 
     // setUpPage
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
 
     casperObj.setUpPage();
 
@@ -74,8 +71,7 @@ casper.test.begin('CasperParser', function (test, casper) {
     */
 
     // onOpen
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     casperObj.engine.start('about:blank', function () {});
     casperObj.onLoadFinished = function () { return 'OK'; };
     test.assertEquals(casperObj.onOpen(), 'OK');
@@ -88,13 +84,11 @@ casper.test.begin('CasperParser', function (test, casper) {
     //test.assertType(casperObj.viewportSize, {width: 1024, height: 800});
 
     // onResourceTimeout
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     test.assertEquals(casperObj.onResourceTimeout(), true);
 
     // onError
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     casperObj.onError('error1');
     test.assertEquals(casperObj.report.errors, ['ERROR: error1']);
 
@@ -107,35 +101,30 @@ casper.test.begin('CasperParser', function (test, casper) {
     test.assertEquals(casperObj.report.errors, ['ERROR: error3\nTRACE:\n -> file: 1 (in function "test")']);
 
     // onResourceReceived
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     casperObj.onResourceReceived({}, {stage: 'end', url: 'about:blank', headers: []});
     test.assertEquals(casperObj.report.resources, { 'about:blank': { headers: [] } });
 
     // onAlert
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     casperObj.onAlert('message');
     test.assertType(casperObj.report.alerts, 'array');
     test.assertEquals(casperObj.report.alerts, ['message']);
 
     // onConfirm
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     test.assertEquals(casperObj.onConfirm('message'), true);
     test.assertType(casperObj.report.confirms, 'array');
     test.assertEquals(casperObj.report.confirms, ['message']);
 
     // onPrompt
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     test.assertEquals(casperObj.onPrompt('message', ''), '');
     test.assertType(casperObj.report.prompts, 'array');
     test.assertEquals(casperObj.report.prompts, [{msg: 'message', defaultVal: ''}]);
 
     // onConsoleMessage
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     casperObj.onConsoleMessage('message', 1, '');
     test.assertType(casperObj.report.console, 'array');
     test.assertEquals(casperObj.report.console, [{msg: 'message', lineNum: 1, sourceId: ''}]);
@@ -157,14 +146,13 @@ casper.test.begin('CasperParser', function (test, casper) {
     test.done();
 });
 
-casper.test.begin('CasperParser Async', function (test) {
+casper.test.begin('CasperParser Async', function (test, casper) {
     var CasperParser = require(srcdir + '/parser/casper'),
         cloneCasper,
         casperObj;
 
     // parseGet
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     casperObj.setUpPage = function () {};
     casperObj.engine.start = function () {};
     casperObj.engine.run = function () {
@@ -175,14 +163,13 @@ casper.test.begin('CasperParser Async', function (test) {
     test.assertEquals(casperObj.parseGet(), undefined);
 });
 
-casper.test.begin('CasperParser Async #2', function (test) {
+casper.test.begin('CasperParser Async #2', function (test, casper) {
     var CasperParser = require(srcdir + '/parser/casper'),
         cloneCasper,
         casperObj;
 
     // parsePost
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     casperObj.setUpPage = function () {};
     casperObj.engine.start = function () {};
     casperObj.engine.run = function () {
@@ -194,15 +181,14 @@ casper.test.begin('CasperParser Async #2', function (test) {
 });
 
 /*
-casper.test.begin('CasperParser Async #3', function (test) {
+casper.test.begin('CasperParser Async #3', function (test, casper) {
     var CasperParser = require(srcdir + '/parser/casper'),
         config        = require(srcdir + '/config'),
         cloneCasper,
         casperObj;
 
     // onInitialized
-    cloneCasper = require('casper').create();
-    casperObj = new CasperParser(cloneCasper);
+    casperObj = new CasperParser(casper);
     casperObj.page.injectJs = function() {
         test.done();
     };
