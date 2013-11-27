@@ -4,8 +4,9 @@ node_js:
   - "0.10"
 
 branches:
-  - develop
-  - master
+  only:
+    - develop
+    - master
 
 script:
   - npm test
