@@ -693,100 +693,102 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             currentCrawler.storeDetailsToFile(result.report);
         }
 
-        // TODO: Optimise this code
-        for (event in links.events) {
-            if (links.events.hasOwnProperty(event)) {
-                for (signature in links.events[event]) {
-                    if (links.events[event].hasOwnProperty(signature)) {
-                        for (element in links.events[event][signature]) {
-                            if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
-                                currentCrawler.possibleCrawlers++;
+        if (Object.keys(links).length !== 0) {
+            // TODO: Optimise this code
+            for (event in links.events) {
+                if (links.events.hasOwnProperty(event)) {
+                    for (signature in links.events[event]) {
+                        if (links.events[event].hasOwnProperty(signature)) {
+                            for (element in links.events[event][signature]) {
+                                if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
+                                    currentCrawler.possibleCrawlers++;
 
-                                newId = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element]).substr(0, 8);
+                                    newId = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element]).substr(0, 8);
 
-                                winston.info(
-                                    '%s Firing %s on "%s" (%s)...',
-                                    winstonCrawlerId,
-                                    event.toUpperCase().blue,
-                                    links.events[event][signature][element].green,
-                                    newId.cyan
-                                );
-                                currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
+                                    winston.info(
+                                        '%s Firing %s on "%s" (%s)...',
+                                        winstonCrawlerId,
+                                        event.toUpperCase().blue,
+                                        links.events[event][signature][element].green,
+                                        newId.cyan
+                                    );
+                                    currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
+                                }
                             }
                         }
                     }
                 }
+                //currentCrawler.checkAndRun(element, 'GET');
+                //currentCrawler.checkAndRun(element, 'GET', data);
             }
-            //currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
+
+            currentCrawler.possibleCrawlers += links.a.length;
+            links.a.forEach(function (element) {
+                currentCrawler.checkAndRun(element, 'GET');
+                //currentCrawler.checkAndRun(element, 'GET', data);
+            });
+
+            currentCrawler.possibleCrawlers += links.link.length;
+            links.link.forEach(function (element) {
+                currentCrawler.checkAndRun(element, 'GET');
+                //currentCrawler.checkAndRun(element, 'GET', data);
+            });
+
+            currentCrawler.possibleCrawlers += links.script.length;
+            links.script.forEach(function (element) {
+                currentCrawler.checkAndRun(element, 'GET');
+                //currentCrawler.checkAndRun(element, 'GET', data);
+            });
+
+            currentCrawler.possibleCrawlers += links.meta.length;
+            links.meta.forEach(function (element) {
+                currentCrawler.checkAndRun(element, 'GET');
+                //currentCrawler.checkAndRun(element, 'GET', data);
+            });
+
+            links.form.forEach(function (element) {
+                var id        = element.action.toString().replace(/[^a-zA-Z0-9_]/g, '_'),
+                    fieldData = {},
+                    cases,
+                    i,
+                    j;
+
+                for (i in element.fields) {
+                    if (element.fields.hasOwnProperty(i)) {
+                        fieldData[element.fields[i]] = '';
+                    }
+                }
+
+                test.create(element.action, id + '-' + element.type, fieldData);
+                //test.create(id + '-' + 'get', fieldData);
+                //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
+
+                cases = test.getCases(element.action); // TODO: Possible duplicates
+                currentCrawler.possibleCrawlers += cases.length;
+                for (j in cases) {
+                    if (cases.hasOwnProperty(j)) {
+                        currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
+
+                        cases[j].POST = currentCrawler.normaliseData(cases[j].POST);
+                        currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j].POST);
+                    }
+                }
+
+                /*
+                var cases = test.getCases(id + '-get');
+                for (var j in cases) {
+                  currentCrawler.checkAndRun(element, 'GET', []);
+                  currentCrawler.checkAndRun(element, 'GET', cases[j]);
+                }
+
+                cases = test.getCases(id + '-post');
+                for (j in cases) {
+                  currentCrawler.checkAndRun(element, 'POST', []);
+                  currentCrawler.checkAndRun(element, 'POST', cases[j]);
+                }
+                */
+            });
         }
-
-        currentCrawler.possibleCrawlers += links.a.length;
-        links.a.forEach(function (element) {
-            currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
-        });
-
-        currentCrawler.possibleCrawlers += links.link.length;
-        links.link.forEach(function (element) {
-            currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
-        });
-
-        currentCrawler.possibleCrawlers += links.script.length;
-        links.script.forEach(function (element) {
-            currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
-        });
-
-        currentCrawler.possibleCrawlers += links.meta.length;
-        links.meta.forEach(function (element) {
-            currentCrawler.checkAndRun(element, 'GET');
-            //currentCrawler.checkAndRun(element, 'GET', data);
-        });
-
-        links.form.forEach(function (element) {
-            var id        = element.action.toString().replace(/[^a-zA-Z0-9_]/g, '_'),
-                fieldData = {},
-                cases,
-                i,
-                j;
-
-            for (i in element.fields) {
-                if (element.fields.hasOwnProperty(i)) {
-                    fieldData[element.fields[i]] = '';
-                }
-            }
-
-            test.create(element.action, id + '-' + element.type, fieldData);
-            //test.create(id + '-' + 'get', fieldData);
-            //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
-
-            cases = test.getCases(element.action); // TODO: Possible duplicates
-            currentCrawler.possibleCrawlers += cases.length;
-            for (j in cases) {
-                if (cases.hasOwnProperty(j)) {
-                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
-
-                    cases[j].POST = currentCrawler.normaliseData(cases[j].POST);
-                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j].POST);
-                }
-            }
-
-            /*
-            var cases = test.getCases(id + '-get');
-            for (var j in cases) {
-              currentCrawler.checkAndRun(element, 'GET', []);
-              currentCrawler.checkAndRun(element, 'GET', cases[j]);
-            }
-
-            cases = test.getCases(id + '-post');
-            for (j in cases) {
-              currentCrawler.checkAndRun(element, 'POST', []);
-              currentCrawler.checkAndRun(element, 'POST', cases[j]);
-            }
-            */
-        });
 
         return currentCrawler.checkRunningCrawlers('No links in the page');
     };
