@@ -350,49 +350,53 @@ var CasperParser = function (engine) {
      * @return undefined
      */
     this.parsePage = function () {
-        var url, links, response;
+        var url, links = {}, response;
 
         currentParser.report.content = currentParser.engine.page.content;
 
-        url = currentParser.engine.evaluate(function () {
-            return document.location.href;
-        });
+        if (currentParser.report.content.indexOf('<html') !== -1) {
+            url = currentParser.engine.evaluate(function () {
+                return document.location.href;
+            });
 
-        fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
-        currentParser.engine.capture(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
-
-        links = currentParser.engine.evaluate(currentParser.onEvaluate, {tags: currentParser.tags});
-
-        links.events = currentParser.engine.evaluate(function () {
-            return window.eventContainer.getEvents();
-        });
-
-        links.a = [].map.call(links.a, function (item) {
-            return currentParser.normaliseUrl(item, url);
-        }).filter(currentParser.onlyUnique);
-
-        links.link = [].map.call(links.link, function (item) {
-            return currentParser.normaliseUrl(item, url);
-        }).filter(currentParser.onlyUnique);
-
-        links.script = [].map.call(links.script, function (item) {
-            return currentParser.normaliseUrl(item, url);
-        }).filter(currentParser.onlyUnique);
-
-        links.meta = [].map.call(links.meta, function (item) {
-            return currentParser.normaliseUrl(item, url);
-        }).filter(currentParser.onlyUnique);
-
-        links.form = [].map.call(links.form, function (item) {
-            item.action = item.action || url;
-            item.action = currentParser.normaliseUrl(item.action, url);
-
-            if (item.action === undefined) {
-                return undefined;
+            if (storeDetails) {
+                fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
+                currentParser.engine.capture(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
             }
 
-            return item;
-        }).filter(currentParser.onlyUnique);
+            links = currentParser.engine.evaluate(currentParser.onEvaluate, {tags: currentParser.tags});
+
+            links.events = currentParser.engine.evaluate(function () {
+                return window.eventContainer.getEvents();
+            });
+
+            links.a = [].map.call(links.a, function (item) {
+                return currentParser.normaliseUrl(item, url);
+            }).filter(currentParser.onlyUnique);
+
+            links.link = [].map.call(links.link, function (item) {
+                return currentParser.normaliseUrl(item, url);
+            }).filter(currentParser.onlyUnique);
+
+            links.script = [].map.call(links.script, function (item) {
+                return currentParser.normaliseUrl(item, url);
+            }).filter(currentParser.onlyUnique);
+
+            links.meta = [].map.call(links.meta, function (item) {
+                return currentParser.normaliseUrl(item, url);
+            }).filter(currentParser.onlyUnique);
+
+            links.form = [].map.call(links.form, function (item) {
+                item.action = item.action || url;
+                item.action = currentParser.normaliseUrl(item.action, url);
+
+                if (item.action === undefined) {
+                    return undefined;
+                }
+
+                return item;
+            }).filter(currentParser.onlyUnique);
+        }
 
         response = {
             idCrawler: idCrawler,
