@@ -549,6 +549,26 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     currentCrawler.xPath
                 );
             }), config.crawler.delay);
+        } else {
+            var report = {
+                errors:     [],
+                alerts:     [],
+                confirms:   [],
+                prompts:    [],
+                console:    [],
+                failure:    true,
+                resources:  {},
+                time:       { start: 0, end: 0, total: 0 },
+                content:    '',
+                httpMethod: currentCrawler.type,
+                event:      currentCrawler.evt,
+                xPath:      currentCrawler.xPath,
+                data:       currentCrawler.data
+            };
+
+            if (currentCrawler.storeDetails) {
+                currentCrawler.storeDetailsToFile(report);
+            }
         }
 
         return currentCrawler.tries < config.crawler.attempts;

@@ -30,13 +30,14 @@
 
 var reporter = function () {
     this.generateHTML = function (currentCrawler, reportName, report) {
-        var i, j, html = '<!DOCTYPE html>\n';
+        var i, j, failed, html = '<!DOCTYPE html>\n';
 
         html += '<html lang="en">\n';
         html += '    <head>\n';
         html += '        <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>\n';
         html += '        <style>\n';
         html += '            body { margin: 0; padding: 18px 10px; font: 12px Verdana, sans-serif; }\n';
+        html += '            body.failed { background-color: #FCC; }\n';
         html += '            pre { border: 1px solid #888; padding: 1em !important; background-color: #F7F7F9; }\n';
         html += '            .container { width: 80%; margin: 0 auto; }\n';
         html += '            .container img { text-align: center; }\n';
@@ -51,9 +52,15 @@ var reporter = function () {
         html += '            .footer a { text-decoration: underline; }\n';
         html += '        </style>\n';
         html += '    </head>\n';
-        html += '    <body>\n';
+        if (report.failure) {
+            failed = ' (FAILED)';
+            html += '    <body class="failed">\n';
+        } else {
+            failed = '';
+            html += '    <body>\n';
+        }
         html += '        <div class="container">\n';
-        html += '            <h1>' + currentCrawler.url + '</h1>\n';
+        html += '            <h1>' + currentCrawler.url + failed + '</h1>\n';
         html += '            <h2>ID: ' + reportName + '</h2>\n';
         html += '            <img src="./' + reportName + '.png" />\n';
         html += '\n';
