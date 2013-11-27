@@ -75,6 +75,6 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
     crawler.username     = username;
     crawler.password     = password;
     crawler.storeDetails = storeDetails;
-    var data = ((typeof container !== 'undefined' && container !== 'undefined') ? JSON.parse(container) : undefined);
+    var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
     crawler.run(url, type, data, evt, xPath);
 }

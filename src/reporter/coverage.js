@@ -28,17 +28,19 @@
  * SOFTWARE.
  */
 
-function repeat(s, n){
+function repeat(s, n) {
     var a = [];
-    while(a.length < n){
+    while (a.length < n) {
         a.push(s);
     }
     return a.join('');
 }
 
 function count_not_undefined(arr) {
-    var count = 0;
-    for (var i = 0; i < arr.length; i++) {
+    var i = 0,
+        count = 0;
+
+    for (i = 0; i < arr.length; i++) {
         if (arr[i] !== undefined) {
             count++;
         }
@@ -50,20 +52,33 @@ console.log('Generating code coverage...');
 var jscov = global._$jscoverage || {},
     cov = {lines: 0, executed: 0, percentage: 0, files: []},
     fs = require('fs'),
-    file, id, line, status, len, color;
+    file,
+    id,
+    line,
+    status,
+    len,
+    color;
 
 for (file in jscov) {
-    cov.files[file] = {lines: 0, executed: 0, percentage: 0, source: {}};
-    for (id in jscov[file].source) {
-        line = jscov[file].source[id];
-        status = jscov[file][parseInt(id) + 1] === undefined ? '-' : jscov[file][parseInt(id) + 1];
-        if (status > 0) cov.files[file].executed++;
-        cov.files[file].source[id] = { status: status, line: line };
+    if (jscov.hasOwnProperty(file)) {
+        cov.files[file] = {lines: 0, executed: 0, percentage: 0, source: {}};
+
+        for (id in jscov[file].source) {
+            if (jscov[file].source.hasOwnProperty(id)) {
+                line = jscov[file].source[id];
+                status = jscov[file][parseInt(id) + 1] === undefined ? '-' : jscov[file][parseInt(id) + 1];
+                if (status > 0) {
+                    cov.files[file].executed++;
+                }
+                cov.files[file].source[id] = { status: status, line: line };
+            }
+        }
+
+        cov.files[file].lines = count_not_undefined(jscov[file]);
+        cov.files[file].percentage = 100 / cov.files[file].lines * cov.files[file].executed;
+        cov.lines += cov.files[file].lines;
+        cov.executed += cov.files[file].executed;
     }
-    cov.files[file].lines = count_not_undefined(jscov[file]);
-    cov.files[file].percentage = 100 / cov.files[file].lines * cov.files[file].executed;
-    cov.lines += cov.files[file].lines;
-    cov.executed += cov.files[file].executed;
 }
 cov.percentage = 100 / cov.lines * cov.executed;
 
@@ -130,39 +145,42 @@ html += '               </tr>\n';
 html += '           </thead>\n';
 html += '           <tbody>\n';
 for (file in cov.files) {
-    if (cov.files[file].percentage > 75) {
-        color = 'green';
-    } else if (cov.files[file].percentage > 50) {
-        color = 'orange';
-    } else if (cov.files[file].percentage > 25) {
-        color = 'red';
-    } else {
-        color = 'grey';
-    }
-
-    html += '           <tr onclick="toggle(\'' + file.replace(/[^0-9a-zA-Z]/g, '_') + '\');">\n';
-    html += '               <td>' + file + '</td><td class="statements">' + cov.files[file].lines + '</td><td class="executed">' + cov.files[file].executed + '</td><td class="coverage">' + cov.files[file].percentage.toFixed(2) + '%</td>\n';
-    html += '               <td class="percentage-container"><div class="percentage"><span style="width: ' + cov.files[file].percentage.toFixed(2) + '%; background-color: ' + color + ';"></span></div></td>\n';
-    html += '           </tr>\n';
-    html += '           <tr>\n';
-    html += '               <td id="' + file.replace(/[^0-9a-zA-Z]/g, '_') + '" style="display: none;" colspan="5">\n';
-    html += '                   <pre>\n';
-    for (line in cov.files[file].source) {
-        len = Object.keys(cov.files[file].source).length.toString().length;
-        html += '                   <span class="lineno" title="' + cov.files[file].source[line].status + ' times">' + (repeat('0', len) + line).slice(-len) + '</span> ';
-        if (cov.files[file].source[line].status === '-') {
-            html += '<span class="line grey">';
-        } else if (cov.files[file].source[line].status.toString() === '0') {
-            html += '<span class="line red">';
+    if (cov.files.hasOwnProperty(file)) {
+        if (cov.files[file].percentage > 75) {
+            color = 'green';
+        } else if (cov.files[file].percentage > 50) {
+            color = 'orange';
+        } else if (cov.files[file].percentage > 25) {
+            color = 'red';
         } else {
-            html += '<span class="line green">';
+            color = 'grey';
         }
-        html += cov.files[file].source[line].line;
-        html += '</span>\n';
+
+        html += '           <tr onclick="toggle(\'' + file.replace(/[^0-9a-zA-Z]/g, '_') + '\');">\n';
+        html += '               <td>' + file + '</td><td class="statements">' + cov.files[file].lines + '</td><td class="executed">' + cov.files[file].executed + '</td><td class="coverage">' + cov.files[file].percentage.toFixed(2) + '%</td>\n';
+        html += '               <td class="percentage-container"><div class="percentage"><span style="width: ' + cov.files[file].percentage.toFixed(2) + '%; background-color: ' + color + ';"></span></div></td>\n';
+        html += '           </tr>\n';
+        html += '           <tr>\n';
+        html += '               <td id="' + file.replace(/[^0-9a-zA-Z]/g, '_') + '" style="display: none;" colspan="5">\n';
+        html += '                   <pre>\n';
+
+        for (line in cov.files[file].source) {
+            len = Object.keys(cov.files[file].source).length.toString().length;
+            html += '                   <span class="lineno" title="' + cov.files[file].source[line].status + ' times">' + (repeat('0', len) + line).slice(-len) + '</span> ';
+            if (cov.files[file].source[line].status === '-') {
+                html += '<span class="line grey">';
+            } else if (cov.files[file].source[line].status.toString() === '0') {
+                html += '<span class="line red">';
+            } else {
+                html += '<span class="line green">';
+            }
+            html += cov.files[file].source[line].line;
+            html += '</span>\n';
+        }
+        html += '                   </pre>\n';
+        html += '               </td>\n';
+        html += '           </tr>\n';
     }
-    html += '                   </pre>\n';
-    html += '               </td>\n';
-    html += '           </tr>\n';
 }
 html += '           </tbody>\n';
 html += '       </table>\n';

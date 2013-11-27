@@ -51,7 +51,7 @@ var IOC = function () {
      * @param {String} obj       The dependency object
      * @return undefined
      */
-    this.add = function(qualifier, obj){
+    this.add = function (qualifier, obj) {
         this.dependencies[qualifier] = obj;
     };
 
@@ -62,9 +62,10 @@ var IOC = function () {
      * @param {Function} func The function to instantiate
      * @return {Object}
      */
-    this.get = function(func) {
-        var obj = new func;
-        var dependencies = this.resolveDependencies(func);
+    this.get = function (func) {
+        var obj          = new func(),
+            dependencies = this.resolveDependencies(func);
+
         func.apply(obj, dependencies);
 
         return obj;
@@ -77,10 +78,12 @@ var IOC = function () {
      * @param {Function} func The function to resolve
      * @return {Array}
      */
-    this.resolveDependencies = function(func) {
-        var args = this.getArguments(func);
-        var dependencies = [];
-        for ( var i = 0; i < args.length; i++) {
+    this.resolveDependencies = function (func) {
+        var args         = this.getArguments(func),
+            dependencies = [],
+            i;
+
+        for (i = 0; i < args.length; i++) {
             dependencies.push(this.dependencies[args[i]]);
         }
 
@@ -94,10 +97,10 @@ var IOC = function () {
      * @param {Function} func The function to inspect
      * @return {Array}
      */
-    this.getArguments = function(func) {
+    this.getArguments = function (func) {
         // This regex is from require.js
-        var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
-        var args = func.toString().match(FN_ARGS)[1].split(/\s*,\s*/);
+        var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
+            args    = func.toString().match(FN_ARGS)[1].split(/\s*,\s*/);
 
         return args;
     };

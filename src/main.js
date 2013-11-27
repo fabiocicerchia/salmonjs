@@ -101,8 +101,15 @@ argv = require('optimist')
     .default('d', false)
     .argv;
 
-function spawnStdout(data) { data = data.toString(); console.log(data.substr(0, data.length - 1)); };
-function spawnStderr(data) { data = data.toString(); console.log(data.substr(0, data.length - 1).red); };
+function spawnStdout(data) {
+    data = data.toString();
+    console.log(data.substr(0, data.length - 1));
+}
+
+function spawnStderr(data) {
+    data = data.toString();
+    console.log(data.substr(0, data.length - 1).red);
+}
 
 if (argv.help !== undefined || argv.uri === undefined) {
     argv.showHelp();

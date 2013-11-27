@@ -42,13 +42,13 @@ var glob = {
      * @param {Integer} millis The number of millisecond to wait for
      * @return undefined
      */
-    sleep: function(millis) {
-        var date = new Date(),
-          curDate = null;
+    sleep: function (millis) {
+        var date    = new Date(),
+            curDate = null;
 
         do {
             curDate = new Date();
-        } while(curDate-date < millis);
+        } while ((curDate - date) < millis);
     },
 
     /**
@@ -58,10 +58,10 @@ var glob = {
      * @param {String} dir The directory to be processed
      * @return {Array}
      */
-    sync: function(dir) {
+    sync: function (dir) {
         var results;
 
-        glob.glob(dir, function(err, res) {
+        glob.glob(dir, function (err, res) {
             results = res;
         });
 
@@ -81,23 +81,25 @@ var glob = {
      * @return undefined
      */
     glob: function (dir, done) {
-        var firstOccurrence = dir.indexOf('*');
-        var dirToProcess = dir.substr(0, (firstOccurrence === -1) ? dir.length : firstOccurrence);
+        var firstOccurrence = dir.indexOf('*'),
+            dirToProcess    = dir.substr(0, (firstOccurrence === -1) ? dir.length : firstOccurrence),
+            lastOccurrence  = dir.lastIndexOf('/'),
+            regEx,
+            filtered;
 
-        var lastOccurrence = dir.lastIndexOf('/');
         dirToProcess = dirToProcess.substr(0, (lastOccurrence === -1) ? dirToProcess.length : lastOccurrence);
 
-        var regEx = '^' + dir.replace(/\//g, '\\/').replace(/\./g, '\\.').replace(/\*\*/g, '.+?').replace(/\*/g, '[^\/]+');
+        regEx = '^' + dir.replace(/\//g, '\\/').replace(/\./g, '\\.').replace(/\*\*/g, '.+?').replace(/\*/g, '[^\/]+');
 
-        glob.list(dirToProcess, function(err, results) {
-            var filtered = [];
+        glob.list(dirToProcess, function (err, results) {
+            filtered = [];
             results.forEach(function (item) {
                 if (item.match(new RegExp(regEx))) {
                     filtered.push(item);
                 }
             });
 
-           done(err, filtered);
+            done(err, filtered);
         });
     },
 
@@ -110,25 +112,31 @@ var glob = {
      * @return undefined
      */
     list: function (dir, done) {
-        var FSWrapper = require('./fs');
-        var fsWrapper = new FSWrapper;
-        var results = [];
+        var FSWrapper = require('./fs'),
+            fsWrapper = new FSWrapper(),
+            results   = [],
+            list      = fsWrapper.readdirSync(dir),
+            pending   = list.length - 2;
 
-        var list = fsWrapper.readdirSync(dir);
-        var pending = list.length - 2;
-        if (!pending) return done(null, results);
+        if (!pending) {
+            return done(null, results);
+        }
 
         list.forEach(function(file) {
             if (file !== '.' && file !== '..') {
                 file = dir + '/' + file;
                 if (fsWrapper.isDirectory(file)) {
-                    glob.list(file, function(err, res) {
+                    glob.list(file, function (err, res) {
                         results = results.concat(res);
-                        if (!--pending) done(null, results);
+                        if (!--pending) {
+                            done(null, results);
+                        }
                     });
                 } else {
                     results.push(file);
-                    if (!--pending) done(null, results);
+                    if (!--pending) {
+                        done(null, results);
+                    }
                 }
             }
         });

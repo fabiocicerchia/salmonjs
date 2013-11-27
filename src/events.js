@@ -58,11 +58,11 @@ var EventContainer = function () {
      * @return {String}
      */
     this.hashString = function (string) {
-        if (typeof SHA1 !== 'undefined') {
+        if (SHA1 !== undefined) {
             return SHA1(string);
-        } else {
-            return string.replace(/[^a-zA-Z0-9]/g, '_');
         }
+
+        return string.replace(/[^a-zA-Z0-9]/g, '_');
     };
 
     /**
@@ -102,17 +102,21 @@ var EventContainer = function () {
      * @return {Array}
      */
     this.getElementsByAttribute = function (element, attribute) {
-        var arr_elms = element.getElementsByTagName('*');
-        var elements = [];
-        var wildcard = attribute.substr(-1, 1) === '*';
-        var curr_attr;
+        var arr_elms = element.getElementsByTagName('*'),
+            elements = [],
+            wildcard = attribute.substr(-1, 1) === '*',
+            curr_attr,
+            attrs,
+            i,
+            l,
+            j;
 
         if (wildcard) {
             attribute = attribute.substr(0, attribute.length - 1);
         }
 
-        for (var i = 0; i < arr_elms.length; i++) {
-            for (var j = 0, attrs = arr_elms[i].attributes, l = attrs.length; j < l; j++){
+        for (i = 0; i < arr_elms.length; i++) {
+            for (j = 0, attrs = arr_elms[i].attributes, l = attrs.length; j < l; j++) {
                 curr_attr = attrs.item(j).nodeName;
                 if ((!wildcard && curr_attr === attribute) || (wildcard && curr_attr.substr(0, attribute.length) === attribute)) {
                     elements.push(arr_elms[i]);
@@ -168,8 +172,7 @@ var EventContainer = function () {
      * @param {Boolean}  useCapture Specifies whether the EventListener being removed was registered as a capturing listener or not. If not specified, useCapture defaults to false.
      * @return undefined
      */
-    this.customRemoveEventListener = function (type, listener, useCapture)
-    {
+    this.customRemoveEventListener = function (type, listener, useCapture) {
         var signature = currentEventContainer.hashString(listener.toString());
         if (currentEventContainer.container[type][signature] !== undefined) {
             currentEventContainer.container[type][signature] = undefined;
@@ -264,17 +267,19 @@ var EventContainer = function () {
      * @return {Array}
      */
     this.getEventsGrouped = function (elements) {
-        var el, i, l, curr_attr, attrs, events = {};
+        var el, i, l, curr_attr, attrs, element, events = {};
 
         for (el in elements) {
-            var element = elements[el];
-            for (i = 0, attrs = element.attributes, l = attrs.length; i < l; i++){
-                curr_attr = attrs.item(i).nodeName;
-                if (curr_attr.substr(0, 2) === 'on') {
-                    if (events[curr_attr] === undefined) {
-                        events[curr_attr] = [];
+            if (elements.hasOwnProperty(el)) {
+                element = elements[el];
+                for (i = 0, attrs = element.attributes, l = attrs.length; i < l; i++) {
+                    curr_attr = attrs.item(i).nodeName;
+                    if (curr_attr.substr(0, 2) === 'on') {
+                        if (events[curr_attr] === undefined) {
+                            events[curr_attr] = [];
+                        }
+                        events[curr_attr].push(element);
                     }
-                    events[curr_attr].push(element);
                 }
             }
         }
@@ -294,11 +299,13 @@ var EventContainer = function () {
         staticEvents = currentEventContainer.getEventsGrouped(currentEventContainer.getElementsByAttribute(document, 'on*'));
 
         for (evt in staticEvents) {
-            type = evt.substr(2);
-            for (el in staticEvents[evt]) {
-                signature = currentEventContainer.hashString(staticEvents[evt][el].getAttribute(evt));
+            if (staticEvents.hasOwnProperty(evt)) {
+                type = evt.substr(2);
+                for (el in staticEvents[evt]) {
+                    signature = currentEventContainer.hashString(staticEvents[evt][el].getAttribute(evt));
 
-                currentEventContainer.pushEvent(type, signature, staticEvents[evt][el]);
+                    currentEventContainer.pushEvent(type, signature, staticEvents[evt][el]);
+                }
             }
         }
 
@@ -319,18 +326,18 @@ var EventContainer = function () {
 
 var eventContainer = new EventContainer();
 
-if (typeof Element !== 'undefined') {
+if (Element !== undefined) {
     eventContainer.overrideEventListener(Element);
     eventContainer.overrideAttributeHandler(Element);
 }
 
-if (typeof document !== 'undefined') {
+if (document !== undefined) {
     document.identifier = 'document';
     eventContainer.overrideEventListener(document);
     eventContainer.overrideAttributeHandler(document);
 }
 
-if (typeof window !== 'undefined') {
+if (window !== undefined) {
     window.identifier = 'window';
     eventContainer.overrideEventListener(window);
     eventContainer.overrideAttributeHandler(window);

@@ -35,8 +35,8 @@
  *
  * @module FSWrapper
  */
- var FSWrapper = function(fs) {
-    if (typeof fs === 'undefined') {
+var FSWrapper = function (fs) {
+    if (fs === undefined) {
         fs = require('fs');
     }
 
@@ -48,8 +48,8 @@
      * @param {String} filename The filename
      * @return {String}
      */
-    this.readFileSync = function(filename) {
-        var method = (typeof fs.readFileSync !== 'undefined') ? 'readFileSync' : 'read';
+    this.readFileSync = function (filename) {
+        var method = (fs.readFileSync !== undefined) ? 'readFileSync' : 'read';
         return fs[method].call(fs, filename);
     };
 
@@ -63,8 +63,8 @@
      * @param {Object} options  The options
      * @return {String}
      */
-    this.writeFileSync = function(filename, data, options) {
-        var method = (typeof fs.writeFileSync !== 'undefined') ? 'writeFileSync' : 'write';
+    this.writeFileSync = function (filename, data, options) {
+        var method = (fs.writeFileSync !== undefined) ? 'writeFileSync' : 'write';
         return fs[method].call(fs, filename, data, options);
     };
 
@@ -76,8 +76,8 @@
      * @param {String} filename The filename
      * @return {Boolean}
      */
-    this.existsSync = function(filename) {
-        var method = (typeof fs.existsSync !== 'undefined') ? 'existsSync' : 'exists';
+    this.existsSync = function (filename) {
+        var method = (fs.existsSync !== undefined) ? 'existsSync' : 'exists';
         return fs[method].call(fs, filename);
     };
 
@@ -90,8 +90,8 @@
      * @param {String} mode The mode
      * @return undefined
      */
-    this.mkdirSync = function(path, mode) {
-        var method = (typeof fs.mkdirSync !== 'undefined') ? 'mkdirSync' : 'makeDirectory';
+    this.mkdirSync = function (path, mode) {
+        var method = (fs.mkdirSync !== undefined) ? 'mkdirSync' : 'makeDirectory';
         return fs[method].call(fs, path, mode);
     };
 
@@ -103,8 +103,8 @@
      * @param {String} path The path
      * @return undefined
      */
-    this.unlinkSync = function(path) {
-        var method = (typeof fs.unlinkSync !== 'undefined') ? 'unlinkSync' : 'remove';
+    this.unlinkSync = function (path) {
+        var method = (fs.unlinkSync !== undefined) ? 'unlinkSync' : 'remove';
         return fs[method].call(fs, path);
     };
 
@@ -116,12 +116,12 @@
      * @param {String} path The path
      * @return {Array}
      */
-    this.readdirSync = function(path) {
-        if (typeof fs.readdirSync !== 'undefined') {
+    this.readdirSync = function (path) {
+        if (fs.readdirSync !== undefined) {
             return fs.readdirSync.call(fs, path);
-        } else {
-            return fs.list.call(fs, path);
         }
+
+        return fs.list.call(fs, path);
     };
 
     /**
@@ -132,12 +132,12 @@
      * @param {String} path The path
      * @return {Boolean}
      */
-    this.isDirectory = function(path) {
-        if (typeof fs.statSync !== 'undefined') {
+    this.isDirectory = function (path) {
+        if (fs.statSync !== undefined) {
             return fs.statSync.call(fs, path).isDirectory();
-        } else {
-            return fs.isDirectory.call(fs, path);
         }
+
+        return fs.isDirectory.call(fs, path);
     };
 };
 

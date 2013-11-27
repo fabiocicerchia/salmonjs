@@ -277,13 +277,15 @@ module.exports = function Parser() {
         }
 
         for (p in obj) {
-            k = prefix ? prefix + '[' + p + ']' : p
-            v = obj[p];
-            str.push(
-                typeof v == 'object' ?
-                this.arrayToQuery(v, k) :
-                encodeURIComponent(k) + '=' + encodeURIComponent(v)
-            );
+            if (obj.hasOwnProperty(p)) {
+                k = prefix ? prefix + '[' + p + ']' : p;
+                v = obj[p];
+                str.push(
+                    typeof v === 'object' ?
+                        this.arrayToQuery(v, k) :
+                        encodeURIComponent(k) + '=' + encodeURIComponent(v)
+                );
+            }
         }
 
         return str.join('&');
@@ -299,7 +301,8 @@ module.exports = function Parser() {
      */
     this.normaliseUrl = function (url, baseUrl) {
         var normalised,
-            baseDomain = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, 'http$1://$2/');
+            baseDomain = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, 'http$1://$2/'),
+            qs;
 
         if (url.substr(0, 2) === '//') {
             url = baseUrl.split(':')[0] + ':' + url;
@@ -322,7 +325,7 @@ module.exports = function Parser() {
         }
 
         if (normalised !== undefined && normalised.indexOf('?') > 0) {
-            var qs = normalised.replace(/\?(.+)(#.*)?/, '$1');
+            qs = normalised.replace(/\?(.+)(#.*)?/, '$1');
             normalised = normalised.replace(qs, '?' + this.arrayToQuery(this.normaliseData(qs)));
         }
 

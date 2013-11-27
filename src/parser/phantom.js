@@ -130,12 +130,14 @@ var PhantomParser = function (page) {
      */
     this.fireEventObject = function () {
         var obj,
-            evt;
+            evt,
+            xPath = arguments[0].xPath,
+            event = arguments[0].event;
 
-        eval('obj = ' + arguments[0].xPath);
+        eval('obj = ' + xPath);
         if (obj !== undefined) {
             evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent(arguments[0].event, false, false, null);
+            evt.initCustomEvent(event, false, false, null);
             obj.dispatchEvent(evt);
         }
     };
@@ -147,12 +149,14 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.fireEventDOM = function () {
-        var element = window.eventContainer.getElementByXpath(arguments[0].xPath),
+        var xPath = arguments[0].xPath,
+            event = arguments[0].event,
+            element = window.eventContainer.getElementByXpath(xPath),
             evt;
 
         if (element !== undefined) {
             evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent(arguments[0].event, false, false, null);
+            evt.initCustomEvent(event, false, false, null);
             element.dispatchEvent(evt);
         }
     };
@@ -200,7 +204,7 @@ var PhantomParser = function (page) {
 
         if (trace && trace.length) {
             msgStack.push('TRACE:');
-            trace.forEach(function(t) {
+            trace.forEach(function (t) {
                 msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function + '")' : ''));
             });
         }
@@ -215,7 +219,7 @@ var PhantomParser = function (page) {
      * @method onInitialized
      * @return undefined
      */
-    this.onInitialized = function() {
+    this.onInitialized = function () {
         currentParser.page.injectJs('../sha1.js');
         currentParser.page.injectJs('../events.js');
     };
@@ -227,7 +231,7 @@ var PhantomParser = function (page) {
      * @param {Object} response The response metadata object
      * @return undefined
      */
-    this.onResourceReceived = function(response) {
+    this.onResourceReceived = function (response) {
         if (response.stage === 'end') {
             currentParser.report.resources[response.url] = {
                 headers: response.headers
@@ -242,7 +246,7 @@ var PhantomParser = function (page) {
      * @param {String} msg The string for the message
      * @return undefined
      */
-    this.onAlert = function(msg) {
+    this.onAlert = function (msg) {
         currentParser.report.alerts.push(msg);
     };
 
@@ -253,7 +257,7 @@ var PhantomParser = function (page) {
      * @param {String} msg The string for the message
      * @return undefined
      */
-    this.onConfirm = function(msg) {
+    this.onConfirm = function (msg) {
         currentParser.report.confirms.push(msg);
         // `true` === pressing the "OK" button, `false` === pressing the "Cancel" button
         return true;
@@ -267,7 +271,7 @@ var PhantomParser = function (page) {
      * @param {String} defaultVal The default value for the prompt answer
      * @return undefined
      */
-    this.onPrompt = function(msg, defaultVal) {
+    this.onPrompt = function (msg, defaultVal) {
         currentParser.report.prompts.push({msg: msg, defaultVal: defaultVal});
         return defaultVal;
     };
@@ -282,7 +286,7 @@ var PhantomParser = function (page) {
      * @param {String}  sourceId The source identifier
      * @return undefined
      */
-    this.onConsoleMessage = function(msg, lineNum, sourceId) {
+    this.onConsoleMessage = function (msg, lineNum, sourceId) {
         currentParser.report.console.push({msg: msg, lineNum: lineNum, sourceId: sourceId});
     };
 
@@ -376,11 +380,15 @@ var PhantomParser = function (page) {
                 events: []
             },
             currentUrl = document.location.href,
-            attribute, tag;
+            attribute,
+            tag,
+            tags = arguments[0];
 
-        for (tag in arguments[0]) {
-            attribute = arguments[0][tag];
-            urls[tag] = [].map.call(document.querySelectorAll(tag), function(item) { return item.getAttribute(attribute); });
+        for (tag in tags) {
+            if (tags.hasOwnProperty(tag)) {
+                attribute = tags[tag];
+                urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) { return item.getAttribute(attribute); });
+            }
         }
 
         urls.form = [].map.call(document.querySelectorAll('form'), function (item) {

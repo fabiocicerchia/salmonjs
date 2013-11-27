@@ -29,8 +29,8 @@
  */
 
 var casper   = casper || {},
-    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
     fs       = require('fs'),
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
     glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/test/assets/';
 
@@ -39,15 +39,15 @@ casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/events.js');
 };
 
-casper.on('remote.message', function(msg) {
+casper.on('remote.message', function (msg) {
     console.log('CONSOLE.LOG: ' + msg);
 });
 
 // TEST #01 --------------------------------------------------------------------
-casper.test.begin("Test #01", function(test) {
-    casper.start(basePath + 'test_01.html', function() {
+casper.test.begin("Test #01", function (test) {
+    casper.start(basePath + 'test_01.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{}',
@@ -55,16 +55,16 @@ casper.test.begin("Test #01", function(test) {
         );
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #02 --------------------------------------------------------------------
-casper.test.begin("Test #02", function(test) {
-    casper.start(basePath + 'test_02.html', function() {
+casper.test.begin("Test #02", function (test) {
+    casper.start(basePath + 'test_02.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{}',
@@ -72,16 +72,16 @@ casper.test.begin("Test #02", function(test) {
         );
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #03 --------------------------------------------------------------------
-casper.test.begin("Test #03", function(test) {
-    casper.start(basePath + 'test_03.html', function() {
+casper.test.begin("Test #03", function (test) {
+    casper.start(basePath + 'test_03.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{}',
@@ -89,16 +89,16 @@ casper.test.begin("Test #03", function(test) {
         );
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #04 --------------------------------------------------------------------
-casper.test.begin("Test #04", function(test) {
-    casper.start(basePath + 'test_04.html', function() {
+casper.test.begin("Test #04", function (test) {
+    casper.start(basePath + 'test_04.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}',
@@ -106,16 +106,16 @@ casper.test.begin("Test #04", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #05 --------------------------------------------------------------------
-casper.test.begin("Test #05", function(test) {
-    casper.start(basePath + 'test_05.html', function() {
+casper.test.begin("Test #05", function (test) {
+    casper.start(basePath + 'test_05.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}',
@@ -123,16 +123,16 @@ casper.test.begin("Test #05", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #06 --------------------------------------------------------------------
-casper.test.begin("Test #06", function(test) {
-    casper.start(basePath + 'test_06.html', function() {
+casper.test.begin("Test #06", function (test) {
+    casper.start(basePath + 'test_06.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}',
@@ -140,16 +140,16 @@ casper.test.begin("Test #06", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #07 --------------------------------------------------------------------
-casper.test.begin("Test #07", function(test) {
-    casper.start(basePath + 'test_07.html', function() {
+casper.test.begin("Test #07", function (test) {
+    casper.start(basePath + 'test_07.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}',
@@ -157,16 +157,16 @@ casper.test.begin("Test #07", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #08 --------------------------------------------------------------------
-casper.test.begin("Test #08", function(test) {
-    casper.start(basePath + 'test_08.html', function() {
+casper.test.begin("Test #08", function (test) {
+    casper.start(basePath + 'test_08.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"25f2d6df4f2a30f29f6f80da1e95011044b0b8f7\":[\"/html/body/a\"]}}',
@@ -174,16 +174,16 @@ casper.test.begin("Test #08", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #09 --------------------------------------------------------------------
-casper.test.begin("Test #09", function(test) {
-    casper.start(basePath + 'test_09.html', function() {
+casper.test.begin("Test #09", function (test) {
+    casper.start(basePath + 'test_09.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/a\"],\"25f2d6df4f2a30f29f6f80da1e95011044b0b8f7\":[\"/html/body/a\"]}}',
@@ -191,16 +191,16 @@ casper.test.begin("Test #09", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #10 --------------------------------------------------------------------
-casper.test.begin("Test #10", function(test) {
-    casper.start(basePath + 'test_10.html', function() {
+casper.test.begin("Test #10", function (test) {
+    casper.start(basePath + 'test_10.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/div\"]}}',
@@ -208,16 +208,16 @@ casper.test.begin("Test #10", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #11 --------------------------------------------------------------------
-casper.test.begin("Test #11", function(test) {
-    casper.start(basePath + 'test_11.html', function() {
+casper.test.begin("Test #11", function (test) {
+    casper.start(basePath + 'test_11.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/div\"]}}',
@@ -225,16 +225,16 @@ casper.test.begin("Test #11", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #12 --------------------------------------------------------------------
-casper.test.begin("Test #12", function(test) {
-    casper.start(basePath + 'test_12.html', function() {
+casper.test.begin("Test #12", function (test) {
+    casper.start(basePath + 'test_12.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}',
@@ -242,16 +242,16 @@ casper.test.begin("Test #12", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #13 --------------------------------------------------------------------
-casper.test.begin("Test #13", function(test) {
-    casper.start(basePath + 'test_13.html', function() {
+casper.test.begin("Test #13", function (test) {
+    casper.start(basePath + 'test_13.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}',
@@ -259,32 +259,33 @@ casper.test.begin("Test #13", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #14 --------------------------------------------------------------------
-casper.test.begin("Test #14", function(test) {
-    casper.start(basePath + 'test_14.html', function() {
+casper.test.begin("Test #14", function (test) {
+    casper.start(basePath + 'test_14.html', function () {
         test.assertEvalEquals(
-            function() {
-            return JSON.stringify(window.eventContainer.getEvents());
-        },
-        '{\"load\":{\"4c36f76234482bdc076deeaa345fb56943c2462e\":[\"/html/body\"]}}',
-        'it should returns 1 event');
+            function () {
+                return JSON.stringify(window.eventContainer.getEvents());
+            },
+            '{\"load\":{\"4c36f76234482bdc076deeaa345fb56943c2462e\":[\"/html/body\"]}}',
+            'it should returns 1 event'
+        );
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #15 --------------------------------------------------------------------
-casper.test.begin("Test #15", function(test) {
-    casper.start(basePath + 'test_15.html', function() {
+casper.test.begin("Test #15", function (test) {
+    casper.start(basePath + 'test_15.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"],\"f328793b597cd5eb24778cf51365c6865b2805cd\":[\"/html/body\"]}}',
@@ -292,16 +293,16 @@ casper.test.begin("Test #15", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #16 --------------------------------------------------------------------
-casper.test.begin("Test #16", function(test) {
-    casper.start(basePath + 'test_16.html', function() {
+casper.test.begin("Test #16", function (test) {
+    casper.start(basePath + 'test_16.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{}',
@@ -309,16 +310,16 @@ casper.test.begin("Test #16", function(test) {
         );
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #17 --------------------------------------------------------------------
-casper.test.begin("Test #17", function(test) {
-    casper.start(basePath + 'test_17.html', function() {
+casper.test.begin("Test #17", function (test) {
+    casper.start(basePath + 'test_17.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"click\":{\"8e3eb8cb110fe7b5d828aa2efe911ba0e83491dd\":[\"/html/body/a\"]}}',
@@ -326,16 +327,16 @@ casper.test.begin("Test #17", function(test) {
         );
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #18 --------------------------------------------------------------------
-casper.test.begin("Test #18", function(test) {
-    casper.start(basePath + 'test_18.html', function() {
+casper.test.begin("Test #18", function (test) {
+    casper.start(basePath + 'test_18.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"46263e884ea4628bd628a94c115f92d57ea23d5c\":[\"/html/body/a\"]}}',
@@ -343,16 +344,16 @@ casper.test.begin("Test #18", function(test) {
         ); // DOMContentLoaded is an extra, empty, one (added by jQuery).
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });
 
 // TEST #19 --------------------------------------------------------------------
-casper.test.begin("Test #19", function(test) {
-    casper.start(basePath + 'test_19.html', function() {
+casper.test.begin("Test #19", function (test) {
+    casper.start(basePath + 'test_19.html', function () {
         test.assertEvalEquals(
-            function() {
+            function () {
                 return JSON.stringify(window.eventContainer.getEvents());
             },
             '{}',
@@ -360,7 +361,7 @@ casper.test.begin("Test #19", function(test) {
         );
     });
 
-    casper.run(function() {
+    casper.run(function () {
         test.done();
     });
 });

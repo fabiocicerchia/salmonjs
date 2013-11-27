@@ -126,12 +126,14 @@ var CasperParser = function (engine) {
      */
     this.fireEventObject = function () {
         var obj,
-            evt;
+            evt,
+            xPath = arguments[0].xPath,
+            event = arguments[0].event;
 
-        eval('obj = ' + arguments[0].xPath);
+        eval('obj = ' + xPath);
         if (obj !== undefined) {
             evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent(arguments[0].event, false, false, null);
+            evt.initCustomEvent(event, false, false, null);
             obj.dispatchEvent(evt);
         }
     };
@@ -143,12 +145,14 @@ var CasperParser = function (engine) {
      * @return undefined
      */
     this.fireEventDOM = function () {
-        var element = window.eventContainer.getElementByXpath(arguments[0].xPath),
+        var xPath = arguments[0].xPath,
+            event = arguments[0].event,
+            element = window.eventContainer.getElementByXpath(xPath),
             evt;
 
         if (element !== undefined) {
             evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent(arguments[0].event, false, false, null);
+            evt.initCustomEvent(event, false, false, null);
             element.dispatchEvent(evt);
         }
     };
@@ -204,7 +208,7 @@ var CasperParser = function (engine) {
 
         if (trace && trace.length) {
             msgStack.push('TRACE:');
-            trace.forEach(function(t) {
+            trace.forEach(function (t) {
                 msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function + '")' : ''));
             });
         }
@@ -219,7 +223,7 @@ var CasperParser = function (engine) {
      * @method onInitialized
      * @return undefined
      */
-    this.onInitialized = function() {
+    this.onInitialized = function () {
         currentParser.engine.page.injectJs(fs.absolute('.') + '/src/sha1.js');
         currentParser.engine.page.injectJs(fs.absolute('.') + '/src/events.js');
     };
@@ -232,7 +236,7 @@ var CasperParser = function (engine) {
      * @param {Object} response The response metadata object
      * @return undefined
      */
-    this.onResourceReceived = function(casper, response) {
+    this.onResourceReceived = function (casper, response) {
         if (response.stage === 'end') {
             currentParser.report.resources[response.url] = {
                 headers: response.headers
@@ -247,7 +251,7 @@ var CasperParser = function (engine) {
      * @param {String} msg The string for the message
      * @return undefined
      */
-    this.onAlert = function(msg) {
+    this.onAlert = function (msg) {
         currentParser.report.alerts.push(msg);
     };
 
@@ -258,7 +262,7 @@ var CasperParser = function (engine) {
      * @param {String} msg The string for the message
      * @return undefined
      */
-    this.onConfirm = function(msg) {
+    this.onConfirm = function (msg) {
         currentParser.report.confirms.push(msg);
         // `true` === pressing the "OK" button, `false` === pressing the "Cancel" button
         return true;
@@ -272,7 +276,7 @@ var CasperParser = function (engine) {
      * @param {String} defaultVal The default value for the prompt answer
      * @return undefined
      */
-    this.onPrompt = function(msg, defaultVal) {
+    this.onPrompt = function (msg, defaultVal) {
         currentParser.report.prompts.push({msg: msg, defaultVal: defaultVal});
         return defaultVal;
     };
@@ -287,7 +291,7 @@ var CasperParser = function (engine) {
      * @param {String}  sourceId The source identifier
      * @return undefined
      */
-    this.onConsoleMessage = function(msg, lineNum, sourceId) {
+    this.onConsoleMessage = function (msg, lineNum, sourceId) {
         currentParser.report.console.push({msg: msg, lineNum: lineNum, sourceId: sourceId});
     };
 
@@ -384,11 +388,14 @@ var CasperParser = function (engine) {
                 events: []
             },
             currentUrl = document.location.href,
-            attribute, tag;
+            attribute,
+            tag;
 
         for (tag in tags) {
-            attribute = tags[tag];
-            urls[tag] = [].map.call(document.querySelectorAll(tag), function(item) { return item.getAttribute(attribute); });
+            if (tags.hasOwnProperty(tag)) {
+                attribute = tags[tag];
+                urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) { return item.getAttribute(attribute); });
+            }
         }
 
         urls.form = [].map.call(document.querySelectorAll('form'), function (item) {

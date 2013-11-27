@@ -48,6 +48,6 @@ var config = {
     }
 };
 
-if (typeof module !== 'undefined') {
+if (module !== undefined) {
     module.exports = config;
 }

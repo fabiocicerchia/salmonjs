@@ -90,7 +90,9 @@ var Test = function (fsWrapper, glob, mainDir) {
         }
 
         fsWrapper.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
-        if (callback !== undefined) callback();
+        if (callback !== undefined) {
+            callback();
+        }
     };
 
     /**
@@ -123,34 +125,34 @@ var Test = function (fsWrapper, glob, mainDir) {
         return cases;
     };
 
-    this.parseINIString = function (data){
+    this.parseINIString = function (data) {
         var regex = {
-            section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
-            param:   /^\s*([\w\.\-\_]+)\s*=\s*(.*?)\s*$/,
-            comment: /^\s*;.*$/
-        };
-
-        var value = {};
-        var lines = data.split(/\r\n|\r|\n/);
-        var section = null;
+                section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
+                param:   /^\s*([\w\.\-\_]+)\s*=\s*(.*?)\s*$/,
+                comment: /^\s*;.*$/
+            },
+            value = {},
+            lines = data.split(/\r\n|\r|\n/),
+            section = null,
+            match;
 
         lines.forEach(function (line) {
             if (regex.comment.test(line)) {
                 return;
             } else if(regex.param.test(line)) {
-                var match = line.match(regex.param);
+                match = line.match(regex.param);
                 if (section) {
                     value[section][match[1]] = match[2];
                 } else {
                     value[match[1]] = match[2];
                 }
             } else if (regex.section.test(line)) {
-                var match = line.match(regex.section);
+                match = line.match(regex.section);
                 value[match[1]] = {};
                 section = match[1];
-            } else if (line.length == 0 && section) {
+            } else if (line.length === 0 && section) {
                 section = null;
-            };
+            }
         });
 
         return value;
@@ -164,8 +166,7 @@ var Test = function (fsWrapper, glob, mainDir) {
      * @return {Object}
      */
     this.parseCase = function (file) {
-        var i, value, content, lines,
-            data = {};
+        var content;
 
         if (!fsWrapper.existsSync(file)) {
             return {};

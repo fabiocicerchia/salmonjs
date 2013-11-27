@@ -86,7 +86,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @type {String}
      * @default ""
      */
-    this.username;
+    this.username = '';
 
     /**
      * The password for HTTP Authentication.
@@ -95,7 +95,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @type {String}
      * @default ""
      */
-    this.password;
+    this.password = '';
 
     /**
      * Flag to decide whether store the page details.
@@ -171,11 +171,12 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      */
     var currentCrawler = this;
 
-    if (typeof optimist !== 'undefined' && typeof winston !== 'undefined') {
+    if (optimist !== undefined && winston !== undefined) {
         if (optimist.argv.$0.indexOf('mocha') !== -1) {
-            try { winston.remove(winston.transports.Console); } catch (err) {}
+            try { winston.remove(winston.transports.Console); } catch (ignore) {}
         }
     }
+
     /**
      * Initialise the crawler.
      *
@@ -237,9 +238,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @return undefined
      */
     this.execPhantomjs = function () {
-        var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath);
-
-        var phantom,
+        var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
+            phantom,
             params  = [
                 //'--debug=true',
                 './src/parser/' + config.parser.interface + '.js',
@@ -274,9 +274,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @return undefined
      */
     this.execCasperjs = function () {
-        var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath);
-
-        var casper,
+        var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
+            casper,
             params  = [
                 //'--debug=true',
                 './src/parser/' + config.parser.interface + '.js',
@@ -330,7 +329,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         winston.info(
             '%s Launching crawler to parse "%s" - %s on %s ...',
             winstonCrawlerId,
-            ('' + this.url).green,
+            String(this.url).green,
             (this.evt === '' ? 'N/A'.grey : this.evt.blue),
             (this.xPath === '' ? 'N/A'.grey : this.xPath.green)
         );
@@ -358,7 +357,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         var id               = redisId.substr(0, 8),
             winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']',
             newId,
-            crawler;
+            args,
+            childProcess;
 
         if (err) {
             throw err;
@@ -388,13 +388,13 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        var args = [
+        args = [
             __dirname + '/worker.js',
             currentCrawler.timeStart, currentCrawler.username, currentCrawler.password, currentCrawler.storeDetails,
             container.url, container.type, JSON.stringify(container.container), container.evt, container.xPath
         ];
 
-        var childProcess = require('child_process').spawn('node', args, { detached: true });
+        childProcess = require('child_process').spawn('node', args, { detached: true });
         childProcess.stdout.on('data', spawnStdout);
         childProcess.stderr.on('data', spawnStderr);
         childProcess.on('exit', function () {
@@ -580,18 +580,20 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @return undefined
      */
     this.storeDetailsToFile = function (report) {
-        var reportName    = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + currentCrawler.evt + currentCrawler.xPath);
+        var Reporter      = require('./reporter/report'),
+            reporter      = new Reporter(),
+            reportName    = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + currentCrawler.evt + currentCrawler.xPath),
+            reportContent = reporter.generateHTML(currentCrawler, reportName, report),
+            indexContent,
+            reportFile,
+            indexFile;
 
-        var Reporter = require('./reporter/report');
-        var reporter = new Reporter();
-        var reportContent = reporter.generateHTML(currentCrawler, reportName, report);
-
-        var indexContent = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
+        indexContent = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
         indexContent    += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
         indexContent    += ' XPath: ' + (currentCrawler.xPath === '' ? 'N/A' : currentCrawler.xPath) + '</a>\n';
 
-        var reportFile = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/' + reportName + '.html';
-        var indexFile  = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/index.html';
+        reportFile = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/' + reportName + '.html';
+        indexFile  = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/index.html';
         fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/', '0777', function () {
             fs.writeFileSync(reportFile, reportContent);
             fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
@@ -743,8 +745,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 if (cases.hasOwnProperty(j)) {
                     currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
 
-                    cases[j]['POST'] = currentCrawler.normaliseData(cases[j]['POST']);
-                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]['POST']);
+                    cases[j].POST = currentCrawler.normaliseData(cases[j].POST);
+                    currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j].POST);
                 }
             }
 
@@ -767,7 +769,14 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     };
 };
 
-function spawnStdout(data) { data = data.toString(); console.log(data.substr(0, data.length - 1)); };
-function spawnStderr(data) { data = data.toString(); console.log(data.substr(0, data.length - 1).red); };
+function spawnStdout(data) {
+    data = data.toString();
+    console.log(data.substr(0, data.length - 1));
+}
+
+function spawnStderr(data) {
+    data = data.toString();
+    console.log(data.substr(0, data.length - 1).red);
+}
 
 module.exports = Crawler;

@@ -28,9 +28,10 @@
  * SOFTWARE.
  */
 
-var reporter = function() {
+var reporter = function () {
     this.generateHTML = function (currentCrawler, reportName, report) {
-        var html = '<!DOCTYPE html>\n';
+        var i, j, html = '<!DOCTYPE html>\n';
+
         html += '<html lang="en">\n';
         html += '    <head>\n';
         html += '        <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>\n';
@@ -74,10 +75,12 @@ var reporter = function() {
         html += '            <h2>Errors</h2>\n';
         html += '            <ul>\n';
         if (report.errors.length > 0) {
-            for (var i in report.errors) {
-                html += '                <li>\n';
-                html += '                    <pre>' + report.errors[i] + '</pre>\n';
-                html += '                </li>\n';
+            for (i in report.errors) {
+                if (report.errors.hasOwnProperty(i)) {
+                    html += '                <li>\n';
+                    html += '                    <pre>' + report.errors[i] + '</pre>\n';
+                    html += '                </li>\n';
+                }
             }
         } else {
             html += '                <li>N/A</li>\n';
@@ -87,10 +90,12 @@ var reporter = function() {
         html += '            <h2>Alerts</h2>\n';
         html += '            <ul>\n';
         if (report.alerts.length > 0) {
-            for (var i in report.alerts) {
-                html += '                <li>\n';
-                html += '                    <code>' + report.alerts[i] + '</code>\n';
-                html += '                </li>\n';
+            for (i in report.alerts) {
+                if (report.alerts.hasOwnProperty(i)) {
+                    html += '                <li>\n';
+                    html += '                    <code>' + report.alerts[i] + '</code>\n';
+                    html += '                </li>\n';
+                }
             }
         } else {
             html += '                <li>N/A</li>\n';
@@ -100,10 +105,12 @@ var reporter = function() {
         html += '            <h2>Confirms</h2>\n';
         html += '            <ul>\n';
         if (report.confirms.length > 0) {
-            for (var i in report.confirms) {
-                html += '                <li>\n';
-                html += '                    <code>' + report.confirms[i] + '</code>\n';
-                html += '                </li>\n';
+            for (i in report.confirms) {
+                if (report.confirms.hasOwnProperty(i)) {
+                    html += '                <li>\n';
+                    html += '                    <code>' + report.confirms[i] + '</code>\n';
+                    html += '                </li>\n';
+                }
             }
         } else {
             html += '                <li>N/A</li>\n';
@@ -113,10 +120,12 @@ var reporter = function() {
         html += '            <h2>Prompts</h2>\n';
         html += '            <ul>\n';
         if (report.prompts.length > 0) {
-            for (var i in report.prompts) {
-                html += '                <li>\n';
-                html += '                    <code>' + report.prompts[i].msg + ' (default value: "' + report.prompts[i].defaultVal + '")</code>\n';
-                html += '                </li>\n';
+            for (i in report.prompts) {
+                if (report.prompts.hasOwnProperty(i)) {
+                    html += '                <li>\n';
+                    html += '                    <code>' + report.prompts[i].msg + ' (default value: "' + report.prompts[i].defaultVal + '")</code>\n';
+                    html += '                </li>\n';
+                }
             }
         } else {
             html += '                <li>N/A</li>\n';
@@ -126,10 +135,12 @@ var reporter = function() {
         html += '            <h2>Console</h2>\n';
         html += '            <ul>\n';
         if (report.console.length > 0) {
-            for (var i in report.console) {
-                html += '                <li>\n';
-                html += '                    <code>' + report.console[i].msg + ' (line: ' + report.console[i].lineNum + ' - source: ' + report.console[i].sourceId + ')</code>\n';
-                html += '               </li>\n';
+            for (i in report.console) {
+                if (report.console.hasOwnProperty(i)) {
+                    html += '                <li>\n';
+                    html += '                    <code>' + report.console[i].msg + ' (line: ' + report.console[i].lineNum + ' - source: ' + report.console[i].sourceId + ')</code>\n';
+                    html += '               </li>\n';
+                }
             }
         } else {
             html += '                <li>N/A</li>\n';
@@ -139,15 +150,19 @@ var reporter = function() {
         html += '            <h2>Resources</h2>\n';
         html += '            <ul>\n';
         if (report.resources.length > 0) {
-            for (var i in report.resources) {
-                html += '                <li>\n';
-                html += '                    <pre class="scroll">URL: ' + i + '/\n';
-                html += 'HEADERS:\n';
-                for (var j in report.resources[i].headers) {
-                    html += report.resources[i].headers[j].name + ': ' + report.resources[i].headers[j].value + '\n';
+            for (i in report.resources) {
+                if (report.resources.hasOwnProperty(i)) {
+                    html += '                <li>\n';
+                    html += '                    <pre class="scroll">URL: ' + i + '/\n';
+                    html += 'HEADERS:\n';
+                    for (j in report.resources[i].headers) {
+                        if (report.resources[i].headers.hasOwnProperty(j)) {
+                            html += report.resources[i].headers[j].name + ': ' + report.resources[i].headers[j].value + '\n';
+                        }
+                    }
+                    html += '</pre>\n';
+                    html += '                </li>\n';
                 }
-                html += '</pre>\n';
-                html += '                </li>\n';
             }
         } else {
             html += '                <li>N/A</li>\n';
