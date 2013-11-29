@@ -3,12 +3,17 @@
 [![Build Status](https://travis-ci.org/fabiocicerchia/spidey.png)](https://travis-ci.org/fabiocicerchia/spidey)
 [![Dependency Status](https://gemnasium.com/fabiocicerchia/spidey.png)](https://gemnasium.com/fabiocicerchia/spidey)
 [![Coverage Status](https://coveralls.io/repos/fabiocicerchia/spidey/badge.png)](https://coveralls.io/r/fabiocicerchia/spidey)
+[![Code Climate](https://codeclimate.com/github/fabiocicerchia/spidey.png)](https://codeclimate.com/github/fabiocicerchia/spidey)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/fabiocicerchia/spidey/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 [![NPM](https://nodei.co/npm/spidey.png?downloads=true&stars=true)](https://nodei.co/npm/spidey/)
 
 [![Spidey - Web Crawler in Node.js to spider dynamically whole websites.](http://jpillora.com/github-twitter-button/img/tweet.png)](https://twitter.com/intent/tweet?text=Spidey+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&url=https%3A%2F%2Ffabiocicerchia.github.io%2Fspidey&hashtags=spidey&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton)
 
 Web Crawler in Node.js to spider dynamically whole websites.
+
+** IMPORTANT: This is a DEVELOPMENT tool, therefore SHOULD NOT be used against a
+website you DO NOT OWN! **
 
 It helps you to map / process entire websites, spidering them and parsing each
 page in a smart way. It follows all the links and test several times the form
@@ -54,22 +59,27 @@ Here below few suggestions about its usage:
 ## Features
 
  * Command Line Interface
- * Reorder query string params for get and post for uniqueness
+ * Catch and handle all the events bound to DOM elements (regardless how they have been set)
+ * Follows any 3xx redirect, JS document.location and meta redirect (can be disabled)
+ * Ignore duplicated URLs / requests and external URLs
  * HTTP authentication
- * Handle events bound with `addEventListener`, HTML attributes (`on*`)
- * Exclude external URIs in the crawling
- * Process the page using PhantomJS
- * Generate report for each page crawled
+ * Generate report for each page crawled, with: 6
   * Screenshot
-  * HTTP header
+  * HTTP headers
   * HTTP method
-  * Data sent
+  * Data sent (GET and POST)
   * Page output
   * Execution time
   * Console messages
   * Alerts, Confirmations & Prompts
   * Errors
-  * List of requests
+  * List of successful and failed requests
+ * Multiple crawlers working asynchronously one URL each one
+ * Support for the following HTML tags:
+   a, area, base, form, frame, iframe, img, input, link, script
+ * URL normalisation
+ * Process the web page using PhantomJS or CasperJS
+ * Pricessing the output content only if it's HTML
 
 ## Dependencies
 
