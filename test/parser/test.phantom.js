@@ -51,7 +51,7 @@ casper.test.begin('PhantomParser', function (test) {
     // setUpPage
     phantom = new PhantomParser(require('webpage').create());
 
-    phantom.setUpPage();
+    phantom.setUpPage(phantom.page);
 
     test.assertEquals(phantom.page.settings.resourceTimeout, config.parser.timeout, 'it has been set up properly');
     test.assertEquals(phantom.page.onResourceTimeout,        phantom.onResourceTimeout, 'it has been set up properly');

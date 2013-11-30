@@ -149,6 +149,44 @@ module.exports = function Parser() {
     };
 
     /**
+     * Contains a stack of steps (JS events and XPath) to be reproduced in order
+     * to reach a certain point during the navigation path.
+     *
+     * @property stepStack
+     * @type {Array}
+     * @default []
+     */
+    this.stepStack = [];
+
+    /**
+     * Contains a list of hashes of steps (JS events and XPath) already executed.
+     *
+     * @property stepHashes
+     * @type {Array}
+     * @default []
+     */
+    this.stepHashes = [];
+
+    /**
+     * Contains a stack of pages to be re-processed because a JS event has been
+     * fired.
+     *
+     * @property stackPages
+     * @type {Array}
+     * @default []
+     */
+    this.stackPages = [];
+
+    /**
+     * Links container.
+     *
+     * @property links
+     * @type {Object}
+     * @default {}
+     */
+    this.links = {};
+
+    /**
      * Parse the URL.
      *
      * @method parse
@@ -165,6 +203,10 @@ module.exports = function Parser() {
         this.data  = data || '';
         this.event = evt || '';
         this.xPath = xPath || '';
+
+        if (this.event !== '' && this.xPath !== '') {
+            this.stepStack.push({event: this.event, xPath: this.xPath});
+        }
 
         this.initReport();
 
@@ -208,6 +250,73 @@ module.exports = function Parser() {
      * @return undefined
      */
     this.parsePost = function () {
+    };
+
+    /**
+     * Fire an event to an object (document, window, ...).
+     *
+     * @method fireEventObject
+     * @return undefined
+     */
+    this.fireEventObject = function () {
+        var obj,
+            evt,
+            xPath = arguments[0].xPath,
+            event = arguments[0].event;
+
+        eval('obj = ' + xPath);
+        if (obj !== undefined) {
+            evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent(event, false, false, null);
+            obj.dispatchEvent(evt);
+        }
+    };
+
+    /**
+     * Fire an event to a DOM element.
+     *
+     * @method fireEventDOM
+     * @return undefined
+     */
+    this.fireEventDOM = function () {
+        var xPath = arguments[0].xPath,
+            event = arguments[0].event,
+            element = window.eventContainer.getElementByXpath(xPath),
+            evt;
+
+        if (element !== undefined) {
+            evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent(event, false, false, null);
+            element.dispatchEvent(evt);
+        }
+    };
+
+    /**
+     * Push the WebPage in the stack of the unprocessed ones after firing the
+     * requested JS event.
+     *
+     * @method putPageInStack
+     * @param {Object} page  The WebPage instance to be cloned.
+     * @param {String} evt   The event to fire.
+     * @param {String} xPath The XPath expression to identify the element to fire.
+     * @return undefined
+     */
+    this.putPageInStack = function (page, evt, xPath) {
+        var id, pageFork = currentParser.cloneWebPage(page);
+
+        id = evt + xPath;
+        if (currentParser.stepHashes.indexOf(id) === -1) {
+            currentParser.stepHashes.push(id);
+            console.log('FIRE(' + evt + ', ' + xPath + ')');
+
+            if (xPath[0] !== '/') {
+                pageFork.evaluate(currentParser.fireEventObject, {event: evt, xPath: xPath});
+            } else {
+                pageFork.evaluate(currentParser.fireEventDOM, {event: evt, xPath: xPath});
+            }
+
+            currentParser.stackPages.push(pageFork);
+        }
     };
 
     /**

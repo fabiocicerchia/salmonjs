@@ -45,8 +45,8 @@ var Parser          = require('../parser'),
     data            = input[7],
     evt             = input[8],
     xPath           = input[9],
-    storeDetails    = input[10],
-    followRedirects = input[11],
+    storeDetails    = input[10] === 'true',
+    followRedirects = input[11] === 'true',
     page            = require('webpage').create();
 
 if (username !== undefined && password !== undefined) {
@@ -86,19 +86,19 @@ var PhantomParser = function (page) {
      * @method setUpPage
      * @return undefined
      */
-    this.setUpPage = function () {
-        this.page.settings.resourceTimeout = config.parser.timeout;
-        this.page.onResourceTimeout        = this.onResourceTimeout;
-        this.page.onError                  = this.onError;
-        this.page.onInitialized            = this.onInitialized;
-        this.page.onResourceReceived       = this.onResourceReceived;
-        this.page.onAlert                  = this.onAlert;
-        this.page.onConfirm                = this.onConfirm;
-        this.page.onPrompt                 = this.onPrompt;
-        this.page.onConsoleMessage         = this.onConsoleMessage;
-        this.page.onNavigationRequested    = this.onNavigationRequested;
-        this.page.viewportSize             = { width: 1024, height: 800 };
-        this.page.settings.userAgent       = 'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)';
+    this.setUpPage = function (page) {
+        page.settings.resourceTimeout = config.parser.timeout;
+        page.onResourceTimeout        = this.onResourceTimeout;
+        page.onError                  = this.onError;
+        page.onInitialized            = this.onInitialized;
+        page.onResourceReceived       = this.onResourceReceived;
+        page.onAlert                  = this.onAlert;
+        page.onConfirm                = this.onConfirm;
+        page.onPrompt                 = this.onPrompt;
+        page.onConsoleMessage         = this.onConsoleMessage;
+        page.onNavigationRequested    = this.onNavigationRequested;
+        page.viewportSize             = { width: 1024, height: 800 };
+        page.settings.userAgent       = 'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)';
     };
 
     /**
@@ -108,7 +108,7 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.parseGet = function () {
-        this.setUpPage();
+        this.setUpPage(this.page);
 
         this.page.open(this.url + this.data, this.onOpen);
         this.page.onLoadFinished = this.onLoadFinished;
@@ -121,7 +121,7 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.parsePost = function () {
-        this.setUpPage();
+        this.setUpPage(this.page);
 
         this.page.open(this.url, 'post', this.data, this.onOpen);
         this.page.onLoadFinished = this.onLoadFinished;
@@ -138,56 +138,31 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.onNavigationRequested = function (url, type, willNavigate, main) {
-        if (!followRedirects && url !== currentParser.url) {
-            var response = {
-                idCrawler: idCrawler, // TODO: It might be empty
-                links:     {},
-                report:    currentParser.report
-            };
-
-            console.log('###' + JSON.stringify(response));
-            if (args.join(' ').indexOf('casperjs --cli test') === -1) {
-                phantom.exit(); // TODO: This will crash PhantomJS
-            }
+        // TODO: What to do with reloads?
+        if (!followRedirects && url.indexOf(currentParser.url) === -1) {
+            //currentParser.links = {};
+            currentParser.exit();
         }
     };
 
     /**
-     * Fire an event to an object (document, window, ...).
+     * Stop the execution of the current parser and return the data scraped.
      *
-     * @method fireEventObject
+     * @method exit
      * @return undefined
      */
-    this.fireEventObject = function () {
-        var obj,
-            evt,
-            xPath = arguments[0].xPath,
-            event = arguments[0].event;
+    this.exit = function () {
+        var response;
 
-        eval('obj = ' + xPath);
-        if (obj !== undefined) {
-            evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent(event, false, false, null);
-            obj.dispatchEvent(evt);
-        }
-    };
+        response = {
+            idCrawler: idCrawler,
+            links:     currentParser.links,
+            report:    currentParser.report
+        };
 
-    /**
-     * Fire an event to a DOM element.
-     *
-     * @method fireEventDOM
-     * @return undefined
-     */
-    this.fireEventDOM = function () {
-        var xPath = arguments[0].xPath,
-            event = arguments[0].event,
-            element = window.eventContainer.getElementByXpath(xPath),
-            evt;
-
-        if (element !== undefined) {
-            evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent(event, false, false, null);
-            element.dispatchEvent(evt);
+        console.log('###' + JSON.stringify(response));
+        if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+            phantom.exit(); // TODO: This will crash PhantomJS
         }
     };
 
@@ -214,9 +189,7 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.onResourceTimeout = function () {
-        if (args.join(' ').indexOf('casperjs') === -1) {
-            phantom.exit();
-        }
+        currentParser.exit();
 
         return true;
     };
@@ -247,11 +220,14 @@ var PhantomParser = function (page) {
      * loaded.
      *
      * @method onInitialized
+     * @param {Object} page The WebPage instance
      * @return undefined
      */
-    this.onInitialized = function () {
-        currentParser.page.injectJs('../sha1.js');
-        currentParser.page.injectJs('../events.js');
+    this.onInitialized = function (page) {
+        var currPage = page || currentParser.page;
+
+        currPage.injectJs('../sha1.js');
+        currPage.injectJs('../events.js');
     };
 
     /**
@@ -327,30 +303,54 @@ var PhantomParser = function (page) {
      * @return undefined
      */
     this.onLoadFinished = function () {
-        if (currentParser.event !== '' && currentParser.xPath !== '') {
-            if (currentParser.xPath[0] !== '/') {
-                currentParser.page.evaluate(currentParser.fireEventObject, currentParser);
-            } else {
-                currentParser.page.evaluate(currentParser.fireEventDOM, currentParser);
+        var step;
+
+        // Execute all the events to be sure to follow the right path to the
+        // right page to be processed.
+        for (step in currentParser.stepStack) {
+            if (currentParser.stepStack[step].event !== '' && currentParser.stepStack[step].xPath !== '') {
+                if (currentParser.stepStack[step].xPath[0] !== '/') {
+                    currentParser.page.evaluate(currentParser.fireEventObject, currentParser.stepStack[step]);
+                } else {
+                    currentParser.page.evaluate(currentParser.fireEventDOM, currentParser.stepStack[step]);
+                }
             }
         }
 
-        currentParser.parsePage();
+        currentParser.parsePage(currentParser.page);
+    };
+
+    /**
+     * Clone the specified WebPage.
+     *
+     * @method cloneWebPage
+     * @param  {Object} page The WebPage instance to be cloned.
+     * @return {Object}
+     */
+    this.cloneWebPage = function (page) {
+        var newPage = require('webpage').create();
+
+        currentParser.setUpPage(newPage);
+        newPage.setContent(page.content, page.url);
+        newPage.onInitialized(newPage);
+
+        return newPage;
     };
 
     /**
      * Parse the page to get the information needed.
      *
      * @method parsePage
+     * @param {Object} page The WebPage instance
      * @return undefined
      */
-    this.parsePage = function () {
-        var url, links = {}, response;
+    this.parsePage = function (page) {
+        var url, links = {}, events;
 
-        currentParser.report.content = currentParser.page.content;
+        currentParser.report.content = page.content;
 
         if (currentParser.report.content.indexOf('<html') !== -1) {
-            url = currentParser.page.evaluate(function () {
+            url = page.evaluate(function () {
                 return document.location.href;
             });
 
@@ -359,29 +359,42 @@ var PhantomParser = function (page) {
                 page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
             }
 
-            links = currentParser.page.evaluate(currentParser.onEvaluate, currentParser.tags);
+            links = page.evaluate(currentParser.onEvaluate, currentParser.tags);
 
-            links.events = currentParser.page.evaluate(function () {
+            // TODO: What if an event will change url? will it be processed in here or just returned back to the crawler?
+            events = page.evaluate(function () {
                 return window.eventContainer.getEvents();
             });
 
-            links.a = [].map.call(links.a, function (item) {
-                return currentParser.normaliseUrl(item, url);
-            }).filter(currentParser.onlyUnique);
+            for (var type in events) {
+                for (var act in events[type]) {
+                    for (var evt in events[type][act]) {
+                        currentParser.putPageInStack(page, type, events[type][act][evt]);
+                    }
+                }
+            }
 
-            links.link = [].map.call(links.link, function (item) {
-                return currentParser.normaliseUrl(item, url);
-            }).filter(currentParser.onlyUnique);
+            while (Object.keys(currentParser.stackPages).length !== 0) {
+                currentParser.parsePage(currentParser.stackPages.pop());
+            }
 
-            links.script = [].map.call(links.script, function (item) {
+            currentParser.links.a = [].map.call(links.a, function (item) {
                 return currentParser.normaliseUrl(item, url);
-            }).filter(currentParser.onlyUnique);
+            }).concat(currentParser.links.a).filter(currentParser.onlyUnique);
 
-            links.meta = [].map.call(links.meta, function (item) {
+            currentParser.links.link = [].map.call(links.link, function (item) {
                 return currentParser.normaliseUrl(item, url);
-            }).filter(currentParser.onlyUnique);
+            }).concat(currentParser.links.link).filter(currentParser.onlyUnique);
 
-            links.form = [].map.call(links.form, function (item) {
+            currentParser.links.script = [].map.call(links.script, function (item) {
+                return currentParser.normaliseUrl(item, url);
+            }).concat(currentParser.links.script).filter(currentParser.onlyUnique);
+
+            currentParser.links.meta = [].map.call(links.meta, function (item) {
+                return currentParser.normaliseUrl(item, url);
+            }).concat(currentParser.links.meta).filter(currentParser.onlyUnique);
+
+            currentParser.links.form = [].map.call(links.form, function (item) {
                 item.action = item.action || url;
                 item.action = currentParser.normaliseUrl(item.action, url);
 
@@ -390,17 +403,10 @@ var PhantomParser = function (page) {
                 }
 
                 return item;
-            }).filter(currentParser.onlyUnique);
+            }).concat(currentParser.links.form).filter(currentParser.onlyUnique);
         }
 
-        response = {
-            idCrawler: idCrawler, // TODO: It might be empty
-            links:     links,
-            report:    currentParser.report
-        };
-
-        console.log('###' + JSON.stringify(response));
-        phantom.exit();
+        currentParser.exit();
     };
 
     /**
@@ -426,7 +432,9 @@ var PhantomParser = function (page) {
         for (tag in tags) {
             if (tags.hasOwnProperty(tag)) {
                 attribute = tags[tag];
-                urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) { return item.getAttribute(attribute); });
+                urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) {
+                    return item.hasAttribute(attribute) ? item.getAttribute(attribute) : undefined;
+                });
             }
         }
 

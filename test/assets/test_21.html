@@ -1,0 +1,13 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <a href="#whatever1" onclick="load()">test</a>
+        <a href="#whatever2">test2</a>
+        <script>
+            function load() {
+                document.getElementsByTagName('a')[1].setAttribute('onclick', 'alert("a");');
+            }
+        </script>
+    </body>
+</html>
