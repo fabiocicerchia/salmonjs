@@ -492,7 +492,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @return undefined
      */
     this.onStdOut = function (data) {
-        var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
+        var strPrint, winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
         winston.info(
             '%s Retrieved %d bytes.',
@@ -500,6 +500,15 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             data.toString().length
         );
         currentCrawler.processOutput += data.toString();
+
+        strPrint = data.toString().replace(/###.+/, '').replace(/[\r\n]/g, '');
+        if (strPrint !== '') {
+            winston.info(
+                'Output from %s: %s'.grey,
+                config.parser.interface.toUpperCase(),
+                strPrint
+            );
+        }
     };
 
     /**
