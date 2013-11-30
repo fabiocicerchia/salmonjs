@@ -33,6 +33,8 @@ var IOC     = require('./ioc'),
     winston = require('winston'),
     fs      = require('fs'),
     path    = require('path'),
+    Insight = require('insight'),
+    pkg     = require('../package.json'),
     redis   = require('redis'),
     client  = redis.createClient(config.redis.port, config.redis.hostname),
     argv;
@@ -40,8 +42,15 @@ var IOC     = require('./ioc'),
 require('path');
 require('colors');
 
+var insight = new Insight({
+    trackingCode:   'UA-439670-13',
+    packageName:    pkg.name,
+    packageVersion: pkg.version
+});
+
 var ioc = new IOC();
 ioc.add('config',    config);
+ioc.add('insight',   insight);
 ioc.add('spawn',     require('child_process').spawn);
 ioc.add('crypto',    require('crypto'));
 ioc.add('redis',     redis);
@@ -97,12 +106,15 @@ argv = require('optimist')
     .describe('p', 'Password for HTTP authentication')
     .describe('d', 'Store details for each page')
     .describe('f', 'Follows redirects')
+    .describe('disable-stats', 'Disable anonymous report usage stats')
     .describe('help', 'Show the help')
     .string('uri')
     .boolean('d')
     .boolean('f')
+    .boolean('disable-stats')
     .default('d', false)
     .default('f', false)
+    .default('disable-stats', false)
     .argv;
 
 function spawnStdout(data) {
@@ -115,9 +127,7 @@ function spawnStderr(data) {
     console.log(data.substr(0, data.length - 1).red);
 }
 
-if (argv.help !== undefined || argv.uri === undefined) {
-    argv.showHelp();
-} else {
+function start() {
     var uri = path.resolve(argv.uri);
     if (fs.existsSync(uri)) {
         uri = 'file://' + encodeURI(uri);
@@ -128,6 +138,9 @@ if (argv.help !== undefined || argv.uri === undefined) {
             uri = 'http://' + uri;
         }
     }
+
+    winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
+    insight.track('cli', 'uri', encodeURIComponent(uri));
 
     winston.info('Start processing "' + uri.green + '"...');
 
@@ -145,4 +158,15 @@ if (argv.help !== undefined || argv.uri === undefined) {
     childProcess.on('exit', function () {
         process.exit();
     });
+}
+
+if (argv.help !== undefined || argv.uri === undefined) {
+    argv.showHelp();
+} else {
+    if (insight.optOut === undefined) {
+        return insight.askPermission(undefined, start);
+    }
+
+    insight.optOut = argv['disable-stats'];
+    start();
 }
