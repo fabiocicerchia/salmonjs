@@ -12,8 +12,8 @@
 
 Web Crawler in Node.js to spider dynamically whole websites.
 
-** IMPORTANT: This is a DEVELOPMENT tool, therefore SHOULD NOT be used against a
-website you DO NOT OWN! **
+**IMPORTANT: This is a DEVELOPMENT tool, therefore SHOULD NOT be used against a
+website you DO NOT OWN!**
 
 It helps you to map / process entire websites, spidering them and parsing each
 page in a smart way. It follows all the links and test several times the form
@@ -79,7 +79,7 @@ Here below few suggestions about its usage:
    a, area, base, form, frame, iframe, img, input, link, script
  * URL normalisation
  * Process the web page using PhantomJS or CasperJS
- * Pricessing the output content only if it's HTML
+ * Processing the output content only if it's HTML
 
 ## Dependencies
 
