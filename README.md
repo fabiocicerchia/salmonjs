@@ -78,7 +78,7 @@ Here below few suggestions about its usage:
  * Support for the following HTML tags:
    a, area, base, form, frame, iframe, img, input, link, script
  * URL normalisation
- * Process the web page using PhantomJS or CasperJS
+ * Process the web page using PhantomJS
  * Processing the output content only if it's HTML
 
 ## Dependencies
@@ -86,7 +86,8 @@ Here below few suggestions about its usage:
 Here the list of main dependencies:
 
  * [Node.js](http://nodejs.org/download/)
- * [PhantomJS](http://phantomjs.org/download.html) / [CasperJS](http://casperjs.org/)
+ * [PhantomJS](http://phantomjs.org/download.html)
+ * [CasperJS](http://casperjs.org/) (optional, only for tests)
  * [Redis](http://redis.io/download)
 
 ## Installation
