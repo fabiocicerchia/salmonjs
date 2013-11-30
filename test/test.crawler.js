@@ -82,11 +82,6 @@ casper.test.begin('Crawler', function (test) {
     test.assertEquals(crawler.run('', '', '', '', ''), 'OK', 'runs');
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
-    config.parser.interface = 'casper';
-    crawler.execCasperjs = function () { return 'OK'; };
-    test.assertEquals(crawler.run('', '', '', '', ''), 'OK', 'runs');
-
-    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
     config.parser.interface = 'fake';
     test.assertEquals(crawler.run('', '', '', '', ''), undefined, 'doesn\'t run');
 
