@@ -34,6 +34,7 @@ var IOC     = require('./ioc'),
     fs      = require('fs'),
     path    = require('path'),
     Insight = require('insight'),
+    os      = require('os'),
     pkg     = require('../package.json'),
     redis   = require('redis'),
     client  = redis.createClient(config.redis.port, config.redis.hostname),
@@ -140,7 +141,12 @@ function start() {
     }
 
     winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
-    insight.track('cli', 'uri', encodeURIComponent(uri));
+    insight.track('cli', 'os', os.type());
+    insight.track('cli', 'platform', os.platform());
+    insight.track('cli', 'arch', os.arch());
+    insight.track('cli', 'release', os.release());
+    insight.track('cli', 'node', process.versions.node);
+    insight.track('cli', 'engine', process.versions.v8);
 
     winston.info('Start processing "' + uri.green + '"...');
 
