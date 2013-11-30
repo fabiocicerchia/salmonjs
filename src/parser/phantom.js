@@ -146,6 +146,34 @@ var PhantomParser = function (page) {
     };
 
     /**
+     * Push the WebPage in the stack of the unprocessed ones after firing the
+     * requested JS event.
+     *
+     * @method putPageInStack
+     * @param {Object} page  The WebPage instance to be cloned.
+     * @param {String} evt   The event to fire.
+     * @param {String} xPath The XPath expression to identify the element to fire.
+     * @return undefined
+     */
+    this.putPageInStack = function (page, evt, xPath) {
+        var id, pageFork = currentParser.cloneWebPage(page);
+
+        id = evt + xPath;
+        if (currentParser.stepHashes.indexOf(id) === -1) {
+            currentParser.stepHashes.push(id);
+            console.log('FIRE(' + evt + ', ' + xPath + ')');
+
+            if (xPath[0] !== '/') {
+                pageFork.evaluate(currentParser.fireEventObject, {event: evt, xPath: xPath});
+            } else {
+                pageFork.evaluate(currentParser.fireEventDOM, {event: evt, xPath: xPath});
+            }
+
+            currentParser.stackPages.push(pageFork);
+        }
+    };
+
+    /**
      * Stop the execution of the current parser and return the data scraped.
      *
      * @method exit
