@@ -281,46 +281,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     };
 
     /**
-     * Execute CasperJS.
-     *
-     * @method execCasperjs
-     * @return undefined
-     */
-    this.execCasperjs = function () {
-        var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
-            casper,
-            params  = [
-                this.idUri,
-                this.timeStart,
-                idRequest,
-                this.username,
-                this.password,
-                this.url,
-                this.type,
-                this.serialise(this.data),
-                this.evt,
-                this.xPath,
-                this.storeDetails,
-                this.followRedirects
-            ];
-
-        try {
-            casper = spawn(config.parser.cmd,  [
-                //'--debug=true',
-                './src/parser/' + config.parser.interface + '.js',
-                JSON.stringify(params)
-            ]);
-
-            casper.stdout.on('data', this.onStdOut);
-            casper.stderr.on('data', this.onStdErr);
-            casper.on('exit', this.onExit);
-        } catch (err) {
-            winston.error(err.message.red);
-            this.handleError();
-        }
-    };
-
-    /**
      * Execute the request launching a spawn'd process to the parser to get the
      * web page data back as JSON.
      *
@@ -353,8 +313,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         if (config.parser.interface === 'phantom') {
             return this.execPhantomjs();
-        } else if (config.parser.interface === 'casper') {
-            return this.execCasperjs();
         }
 
         return undefined;
