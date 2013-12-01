@@ -31,6 +31,7 @@ RM=rm -rf
 GIT=git
 CASPERJS=./casperjs/bin/casperjs
 JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
+FILES=test/test.*.js test/*/test.*.js
 
 install-casper:
 	$(GIT) clone git://github.com/n1k0/casperjs.git
@@ -50,7 +51,7 @@ changelog:
 coverage:
 	$(RM) src-cov 2> /dev/null
 	$(JSCOVERAGE) src src-cov
-	$(CASPERJS) test test/test.*.js test/*/test.*.js --post=src/reporter/coverage.js --coverage --concise
+	$(CASPERJS) test $(FILES) --post=src/reporter/coverage.js --coverage --concise
 	$(RM) src-cov
 
 .PHONY: test
