@@ -96,19 +96,6 @@ var FSWrapper = function (fs) {
     };
 
     /**
-     * Method to handle the differences between Node.js FS.unlinkSync and
-     * PhantomJS FS.remove.
-     *
-     * @method unlinkSync
-     * @param {String} path The path
-     * @return undefined
-     */
-    this.unlinkSync = function (path) {
-        var method = (fs.unlinkSync !== undefined) ? 'unlinkSync' : 'remove';
-        return fs[method].call(fs, path);
-    };
-
-    /**
      * Method to handle the differences between Node.js FS.readdirSync and
      * PhantomJS FS.list.
      *
