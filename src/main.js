@@ -33,6 +33,7 @@ var IOC     = require('./ioc'),
     winston = require('winston'),
     fs      = require('fs'),
     path    = require('path'),
+    crypto  = require('crypto'),
     Insight = require('insight'),
     os      = require('os'),
     pkg     = require('../package.json'),
@@ -53,7 +54,7 @@ var ioc = new IOC();
 ioc.add('config',    config);
 ioc.add('insight',   insight);
 ioc.add('spawn',     require('child_process').spawn);
-ioc.add('crypto',    require('crypto'));
+ioc.add('crypto',    crypto);
 ioc.add('redis',     redis);
 ioc.add('client',    client);
 ioc.add('winston',   winston);
@@ -141,12 +142,16 @@ function start() {
     }
 
     winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
-    insight.track('cli', 'os', os.type());
+    var uniqId = os.type() + os.platform() + os.arch() + os.release() + process.versions.node + process.versions.v8 + '0.2.1';
+    uniqId = crypto.createHash('sha1').update(uniqId).digest('hex');
+    insight.track('cli', 'os',       os.type());
     insight.track('cli', 'platform', os.platform());
-    insight.track('cli', 'arch', os.arch());
-    insight.track('cli', 'release', os.release());
-    insight.track('cli', 'node', process.versions.node);
-    insight.track('cli', 'engine', process.versions.v8);
+    insight.track('cli', 'arch',     os.arch());
+    insight.track('cli', 'release',  os.release());
+    insight.track('cli', 'node',     process.versions.node);
+    insight.track('cli', 'engine',   process.versions.v8);
+    insight.track('cli', 'spidey',   '0.2.1');
+    insight.track('cli', 'spidey',   uniqId);
 
     winston.info('Start processing "' + uri.green + '"...');
 
