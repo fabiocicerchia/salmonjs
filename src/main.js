@@ -170,9 +170,9 @@ if (argv.help !== undefined || argv.uri === undefined) {
     argv.showHelp();
 } else {
     if (insight.optOut === undefined) {
-        return insight.askPermission(undefined, start);
+        insight.askPermission(undefined, start);
+    } else {
+        insight.optOut = argv['disable-stats'];
+        start();
     }
-
-    insight.optOut = argv['disable-stats'];
-    start();
 }
