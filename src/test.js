@@ -57,16 +57,17 @@ var Test = function (fsWrapper, glob, mainDir) {
     /**
      * Create test case file.
      *
-     * @method create
+     * @method createNewCaseFile
      * @param  {String}   name     The name of the test case.
      * @param  {String}   data     The data of the test case.
      * @param  {Function} callback The data of the test case.
      * @return undefined
      */
-    this.create = function (url, name, data, callback) {
-        var content      = '',
-            testCaseFile = mainDir + this.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_') + '/' + name + '.tst',
-            k;
+    this.createNewCaseFile = function (url, name, data, callback) {
+        var k,
+            content      = '',
+            dir          = mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'),
+            testCaseFile = dir + '/' + name + '.tst';
 
         if (url === '' || name === '' || Object.keys(data).length === 0) {
             return (callback !== undefined) ? callback() : undefined;
@@ -81,15 +82,16 @@ var Test = function (fsWrapper, glob, mainDir) {
 
         for (k in data) {
             if (data.hasOwnProperty(k)) {
-                content += k + '=' + data[k] + "\n";
+               content += k + '=' + data[k] + "\n";
             }
         }
 
-        if (!fsWrapper.existsSync(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'))) {
-            fsWrapper.mkdirSync(mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'), '0777');
+        if (!fsWrapper.existsSync(dir)) {
+            fsWrapper.mkdirSync(dir, '0777');
         }
 
         fsWrapper.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
+
         if (callback !== undefined) {
             callback();
         }
@@ -107,50 +109,54 @@ var Test = function (fsWrapper, glob, mainDir) {
             return [];
         }
 
-        var cases = [],
-            filename,
-            testCase,
+        var testCase,
+            cases = [],
             files = glob.sync(mainDir + this.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_') + '/*.tst');
 
-        for (filename in files) {
-            if (files.hasOwnProperty(filename)) {
-                testCase = currentTest.parseCase(filename);
+        files.forEach(function (value) {
+            testCase = currentTest.parseCaseFile(value);
 
-                if (testCase !== {}) {
-                    cases.push(testCase);
-                }
+            if (testCase !== {}) {
+                cases.push(testCase);
             }
-        }
+        });
 
         return cases;
     };
 
+    /**
+     * TBD
+     */
     this.parseINIString = function (data) {
-        var regex = {
+        var regex   = {
                 section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
                 param:   /^\s*([\w\.\-\_]+)\s*=\s*(.*?)\s*$/,
                 comment: /^\s*;.*$/
             },
-            value = {},
-            lines = data.split(/\r\n|\r|\n/),
+            value   = {},
+            lines   = data.split(/\r\n|\r|\n/),
             section = null,
             match;
 
         lines.forEach(function (line) {
             if (regex.comment.test(line)) {
+                // TODO: NOT COVERED!
                 return;
             } else if(regex.param.test(line)) {
                 match = line.match(regex.param);
                 if (section) {
+                    // TODO: NOT COVERED!
                     value[section][match[1]] = match[2];
                 } else {
                     value[match[1]] = match[2];
                 }
             } else if (regex.section.test(line)) {
+                // TODO: NOT COVERED!
                 match = line.match(regex.section);
                 value[match[1]] = {};
                 section = match[1];
             } else if (line.length === 0 && section) {
+                // TODO: NOT COVERED!
                 section = null;
             }
         });
@@ -161,11 +167,11 @@ var Test = function (fsWrapper, glob, mainDir) {
     /**
      * Parse a test cases file to return the testing data to be used.
      *
-     * @method parseCases
+     * @method parseCaseFile
      * @param  {String} The test case file.
      * @return {Object}
      */
-    this.parseCase = function (file) {
+    this.parseCaseFile = function (file) {
         var content;
 
         if (!fsWrapper.existsSync(file)) {
