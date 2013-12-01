@@ -43,12 +43,11 @@ casper.on('remote.message', function (msg) {
     console.log('CONSOLE.LOG: ' + msg);
 });
 
-casper.test.begin('PhantomParser', function (test) {
+casper.test.begin('setUpPage', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
         phantom;
 
-    // setUpPage
     phantom = new PhantomParser(require('webpage').create());
 
     phantom.setUpPage(phantom.page);
@@ -66,17 +65,14 @@ casper.test.begin('PhantomParser', function (test) {
     test.assertEquals(phantom.page.viewportSize,             { width: 1024, height: 800 }, 'it has been set up properly');
     test.assertEquals(phantom.page.settings.userAgent,      'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)', 'it has been set up properly');
 
-    /*
-    // fireEventObject
-    // TBD
-    test.assertEquals(false, true);
+    test.done();
+});
 
-    // fireEventDOM
-    // TBD
-    test.assertEquals(false, true);
-    */
+casper.test.begin('onOpen', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
 
-    // onOpen
     phantom = new PhantomParser(require('webpage').create());
     phantom.onOpen('failure');
 
@@ -94,11 +90,25 @@ casper.test.begin('PhantomParser', function (test) {
     test.assertType(phantom.page.navigationLocked, 'boolean');
     test.assertEquals(phantom.page.navigationLocked, true);
 
-    // onResourceTimeout
+    test.done();
+});
+
+casper.test.begin('onResourceTimeout', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
     phantom = new PhantomParser(require('webpage').create());
     test.assertEquals(phantom.onResourceTimeout(), true);
 
-    // onError
+    test.done();
+});
+
+casper.test.begin('onError', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
     phantom = new PhantomParser(require('webpage').create());
     phantom.onError('error1');
     test.assertEquals(phantom.report.errors, ['ERROR: error1']);
@@ -111,45 +121,103 @@ casper.test.begin('PhantomParser', function (test) {
     phantom.onError('error3', [{file: 'file', line: 1, function: 'test'}]);
     test.assertEquals(phantom.report.errors, ['ERROR: error3\nTRACE:\n -> file: 1 (in function "test")']);
 
-    // onResourceReceived
+    test.done();
+});
+
+casper.test.begin('onResourceReceived', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
     phantom = new PhantomParser(require('webpage').create());
     phantom.onResourceReceived({stage: 'end', url: 'about:blank', headers: []});
     test.assertEquals(phantom.report.resources, { 'about:blank': { headers: [] } });
 
-    // onAlert
+    test.done();
+});
+
+casper.test.begin('onAlert', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
     phantom = new PhantomParser(require('webpage').create());
     phantom.onAlert('message');
     test.assertType(phantom.report.alerts, 'array');
     test.assertEquals(phantom.report.alerts, ['message']);
 
-    // onConfirm
+    test.done();
+});
+
+casper.test.begin('onConfirm', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
     phantom = new PhantomParser(require('webpage').create());
     test.assertEquals(phantom.onConfirm('message'), true);
     test.assertType(phantom.report.confirms, 'array');
     test.assertEquals(phantom.report.confirms, ['message']);
 
-    // onPrompt
+    test.done();
+});
+
+casper.test.begin('onPrompt', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
     phantom = new PhantomParser(require('webpage').create());
     test.assertEquals(phantom.onPrompt('message', ''), '');
     test.assertType(phantom.report.prompts, 'array');
     test.assertEquals(phantom.report.prompts, [{msg: 'message', defaultVal: ''}]);
 
-    // onConsoleMessage
+    test.done();
+});
+
+casper.test.begin('onConsoleMessage', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
     phantom = new PhantomParser(require('webpage').create());
     phantom.onConsoleMessage('message', 1, '');
     test.assertType(phantom.report.console, 'array');
     test.assertEquals(phantom.report.console, [{msg: 'message', lineNum: 1, sourceId: ''}]);
 
+    test.done();
+});
+
+casper.test.begin('onLoadFinished', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
     /*
-    // onLoadFinished
     // TBD
-    test.assertEquals(false, true);
+    test.assertEquals(false, true);*/
 
-    // parsePage
+    test.done();
+});
+
+casper.test.begin('parsePage', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
+    /*
     // TBD
-    test.assertEquals(false, true);
+    test.assertEquals(false, true);*/
 
-    // onEvaluate
+    test.done();
+});
+
+casper.test.begin('onEvaluate', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
+    /*
     // TBD
     test.assertEquals(false, true);
     */
@@ -157,11 +225,10 @@ casper.test.begin('PhantomParser', function (test) {
     test.done();
 });
 
-casper.test.begin('PhantomParser Async', function (test) {
+casper.test.begin('parseGet', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         phantom;
 
-    // parseGet
     phantom = new PhantomParser(require('webpage').create());
     phantom.url = 'about:blank';
     phantom.data = '';
@@ -172,11 +239,10 @@ casper.test.begin('PhantomParser Async', function (test) {
     test.assertEquals(phantom.parseGet(), undefined);
 });
 
-casper.test.begin('PhantomParser Async #2', function (test) {
+casper.test.begin('parsePost', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         phantom;
 
-    // parsePost
     phantom = new PhantomParser(require('webpage').create());
     phantom.url = 'about:blank';
     phantom.data = {};
@@ -188,12 +254,11 @@ casper.test.begin('PhantomParser Async #2', function (test) {
 });
 
 /*
-casper.test.begin('PhantomParser Async #3', function (test) {
+casper.test.begin('onInitialized', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
         phantom;
 
-    // onInitialized
     phantom = new PhantomParser(require('webpage').create());
     phantom.page.injectJs = function() {
         test.done();

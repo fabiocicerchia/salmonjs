@@ -43,25 +43,38 @@ casper.on('remote.message', function (msg) {
     console.log('CONSOLE.LOG: ' + msg);
 });
 
-casper.test.begin('Config', function (test) {
+casper.test.begin('Redis', function (test) {
     var config = require(srcdir + '/config');
-
-    // REDIS
     test.assertType(config.redis, 'object', 'it should be an object');
     test.assertType(config.redis.port, 'number', 'it contains "port" element');
     test.assertType(config.redis.hostname, 'string', 'it contains "hostname" element');
 
-    // LOGGING
+    test.done();
+});
+
+casper.test.begin('Logging', function (test) {
+    var config = require(srcdir + '/config');
+
     test.assertType(config.logging, 'object', 'it should be an object');
     test.assertType(config.logging.level, 'string', 'it contains "level" element');
     test.assertType(config.logging.silent, 'boolean', 'it contains "silent" element');
 
-    // PARSER
+    test.done();
+});
+
+casper.test.begin('Parser', function (test) {
+    var config = require(srcdir + '/config');
+
     test.assertType(config.parser, 'object', 'it should be an object');
     test.assertType(config.parser.interface, 'string', 'it contains "interface" element');
     test.assertType(config.parser.timeout, 'number', 'it contains "timeout" element');
 
-    // CRAWLER
+    test.done();
+});
+
+casper.test.begin('Crawler', function (test) {
+    var config = require(srcdir + '/config');
+
     test.assertType(config.crawler, 'object', 'it should be an object');
     test.assertType(config.crawler.attempts, 'number', 'it contains "attempts" element');
     test.assertType(config.crawler.delay, 'number', 'it contains "delay" element');

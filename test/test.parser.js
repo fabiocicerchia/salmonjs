@@ -43,12 +43,11 @@ casper.on('remote.message', function (msg) {
     console.log('CONSOLE.LOG: ' + msg);
 });
 
-casper.test.begin('Parser', function (test) {
+casper.test.begin('parse', function (test) {
     var Parser = require(srcdir + '/parser'),
         parser,
         resp;
 
-    // parse
     parser = new Parser();
 
     parser.parseGet   = function () { return 'GET'; };
@@ -60,6 +59,14 @@ casper.test.begin('Parser', function (test) {
     test.assertEquals(parser.data, '', 'parses a GET request');
     test.assertEquals(parser.event, '', 'parses a GET request');
     test.assertEquals(parser.xPath, '', 'parses a GET request');
+
+    test.done();
+});
+
+casper.test.begin('parse #2', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
 
     parser = new Parser();
 
@@ -73,11 +80,27 @@ casper.test.begin('Parser', function (test) {
     test.assertEquals(parser.event, '', 'parses a POST request');
     test.assertEquals(parser.xPath, '', 'parses a POST request');
 
+    test.done();
+});
+
+casper.test.begin('parse #3', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
+
     parser = new Parser();
 
     parser.initReport = function () {};
 
     test.assertEquals(parser.parse('', 'HEAD', '', '', ''), undefined, 'doesn\'t parse anything else');
+
+    test.done();
+});
+
+casper.test.begin('Parser', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
 
     // initReport
     parser = new Parser();
@@ -94,19 +117,40 @@ casper.test.begin('Parser', function (test) {
     test.assertEquals(parser.report.xPath, 'xPath', 'sets up the report container');
     test.assertEquals(parser.report.data, 'data', 'sets up the report container');
 
-    // parseGet
+    test.done();
+});
+
+casper.test.begin('parseGet', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
+
     parser = new Parser();
     resp   = parser.parseGet();
 
     test.assertEquals(resp, undefined, 'doesn\'t do anything');
 
-    // parsePost
+    test.done();
+});
+
+casper.test.begin('parsePost', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
+
     parser = new Parser();
     resp   = parser.parsePost();
 
     test.assertEquals(resp, undefined, 'doesn\'t do anything');
 
-    // onlyUnique
+    test.done();
+});
+
+casper.test.begin('onlyUnique', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
+
     parser = new Parser();
 
     test.assertEquals(parser.onlyUnique('unique', 0, ['unique']), true, 'returns true when the element is unique');
@@ -119,7 +163,14 @@ casper.test.begin('Parser', function (test) {
     test.assertEquals(parser.onlyUnique('unique', 1, ['unique', 'unique']), false, 'returns false when the element is not unique');
     test.assertEquals(parser.onlyUnique(undefined, 0, [undefined, 'unique', 'unique']), false, 'returns false when the element is not unique');
 
-    // normaliseData
+    test.done();
+});
+
+casper.test.begin('normaliseData', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
+
     parser = new Parser();
 
     test.assertEquals(parser.normaliseData('http://www.example.com/?%C3%A0=1'), {'à': '1'}, 'encodes correctly');
@@ -140,7 +191,14 @@ casper.test.begin('Parser', function (test) {
     test.assertEquals(parser.normaliseData({}), {}, 'returns empty array when input is not array');
     test.assertEquals(parser.normaliseData(1), {}, 'returns empty array when input is not array');
 
-    // arrayToQuery
+    test.done();
+});
+
+casper.test.begin('arrayToQuery', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
+
     parser = new Parser();
 
     test.assertEquals(parser.arrayToQuery({}), '', 'works correctly');
@@ -159,7 +217,14 @@ casper.test.begin('Parser', function (test) {
     test.assertEquals(parser.arrayToQuery(''), '', 'returns empty string when input is not array');
     test.assertEquals(parser.arrayToQuery('test'), '', 'returns empty string when input is not array');
 
-    // normaliseUrl
+    test.done();
+});
+
+casper.test.begin('normaliseUrl', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser,
+        resp;
+
     parser = new Parser();
 
     test.assertEquals(parser.normaliseUrl('/?b=2', 'http://www.example.com/?a=1'), 'http://www.example.com/?b=2', 'strips querystring when baseUrl contains a querystring');

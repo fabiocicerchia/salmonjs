@@ -43,13 +43,12 @@ casper.on('remote.message', function (msg) {
     console.log('CONSOLE.LOG: ' + msg);
 });
 
-casper.test.begin('Test', function (test) {
+casper.test.begin('createNewCaseFile', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
         testObj   = new Test(fsWrapper, glob, srcdir + '/..');
 
-    // create
-    testObj.create('', 'test', {a: 1}, function () {
+    testObj.createNewCaseFile('', 'test', {a: 1}, function () {
         var content;
         try {
             content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'test.tst');
@@ -58,7 +57,7 @@ casper.test.begin('Test', function (test) {
         test.assertEquals(content, undefined, 'doesn\'t create a file if url is empty');
     });
 
-    testObj.create('http://www.example.com', '', {a: 1}, function () {
+    testObj.createNewCaseFile('http://www.example.com', '', {a: 1}, function () {
         var content;
         try {
             content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/.tst');
@@ -67,8 +66,16 @@ casper.test.begin('Test', function (test) {
         test.assertEquals(content, undefined, 'doesn\'t create a file if name is empty');
     });
 
+    test.done();
+});
+
+casper.test.begin('createNewCaseFile #2', function (test) {
+    var Test      = require(srcdir + '/test'),
+        fsWrapper = new (require(srcdir + '/fs'))(fs),
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+
     testObj = new Test(fsWrapper, glob, srcdir + '/..');
-    testObj.create('http://www.example.com', 'test', {}, function () {
+    testObj.createNewCaseFile('http://www.example.com', 'test', {}, function () {
         var content;
         try {
             content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
@@ -77,8 +84,16 @@ casper.test.begin('Test', function (test) {
         test.assertEquals(content, undefined, 'doesn\'t create a file if data is empty');
     });
 
+    test.done();
+});
+
+casper.test.begin('createNewCaseFile #3', function (test) {
+    var Test      = require(srcdir + '/test'),
+        fsWrapper = new (require(srcdir + '/fs'))(fs),
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+
     testObj = new Test(fsWrapper, glob, srcdir + '/..');
-    testObj.create('http://www.example.com', 'test', {a: 1, b: 2}, function () {
+    testObj.createNewCaseFile('http://www.example.com', 'test', {a: 1, b: 2}, function () {
         var content;
         try {
             content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
@@ -89,30 +104,60 @@ casper.test.begin('Test', function (test) {
         test.assertMatch(content, /\n; url = http:\/\/www.example.com\n; id = test\n\n\[POST\]\na=1\nb=2\n/, 'creates a file if url, name and data is not empty');
     });
 
-    // getCases
+    test.done();
+});
+
+casper.test.begin('getCases', function (test) {
+    var Test      = require(srcdir + '/test'),
+        fsWrapper = new (require(srcdir + '/fs'))(fs),
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+
     testObj = new Test(fsWrapper, glob, srcdir + '/..');
-    testObj.parseCase = function () { return {}; };
+    testObj.parseCaseFile = function () { return {}; };
 
     test.assertEquals(testObj.getCases(''), [], 'doesn\'t return anything if there are no matches');
     test.assertEquals(testObj.getCases('non-existent'), [], 'doesn\'t return anything if there are no matches');
 
     fs.write(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst', 'a=1\nb=2\n');
     testObj = new Test(fsWrapper, glob, srcdir + '/..');
-    testObj.parseCase = function () { return {a: 1, b: 2}; };
+    testObj.parseCaseFile = function () { return {a: 1, b: 2}; };
 
     test.assertEquals(testObj.getCases('http___www_example_com'), [{a: 1, b: 2}], 'returns something if there are matches');
     fs.remove(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');
 
-    // parseCase
-    testObj = new Test(fsWrapper, glob, srcdir + '/..');
-    test.assertEquals(testObj.parseCase('non-existent'), {}, 'doesn\'t parse a non existent file');
+    test.done();
+});
+
+casper.test.begin('parseCaseFile', function (test) {
+    var Test      = require(srcdir + '/test'),
+        fsWrapper = new (require(srcdir + '/fs'))(fs),
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
 
     testObj = new Test(fsWrapper, glob, srcdir + '/..');
-    test.assertEquals(testObj.parseCase('empty-file'), {}, 'parses an empty file');
+    test.assertEquals(testObj.parseCaseFile('non-existent'), {}, 'doesn\'t parse a non existent file');
+
+    test.done();
+});
+
+casper.test.begin('parseCaseFile #2', function (test) {
+    var Test      = require(srcdir + '/test'),
+        fsWrapper = new (require(srcdir + '/fs'))(fs),
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+
+    testObj = new Test(fsWrapper, glob, srcdir + '/..');
+    test.assertEquals(testObj.parseCaseFile('empty-file'), {}, 'parses an empty file');
+
+    test.done();
+});
+
+casper.test.begin('parseCaseFile #3', function (test) {
+    var Test      = require(srcdir + '/test'),
+        fsWrapper = new (require(srcdir + '/fs'))(fs),
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
 
     testObj = new Test(fsWrapper, glob, srcdir + '/..');
     fs.write(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst', 'a=1\nb=2\n');
-    test.assertEquals(testObj.parseCase(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst'), {a: '1', b: '2'}, 'parses a not empty file');
+    test.assertEquals(testObj.parseCaseFile(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst'), {a: '1', b: '2'}, 'parses a not empty file');
     fs.remove(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst');
 
     fs.removeTree(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com');
