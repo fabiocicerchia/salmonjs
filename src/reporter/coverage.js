@@ -129,11 +129,11 @@ html += '       <table>\n';
 html += '           <thead>\n';
 html += '               <tr><th>File</th><th>Statements</th><th>Executed</th><th>Coverage</th><th></th></tr>\n';
 
-if (cov.files[file].percentage > 75) {
+if (cov.files[file].percentage >= 75) {
     color = 'green';
-} else if (cov.files[file].percentage > 50) {
+} else if (cov.files[file].percentage >= 50) {
     color = 'orange';
-} else if (cov.files[file].percentage > 25) {
+} else if (cov.files[file].percentage >= 25) {
     color = 'red';
 } else {
     color = 'grey';
