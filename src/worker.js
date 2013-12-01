@@ -43,20 +43,19 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         type            = args[8],
         container       = args[9],
         evt             = args[10],
-        xPath           = args[11];
-
-    var config    = require('../src/config'),
-        Crawler   = require('../src/crawler'),
-        winston   = require('winston'),
-        fs        = require('fs'),
-        path      = require('path'),
-        glob      = require('glob'),
-        redis     = require('redis'),
-        client    = redis.createClient(config.redis.port, config.redis.hostname),
-        spawn     = require('child_process').spawn,
-        crypto    = require('crypto'),
-        optimist  = require('optimist'),
-        test      = new (require('../src/test'))(fs, glob, '.');
+        xPath           = args[11],
+        config          = require('../src/config'),
+        Crawler         = require('../src/crawler'),
+        winston         = require('winston'),
+        fs              = require('fs'),
+        path            = require('path'),
+        glob            = require('glob'),
+        redis           = require('redis'),
+        client          = redis.createClient(config.redis.port, config.redis.hostname),
+        spawn           = require('child_process').spawn,
+        crypto          = require('crypto'),
+        optimist        = require('optimist'),
+        test            = new (require('../src/test'))(fs, glob, '.');
 
     winston.cli();
     winston.remove(winston.transports.Console);
