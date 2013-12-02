@@ -129,11 +129,11 @@ html += '       <table>\n';
 html += '           <thead>\n';
 html += '               <tr><th>File</th><th>Statements</th><th>Executed</th><th>Coverage</th><th></th></tr>\n';
 
-if (cov.files[file].percentage >= 75) {
+if (cov.percentage >= 75) {
     color = 'green';
-} else if (cov.files[file].percentage >= 50) {
+} else if (cov.percentage >= 50) {
     color = 'orange';
-} else if (cov.files[file].percentage >= 25) {
+} else if (cov.percentage >= 25) {
     color = 'red';
 } else {
     color = 'grey';
@@ -146,11 +146,11 @@ html += '           </thead>\n';
 html += '           <tbody>\n';
 for (file in cov.files) {
     if (cov.files.hasOwnProperty(file)) {
-        if (cov.files[file].percentage > 75) {
+        if (cov.files[file].percentage >= 75) {
             color = 'green';
-        } else if (cov.files[file].percentage > 50) {
+        } else if (cov.files[file].percentage >= 50) {
             color = 'orange';
-        } else if (cov.files[file].percentage > 25) {
+        } else if (cov.files[file].percentage >= 25) {
             color = 'red';
         } else {
             color = 'grey';
