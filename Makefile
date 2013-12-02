@@ -37,7 +37,7 @@ install-casper:
 	$(GIT) clone git://github.com/n1k0/casperjs.git
 
 test:
-	$(CASPERJS) test test/test.*.js test/*/test.*.js
+	$(CASPERJS) test $(FILES)
 
 changelog:
 	$(ECHO) "CHANGELOG" > ./docs/CHANGELOG
