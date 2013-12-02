@@ -52,7 +52,7 @@ casper.test.begin('serialise', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -77,7 +77,7 @@ casper.test.begin('serialise #2', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -100,7 +100,7 @@ casper.test.begin('serialise #2', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -124,7 +124,7 @@ casper.test.begin('run', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -148,7 +148,7 @@ casper.test.begin('run #2', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -171,7 +171,7 @@ casper.test.begin('analiseRedisResponse', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -194,7 +194,7 @@ casper.test.begin('checkAndRun', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -217,7 +217,7 @@ casper.test.begin('checkRunningCrawlers', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -241,7 +241,7 @@ casper.test.begin('checkRunningCrawlers #1', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -265,7 +265,7 @@ casper.test.begin('onStdOut', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -293,7 +293,7 @@ casper.test.begin('onStdErr', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -319,7 +319,7 @@ casper.test.begin('handleError', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -342,7 +342,7 @@ casper.test.begin('onExit', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -367,7 +367,7 @@ casper.test.begin('htmlEscape', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -411,7 +411,7 @@ casper.test.begin('storeDetailsToFile', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -434,7 +434,7 @@ casper.test.begin('processPage', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -487,7 +487,7 @@ casper.test.begin('processPage #2', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -540,7 +540,7 @@ casper.test.begin('processPage #3', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -593,7 +593,7 @@ casper.test.begin('processPage #4', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -652,7 +652,7 @@ casper.test.begin('processPage #5', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -712,7 +712,7 @@ casper.test.begin('processPage #6', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -771,7 +771,7 @@ casper.test.begin('processPage #7', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -831,7 +831,7 @@ casper.test.begin('processPage #8', function (test) {
         client   = {},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs']}},
+        optimist = {argv: {$0: ['casperjs cli --test']}},
         crawler,
         content,
         unescaped,
@@ -913,3 +913,81 @@ casper.test.begin('handleError #2', function (test) {
     crawler.tries = 0;
     test.assertEquals(crawler.handleError(), true);
 });
+
+casper.test.begin('init', function (test) {
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
+        spawn    = {},
+        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        testObj  = require(srcdir + '/test'),
+        client   = {on: function (evt, cb) { cb({}); }},
+        winston  = {error: function () {}, info: function () {}, warn: function () {}},
+        fs       = require(srcdir + '/fs'),
+        optimist = {argv: {$0: ['casperjs --cli test']}},
+        crawler;
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    process = {pid: 123};
+
+    crawler.init();
+    test.assertType(crawler.idCrawler, 'string');
+    test.assertEquals(crawler.idCrawler, '123');
+
+    test.done();
+});
+
+casper.test.begin('sha1', function (test) {
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
+        spawn    = {},
+        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return 'fake'; }}; }}; }},
+        testObj  = require(srcdir + '/test'),
+        client   = {},
+        winston  = {error: function () {}, info: function () {}, warn: function () {}},
+        fs       = require(srcdir + '/fs'),
+        optimist = {argv: {$0: []}},
+        crawler;
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.sha1('test'), 'fake');
+
+    test.done();
+});
+
+casper.test.begin('normaliseData', function (test) {
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
+        spawn    = {},
+        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        testObj  = require(srcdir + '/test'),
+        client   = {},
+        winston  = {error: function () {}, info: function () {}, warn: function () {}},
+        fs       = require(srcdir + '/fs'),
+        optimist = {argv: {$0: []}},
+        crawler;
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?%C3%A0=1'), {'à': '1'}, 'encodes correctly');
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?a=%3D'), {a: '='}, 'encodes correctly');
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?a=1&a=2'), {a: '2'}, 'removes duplicates');
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?b=1&a=2'), {a: '2', b: '1'}, 'orders alphabetically');
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist);
+
+    test.assertEquals(crawler.normaliseData('http://www.example.com/?'), {}, 'returns empty array when input is not array');
+    test.assertEquals(crawler.normaliseData([]), {}, 'returns empty array when input is not array');
+    test.assertEquals(crawler.normaliseData({}), {}, 'returns empty array when input is not array');
+    test.assertEquals(crawler.normaliseData(1), {}, 'returns empty array when input is not array');
+
+    test.done();
+});
+

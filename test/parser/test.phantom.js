@@ -266,3 +266,39 @@ casper.test.begin('onInitialized', function (test) {
     test.assertEquals(phantom.onInitialized(), undefined);
 });
 */
+
+// TODO: do it
+casper.test.begin('onNavigationRequested', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        phantom;
+
+    phantom = new PhantomParser(require('webpage').create());
+    test.done();
+});
+
+// TODO: do it
+casper.test.begin('putPageInStack', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        phantom;
+
+    phantom = new PhantomParser(require('webpage').create());
+    test.done();
+});
+
+// TODO: do it
+casper.test.begin('exit', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        phantom;
+
+    phantom = new PhantomParser(require('webpage').create());
+    test.done();
+});
+
+// TODO: do it
+casper.test.begin('cloneWebPage', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        phantom;
+
+    phantom = new PhantomParser(require('webpage').create());
+    test.done();
+});

@@ -181,7 +181,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     var currentCrawler = this;
 
     if (optimist !== undefined && winston !== undefined) {
-        if (optimist.argv.$0.indexOf('mocha') !== -1) {
+        if (optimist.argv.$0.indexOf('casperjs --cli test') === -1) {
             try { winston.remove(winston.transports.Console); } catch (ignore) {}
         }
     }
@@ -199,7 +199,9 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         client.on('error', function (err) {
             winston.error('REDIS - %s'.red, err.toString());
             // TODO: Is it really good to exit?
-            process.exit(1);
+            if (optimist.argv.$0.indexOf('casperjs --cli test') === -1) {
+                process.exit(1);
+            }
         });
 
         this.idCrawler = process.pid.toString();
@@ -431,7 +433,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
 
-            if (optimist.argv.$0.indexOf('casperjs') === -1) {
+            if (optimist.argv.$0.indexOf('casperjs cli --test') === -1) {
                 // TODO: This is called at the wrong time.
                 process.exit();
             }
@@ -746,9 +748,9 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     }
                 }
 
-                test.create(element.action, id + '-' + element.type, fieldData);
-                //test.create(id + '-' + 'get', fieldData);
-                //test.create(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
+                test.createNewCaseFile(element.action, id + '-' + element.type, fieldData);
+                //test.createNewCaseFile(id + '-' + 'get', fieldData);
+                //test.createNewCaseFile(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
 
                 cases = test.getCases(element.action); // TODO: Possible duplicates
                 currentCrawler.possibleCrawlers += cases.length;

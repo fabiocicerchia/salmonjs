@@ -60,6 +60,13 @@ casper.test.begin('parse', function (test) {
     test.assertEquals(parser.event, '', 'parses a GET request');
     test.assertEquals(parser.xPath, '', 'parses a GET request');
 
+    test.assertEquals(parser.parse('', 'GET', '', 'click', '/html/body'), 'GET', 'parses a GET request');
+    test.assertEquals(parser.url, '', 'parses a GET request');
+    test.assertEquals(parser.type, 'GET', 'parses a GET request');
+    test.assertEquals(parser.data, '', 'parses a GET request');
+    test.assertEquals(parser.event, 'click', 'parses a GET request');
+    test.assertEquals(parser.xPath, '/html/body', 'parses a GET request');
+
     test.done();
 });
 
@@ -97,12 +104,11 @@ casper.test.begin('parse #3', function (test) {
     test.done();
 });
 
-casper.test.begin('Parser', function (test) {
+casper.test.begin('initReport', function (test) {
     var Parser = require(srcdir + '/parser'),
         parser,
         resp;
 
-    // initReport
     parser = new Parser();
 
     parser.type  = 'type';
@@ -261,6 +267,44 @@ casper.test.begin('normaliseUrl', function (test) {
     test.assertEquals(parser.normaliseUrl('http://www.example.com/directory/', 'http://www.example.com/'), 'http://www.example.com/directory/', 'convert properly other URLs');
     test.assertEquals(parser.normaliseUrl('//www.example.com/directory', 'http://www.example.com/'), 'http://www.example.com/directory', 'convert properly other URLs');
     test.assertEquals(parser.normaliseUrl('//www.example.com/directory', 'https://www.example.com/'), 'https://www.example.com/directory', 'convert properly other URLs');
+
+    test.done();
+});
+
+casper.test.begin('fireEventObject', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser;
+
+    parser = new Parser();
+
+    test.assertType(parser.fireEventObject({'event': 'click', xPath: 'window'}), 'customevent');
+
+    test.assertEquals(parser.fireEventObject({'event': 'click', xPath: undefined}), undefined);
+
+    test.done();
+});
+
+casper.test.begin('fireEventDOM', function (test) {
+    var Parser = require(srcdir + '/parser'),
+        parser;
+
+    parser = new Parser();
+
+    window.eventContainer = {
+        getElementByXpath: function(xPath) {
+            return document.createElement('div');
+        }
+    };
+
+    test.assertType(parser.fireEventDOM({'event': 'click', xPath: '//*'}), 'customevent');
+
+    window.eventContainer = {
+        getElementByXpath: function(xPath) {
+            return undefined;
+        }
+    };
+
+    test.assertEquals(parser.fireEventDOM({'event': 'click', xPath: undefined}), undefined);
 
     test.done();
 });

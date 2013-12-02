@@ -256,7 +256,7 @@ module.exports = function Parser() {
      * Fire an event to an object (document, window, ...).
      *
      * @method fireEventObject
-     * @return undefined
+     * @return {Object}|undefined
      */
     this.fireEventObject = function () {
         var obj,
@@ -269,14 +269,18 @@ module.exports = function Parser() {
             evt = document.createEvent('CustomEvent');
             evt.initCustomEvent(event, false, false, null);
             obj.dispatchEvent(evt);
+
+            return evt;
         }
+
+        return undefined;
     };
 
     /**
      * Fire an event to a DOM element.
      *
      * @method fireEventDOM
-     * @return undefined
+     * @return {Object}|undefined
      */
     this.fireEventDOM = function () {
         var xPath = arguments[0].xPath,
@@ -288,7 +292,11 @@ module.exports = function Parser() {
             evt = document.createEvent('CustomEvent');
             evt.initCustomEvent(event, false, false, null);
             element.dispatchEvent(evt);
+
+            return evt;
         }
+
+        return undefined;
     };
 
     /**
