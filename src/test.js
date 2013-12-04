@@ -35,7 +35,7 @@
  *
  * @module Test
  */
-var Test = function (fsWrapper, glob, mainDir) {
+var Test = function (fsWrapper, glob, mainDir, utils) {
     /**
      * Test case directory.
      *
@@ -125,66 +125,6 @@ var Test = function (fsWrapper, glob, mainDir) {
     };
 
     /**
-     * TBD
-     */
-    this.parseINIString = function (data) {
-        var regex   = {
-                section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
-                param:   /^\s*([\w\.\-\_\[\]]+)\s*=\s*(.*?)\s*$/,
-                comment: /^\s*;.*$/
-            },
-            value   = {},
-            lines   = data.split(/\r\n|\r|\n/),
-            section = null,
-            match,
-            isArray;
-
-        lines.forEach(function (line) {
-            isArray = false;
-            if (regex.comment.test(line)) {
-                return;
-            } else if(regex.param.test(line)) {
-                match = line.match(regex.param);
-
-                if (match[1].substr(match[1].length - 2, 2) === '[]') {
-                    match[1] = match[1].substr(0, match[1].length - 2);
-                    isArray = true;
-                }
-
-                if (match[2][0] === '"' && match[2][match[2].length - 1] === '"') {
-                    match[2] = match[2].substr(1, match[2].length - 2);
-                }
-
-                if (isArray) {
-                    if (section) {
-                        if (typeof value[section][match[1]] === 'undefined') {
-                            value[section][match[1]] = [];
-                        }
-                        value[section][match[1]].push(match[2]);
-                    } else {
-                        if (typeof value[match[1]] === 'undefined') {
-                            value[match[1]] = [];
-                        }
-                        value[match[1]].push(match[2]);
-                    }
-                } else {
-                    if (section) {
-                        value[section][match[1]] = match[2];
-                    } else {
-                        value[match[1]] = match[2];
-                    }
-                }
-            } else if (regex.section.test(line)) {
-                match = line.match(regex.section);
-                value[match[1]] = {};
-                section = match[1];
-            }
-        });
-
-        return value;
-    };
-
-    /**
      * Parse a test cases file to return the testing data to be used.
      *
      * @method parseCaseFile
@@ -200,7 +140,7 @@ var Test = function (fsWrapper, glob, mainDir) {
 
         content = fsWrapper.readFileSync(file).toString();
 
-        return this.parseINIString(content);
+        return utils.parseINIString(content);
     };
 };
 

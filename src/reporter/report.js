@@ -28,7 +28,7 @@
  * SOFTWARE.
  */
 
-var reporter = function () {
+var reporter = function (utils) {
     this.generateHTML = function (currentCrawler, reportName, report) {
         var i, j, failed, html = '<!DOCTYPE html>\n';
 
@@ -178,7 +178,7 @@ var reporter = function () {
         html += '\n';
         html += '            <h2>Content</h2>\n';
         html += '            <pre class="prettyprint linenums">\n';
-        html += currentCrawler.htmlEscape(report.content);
+        html += utils.htmlEscape(report.content);
         html += '</pre>\n';
         html += '        </div>\n';
         html += '        <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/spidey">Spidey</a> version 0.2.1</div>\n';

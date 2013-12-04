@@ -46,9 +46,10 @@ casper.on('remote.message', function (msg) {
 casper.test.begin('setUpPage', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
 
     phantom.setUpPage(phantom.page);
 
@@ -71,9 +72,10 @@ casper.test.begin('setUpPage', function (test) {
 casper.test.begin('onOpen', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     phantom.onOpen('failure');
 
     test.assertType(phantom.report.time.start, 'number');
@@ -96,9 +98,10 @@ casper.test.begin('onOpen', function (test) {
 casper.test.begin('onResourceTimeout', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     test.assertEquals(phantom.onResourceTimeout(), true);
 
     test.done();
@@ -107,9 +110,10 @@ casper.test.begin('onResourceTimeout', function (test) {
 casper.test.begin('onError', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     phantom.onError('error1');
     test.assertEquals(phantom.report.errors, ['ERROR: error1']);
 
@@ -127,9 +131,10 @@ casper.test.begin('onError', function (test) {
 casper.test.begin('onResourceReceived', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     phantom.onResourceReceived({stage: 'end', url: 'about:blank', headers: []});
     test.assertEquals(phantom.report.resources, { 'about:blank': { headers: [] } });
 
@@ -139,9 +144,10 @@ casper.test.begin('onResourceReceived', function (test) {
 casper.test.begin('onAlert', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     phantom.onAlert('message');
     test.assertType(phantom.report.alerts, 'array');
     test.assertEquals(phantom.report.alerts, ['message']);
@@ -152,9 +158,10 @@ casper.test.begin('onAlert', function (test) {
 casper.test.begin('onConfirm', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     test.assertEquals(phantom.onConfirm('message'), true);
     test.assertType(phantom.report.confirms, 'array');
     test.assertEquals(phantom.report.confirms, ['message']);
@@ -165,9 +172,10 @@ casper.test.begin('onConfirm', function (test) {
 casper.test.begin('onPrompt', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     test.assertEquals(phantom.onPrompt('message', ''), '');
     test.assertType(phantom.report.prompts, 'array');
     test.assertEquals(phantom.report.prompts, [{msg: 'message', defaultVal: ''}]);
@@ -178,9 +186,10 @@ casper.test.begin('onPrompt', function (test) {
 casper.test.begin('onConsoleMessage', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     phantom.onConsoleMessage('message', 1, '');
     test.assertType(phantom.report.console, 'array');
     test.assertEquals(phantom.report.console, [{msg: 'message', lineNum: 1, sourceId: ''}]);
@@ -191,9 +200,10 @@ casper.test.begin('onConsoleMessage', function (test) {
 casper.test.begin('onLoadFinished', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
 
     phantom.parsePage = function () { test.done(); };
     phantom.onLoadFinished();
@@ -202,9 +212,10 @@ casper.test.begin('onLoadFinished', function (test) {
 casper.test.begin('onLoadFinished #2', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
 
     phantom.stepStack = [{event: 'click', xPath: 'window'}];
     phantom.parsePage = function () { };
@@ -215,9 +226,10 @@ casper.test.begin('onLoadFinished #2', function (test) {
 casper.test.begin('onLoadFinished #3', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
 
     phantom.stepStack = [{event: 'click', xPath: '/html/body'}];
     phantom.parsePage = function () { };
@@ -228,6 +240,7 @@ casper.test.begin('onLoadFinished #3', function (test) {
 casper.test.begin('parsePage', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
     /*
@@ -240,6 +253,7 @@ casper.test.begin('parsePage', function (test) {
 casper.test.begin('onEvaluate', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
     /*
@@ -252,9 +266,10 @@ casper.test.begin('onEvaluate', function (test) {
 
 casper.test.begin('parseGet', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     phantom.url = 'about:blank';
     phantom.data = '';
     phantom.onOpen = function () {};
@@ -266,9 +281,10 @@ casper.test.begin('parseGet', function (test) {
 
 casper.test.begin('parsePost', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     phantom.url = 'about:blank';
     phantom.data = {};
     phantom.onOpen = function () {};
@@ -282,9 +298,10 @@ casper.test.begin('parsePost', function (test) {
 casper.test.begin('onInitialized', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         config        = require(srcdir + '/config'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     phantom.page.injectJs = function() {
         test.done();
     };
@@ -294,10 +311,11 @@ casper.test.begin('onInitialized', function (test) {
 
 casper.test.begin('onNavigationRequested', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
+        utils         = {},
         phantom,
         resp;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
 
     followRedirects = false;
     phantom.url = 'about:blank';
@@ -325,10 +343,11 @@ casper.test.begin('onNavigationRequested', function (test) {
 
 casper.test.begin('putPageInStack', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
+        utils         = {},
         phantom,
         page;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     page = {data:{}, evaluate: function (a, b) { this.data = b; }};
     phantom.cloneWebPage = function() {
         return {data:{}, evaluate: function (a, b) { this.data = b; }};
@@ -366,18 +385,20 @@ casper.test.begin('putPageInStack', function (test) {
 // TODO: do it
 casper.test.begin('exit', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
+        utils         = {},
         phantom;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
     test.done();
 });
 
 casper.test.begin('cloneWebPage', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
+        utils         = {},
         phantom,
         resp;
 
-    phantom = new PhantomParser(require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create());
 
     phantom.setUpPage = function(page) {
         page.onInitialized = function() {

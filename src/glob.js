@@ -36,22 +36,6 @@
  */
 var glob = {
     /**
-     * Sleep function.
-     *
-     * @method sleep
-     * @param {Integer} millis The number of millisecond to wait for
-     * @return undefined
-     */
-    sleep: function (millis) {
-        var date    = new Date(),
-            curDate = null;
-
-        do {
-            curDate = new Date();
-        } while ((curDate - date) < millis);
-    },
-
-    /**
      * Sync version of glob.
      *
      * @method sync
@@ -66,7 +50,7 @@ var glob = {
         });
 
         while (results === undefined) {
-            this.sleep(5);
+            utils.sleep(5);
         }
 
         return results;

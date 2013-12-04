@@ -47,7 +47,8 @@ var Parser          = require('../parser'),
     xPath           = input[9],
     storeDetails    = input[10] === 'true',
     followRedirects = input[11] === 'true',
-    page            = require('webpage').create();
+    page            = require('webpage').create(),
+    utils           = new (require('../utils'));
 
 if (username !== undefined && password !== undefined) {
     page.customHeaders = {
@@ -61,7 +62,7 @@ if (username !== undefined && password !== undefined) {
  * @class PhantomParser
  * @extends Parser
  */
-var PhantomParser = function (page) {
+var PhantomParser = function (utils, page) {
     /**
      * The WebPage element.
      *
@@ -165,9 +166,9 @@ var PhantomParser = function (page) {
             console.log('FIRE(' + evt + ', ' + xPath + ')');
 
             if (xPath.substr(0, 1) !== '/') {
-                pageFork.evaluate(currentParser.fireEventObject, {event: evt, xPath: xPath});
+                pageFork.evaluate(utils.fireEventObject, {event: evt, xPath: xPath});
             } else {
-                pageFork.evaluate(currentParser.fireEventDOM, {event: evt, xPath: xPath});
+                pageFork.evaluate(utils.fireEventDOM, {event: evt, xPath: xPath});
             }
 
             currentParser.stackPages.push(pageFork);
@@ -339,9 +340,9 @@ var PhantomParser = function (page) {
         for (step in currentParser.stepStack) {
             if (currentParser.stepStack[step].event !== '' && currentParser.stepStack[step].xPath !== '') {
                 if (currentParser.stepStack[step].xPath[0] !== '/') {
-                    currentParser.page.evaluate(currentParser.fireEventObject, currentParser.stepStack[step]);
+                    currentParser.page.evaluate(utils.fireEventObject, currentParser.stepStack[step]);
                 } else {
-                    currentParser.page.evaluate(currentParser.fireEventDOM, currentParser.stepStack[step]);
+                    currentParser.page.evaluate(utils.fireEventDOM, currentParser.stepStack[step]);
                 }
             }
         }
@@ -408,31 +409,31 @@ var PhantomParser = function (page) {
             }
 
             currentParser.links.a = [].map.call(links.a, function (item) {
-                return currentParser.normaliseUrl(item, url);
-            }).concat(currentParser.links.a).filter(currentParser.onlyUnique);
+                return utils.normaliseUrl(item, url);
+            }).concat(currentParser.links.a).filter(utils.onlyUnique);
 
             currentParser.links.link = [].map.call(links.link, function (item) {
-                return currentParser.normaliseUrl(item, url);
-            }).concat(currentParser.links.link).filter(currentParser.onlyUnique);
+                return utils.normaliseUrl(item, url);
+            }).concat(currentParser.links.link).filter(utils.onlyUnique);
 
             currentParser.links.script = [].map.call(links.script, function (item) {
-                return currentParser.normaliseUrl(item, url);
-            }).concat(currentParser.links.script).filter(currentParser.onlyUnique);
+                return utils.normaliseUrl(item, url);
+            }).concat(currentParser.links.script).filter(utils.onlyUnique);
 
             currentParser.links.meta = [].map.call(links.meta, function (item) {
-                return currentParser.normaliseUrl(item, url);
-            }).concat(currentParser.links.meta).filter(currentParser.onlyUnique);
+                return utils.normaliseUrl(item, url);
+            }).concat(currentParser.links.meta).filter(utils.onlyUnique);
 
             currentParser.links.form = [].map.call(links.form, function (item) {
                 item.action = item.action || url;
-                item.action = currentParser.normaliseUrl(item.action, url);
+                item.action = utils.normaliseUrl(item.action, url);
 
                 if (item.action === undefined) {
                     return undefined;
                 }
 
                 return item;
-            }).concat(currentParser.links.form).filter(currentParser.onlyUnique);
+            }).concat(currentParser.links.form).filter(utils.onlyUnique);
         }
 
         currentParser.exit();
@@ -501,9 +502,9 @@ var PhantomParser = function (page) {
     };
 };
 
-PhantomParser.prototype = new Parser();
+PhantomParser.prototype = new Parser(utils);
 if (args.join(' ').indexOf('casperjs --cli test') === -1) {
-    new PhantomParser(page).parse(url, type, data, evt, xPath);
+    new PhantomParser(utils, page).parse(url, type, data, evt, xPath);
 } else {
     module.exports = PhantomParser;
 }

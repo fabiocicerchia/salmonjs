@@ -55,6 +55,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         spawn           = require('child_process').spawn,
         crypto          = require('crypto'),
         optimist        = require('optimist'),
+        utils           = new (require('../src/utils'))(crypto),
         test            = new (require('../src/test'))(fs, glob, '.');
 
     winston.cli();
@@ -69,7 +70,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         }
     );
 
-    var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist);
+    var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist, utils);
     crawler.init();
     crawler.timeStart       = timeStart;
     crawler.username        = username;

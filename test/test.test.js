@@ -46,7 +46,8 @@ casper.on('remote.message', function (msg) {
 casper.test.begin('createNewCaseFile', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+        utils     = {},
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
 
     testObj.createNewCaseFile('', 'test', {a: 1}, function () {
         var content;
@@ -72,9 +73,10 @@ casper.test.begin('createNewCaseFile', function (test) {
 casper.test.begin('createNewCaseFile #2', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+        utils     = {},
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..');
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
     testObj.createNewCaseFile('http://www.example.com', 'test', {}, function () {
         var content;
         try {
@@ -90,9 +92,10 @@ casper.test.begin('createNewCaseFile #2', function (test) {
 casper.test.begin('createNewCaseFile #3', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+        utils     = {},
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..');
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
     testObj.createNewCaseFile('http://www.example.com', 'test', {a: 1, b: 2}, function () {
         var content;
         try {
@@ -110,9 +113,10 @@ casper.test.begin('createNewCaseFile #3', function (test) {
 casper.test.begin('getCases', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+        utils     = {},
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..');
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
     testObj.parseCaseFile = function () { return {}; };
 
     test.assertEquals(testObj.getCases(''), [], 'doesn\'t return anything if there are no matches');
@@ -131,9 +135,10 @@ casper.test.begin('getCases', function (test) {
 casper.test.begin('parseCaseFile', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+        utils     = {},
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..');
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
     test.assertEquals(testObj.parseCaseFile('non-existent'), {}, 'doesn\'t parse a non existent file');
 
     test.done();
@@ -142,9 +147,10 @@ casper.test.begin('parseCaseFile', function (test) {
 casper.test.begin('parseCaseFile #2', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+        utils     = {},
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..');
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
     test.assertEquals(testObj.parseCaseFile('empty-file'), {}, 'parses an empty file');
 
     test.done();
@@ -153,49 +159,16 @@ casper.test.begin('parseCaseFile #2', function (test) {
 casper.test.begin('parseCaseFile #3', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..');
+        utils     = {},
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..');
+    utils.parseINIString = function() { return {a: '1', b: '2'}; };
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
     fs.write(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst', 'a=1\nb=2\n');
     test.assertEquals(testObj.parseCaseFile(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst'), {a: '1', b: '2'}, 'parses a not empty file');
     fs.remove(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst');
 
     fs.removeTree(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com');
-
-    test.done();
-});
-
-casper.test.begin('parseINIString', function (test) {
-    var Test      = require(srcdir + '/test'),
-        fsWrapper = new (require(srcdir + '/fs'))(fs),
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..'),
-        ini;
-
-    testObj = new Test(fsWrapper, glob, srcdir + '/..');
-
-    ini = '; This is a sample configuration file';
-    test.assertEquals(testObj.parseINIString(ini), {});
-
-    ini = '; This is a sample configuration file\n\n; This is a sample configuration file';
-    test.assertEquals(testObj.parseINIString(ini), {});
-
-    ini = '[first_section]\none = 1\nfive = 5\nanimal = BIRD';
-    test.assertEquals(testObj.parseINIString(ini), {"first_section":{"one":"1","five":"5","animal":"BIRD"}});
-
-    ini = '[second_section]\npath = "/usr/local/bin"\nURL = "http://www.example.com/~username"';
-    test.assertEquals(testObj.parseINIString(ini), {"second_section":{"path":"/usr/local/bin","URL":"http://www.example.com/~username"}});
-
-    ini = '[third_section]\ncontainer[] = "1"\ncontainer[] = "2"\ncontainer[] = "3"\ncontainer[] = "4"';
-    test.assertEquals(testObj.parseINIString(ini), {"third_section":{"container":["1","2","3","4"]}});
-
-    ini = 'container[] = "1"\ncontainer[] = "2"\ncontainer[] = "3"\ncontainer[] = "4"';
-    test.assertEquals(testObj.parseINIString(ini), {"container":["1","2","3","4"]});
-
-    ini = 'global_value1 = 1\n[section1]\nkey = value';
-    test.assertEquals(testObj.parseINIString(ini), {"global_value1":"1","section1":{"key":"value"}});
-
-    ini = '[first_section]\none = 1\n\nfive = 5\nanimal = BIRD';
-    test.assertEquals(testObj.parseINIString(ini), {"first_section":{"one":"1","five":"5","animal":"BIRD"}});
 
     test.done();
 });

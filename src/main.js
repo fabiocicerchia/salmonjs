@@ -61,6 +61,7 @@ ioc.add('winston',   winston);
 ioc.add('optimist',  require('optimist'));
 ioc.add('fs',        fs);
 ioc.add('glob',      require('./glob'));
+ioc.add('utils',     ioc.get(require('../src/utils')));
 ioc.add('dirName',   __dirname);
 ioc.add('mainDir',   __dirname + '/..');
 ioc.add('fsWrapper', ioc.get(require('../src/fs')));

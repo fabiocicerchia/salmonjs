@@ -33,7 +33,7 @@
  *
  * @module Crawler
  */
-var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist) {
+var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist, utils) {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -209,47 +209,13 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     };
 
     /**
-     * Serialise an object as questring.
-     *
-     * @method serialise
-     * @param  {Object} obj The object to be converted.
-     * @return {String} The querysting based on the input.
-     */
-    this.serialise = function (obj) {
-        var str = [], p;
-
-        if (typeof obj !== 'object') {
-            return '';
-        }
-
-        for (p in obj) {
-            if (obj.hasOwnProperty(p)) {
-                str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
-            }
-        }
-
-        return str.join('&');
-    };
-
-    /**
-     * Hash a string with SHA1.
-     *
-     * @method hashString
-     * @param {String} plainText The string to be converted to hash
-     * @return {String}
-     */
-    this.sha1 = function  (plainText) {
-        return crypto.createHash('sha1').update(plainText).digest('hex');
-    };
-
-    /**
      * Execute PhantomJS.
      *
      * @method execPhantomjs
      * @return undefined
      */
     this.execPhantomjs = function () {
-        var idRequest = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
+        var idRequest = utils.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
             phantom,
             params  = [
                 this.idUri,
@@ -259,7 +225,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 this.password,
                 this.url,
                 this.type,
-                this.serialise(this.data),
+                utils.serialise(this.data),
                 this.evt,
                 this.xPath,
                 this.storeDetails,
@@ -301,7 +267,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         this.evt   = evt || '';
         this.xPath = xPath || '';
 
-        this.idUri = currentCrawler.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath).substr(0, 8);
+        this.idUri = utils.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath).substr(0, 8);
 
         var winstonCrawlerId = '[' + this.idUri.cyan + '-' + this.idCrawler.magenta + ']';
 
@@ -356,7 +322,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             return currentCrawler.checkRunningCrawlers('No items left to be processed');
         }
 
-        newId = currentCrawler.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath).substr(0, 8);
+        newId = utils.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath).substr(0, 8);
 
         winston.info(
             '%s' + ' Match not found in Redis. Continue (%s)'.grey,
@@ -403,7 +369,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         container.evt   = evt || '';
         container.xPath = xPath || '';
 
-        redisId = currentCrawler.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath);
+        redisId = utils.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath);
         id      = redisId.substr(0, 8);
 
         winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
@@ -563,22 +529,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     };
 
     /**
-     * Escape a HTML string.
-     *
-     * @method htmlEscape
-     * @param {String} str The HTML to be escaped.
-     * @return {String}
-     */
-    this.htmlEscape = function (str) {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-    };
-
-    /**
      * Store the report details to a report file.
      *
      * @method storeDetailsToFile
@@ -587,8 +537,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      */
     this.storeDetailsToFile = function (report) {
         var Reporter      = require('./reporter/report'),
-            reporter      = new Reporter(),
-            reportName    = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + currentCrawler.evt + currentCrawler.xPath),
+            reporter      = new Reporter(utils),
+            reportName    = utils.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + currentCrawler.evt + currentCrawler.xPath),
             reportContent = reporter.generateHTML(currentCrawler, reportName, report),
             indexContent,
             reportFile,
@@ -604,45 +554,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             fs.writeFileSync(reportFile, reportContent);
             fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
         });
-    };
-
-    // TODO: Duplicated!
-    /**
-     * Normalise the data, ordering the array.
-     *
-     * @method normaliseData
-     * @param {String} data The data to be normalised.
-     * @return {Object}
-     */
-    this.normaliseData = function (data) {
-        var i, pair, vars, dataContainer = {},
-            keys = [],
-            sorted = {};
-
-        if (typeof data !== 'string') {
-            return {};
-        }
-
-        vars = data.replace(/.+\?/, '').split('&');
-
-        if (vars.length === 0 || vars[0] === '') {
-            return {};
-        }
-
-        for (i = 0; i < vars.length; i++) {
-            pair = vars[i].split('=');
-            keys.push(decodeURIComponent(pair[0]));
-            dataContainer[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
-        }
-        keys = keys.sort();
-
-        for (i in keys) {
-            if (keys.hasOwnProperty(i)) {
-                sorted[keys[i]] = dataContainer[keys[i]];
-            }
-        }
-
-        return sorted;
     };
 
     /**
@@ -692,7 +603,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                                 if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
                                     currentCrawler.possibleCrawlers++;
 
-                                    newId = currentCrawler.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element]).substr(0, 8);
+                                    newId = utils.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element]).substr(0, 8);
 
                                     winston.info(
                                         '%s Firing %s on "%s" (%s)...',
@@ -758,7 +669,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     if (cases.hasOwnProperty(j)) {
                         currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
 
-                        cases[j].POST = currentCrawler.normaliseData(cases[j].POST);
+                        cases[j].POST = utils.normaliseData(cases[j].POST);
                         currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j].POST);
                     }
                 }
