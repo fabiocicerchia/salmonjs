@@ -181,7 +181,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     var currentCrawler = this;
 
     if (optimist !== undefined && winston !== undefined) {
-        if (optimist.argv.$0.indexOf('casperjs --cli test') === -1) {
+        if (optimist.argv.$0.indexOf('casperjs --cli test') !== -1) {
             try { winston.remove(winston.transports.Console); } catch (ignore) {}
         }
     }
