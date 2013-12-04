@@ -140,9 +140,10 @@ var PhantomParser = function (page) {
     this.onNavigationRequested = function (url, type, willNavigate, main) {
         // TODO: What to do with reloads?
         if (!followRedirects && url.indexOf(currentParser.url) === -1) {
-            //currentParser.links = {};
-            currentParser.exit();
+            return currentParser.exit();
         }
+
+        return undefined;
     };
 
     /**
@@ -163,7 +164,7 @@ var PhantomParser = function (page) {
             currentParser.stepHashes.push(id);
             console.log('FIRE(' + evt + ', ' + xPath + ')');
 
-            if (xPath[0] !== '/') {
+            if (xPath.substr(0, 1) !== '/') {
                 pageFork.evaluate(currentParser.fireEventObject, {event: evt, xPath: xPath});
             } else {
                 pageFork.evaluate(currentParser.fireEventDOM, {event: evt, xPath: xPath});

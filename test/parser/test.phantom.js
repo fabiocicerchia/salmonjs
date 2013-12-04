@@ -193,11 +193,36 @@ casper.test.begin('onLoadFinished', function (test) {
         config        = require(srcdir + '/config'),
         phantom;
 
-    /*
-    // TBD
-    test.assertEquals(false, true);*/
+    phantom = new PhantomParser(require('webpage').create());
 
-    test.done();
+    phantom.parsePage = function () { test.done(); };
+    phantom.onLoadFinished();
+});
+
+casper.test.begin('onLoadFinished #2', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
+    phantom = new PhantomParser(require('webpage').create());
+
+    phantom.stepStack = [{event: 'click', xPath: 'window'}];
+    phantom.parsePage = function () { };
+    phantom.page.evaluate = function () { test.done(); };
+    phantom.onLoadFinished();
+});
+
+casper.test.begin('onLoadFinished #3', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        config        = require(srcdir + '/config'),
+        phantom;
+
+    phantom = new PhantomParser(require('webpage').create());
+
+    phantom.stepStack = [{event: 'click', xPath: '/html/body'}];
+    phantom.parsePage = function () { };
+    phantom.page.evaluate = function () { test.done(); };
+    phantom.onLoadFinished();
 });
 
 casper.test.begin('parsePage', function (test) {
@@ -267,21 +292,74 @@ casper.test.begin('onInitialized', function (test) {
 });
 */
 
-// TODO: do it
 casper.test.begin('onNavigationRequested', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        phantom;
+        phantom,
+        resp;
 
     phantom = new PhantomParser(require('webpage').create());
+
+    followRedirects = false;
+    phantom.url = 'about:blank';
+    phantom.exit = function () { return true; };
+    resp = phantom.onNavigationRequested('', '', '', '');
+    test.assertEquals(resp, true);
+
+    phantom.url = 'http://www.example.com';
+    phantom.exit = function () { return true; };
+    resp = phantom.onNavigationRequested('about:blank', '', '', '');
+    test.assertEquals(resp, true);
+
+    phantom.url = 'http://www.example.com';
+    phantom.exit = function () { return true; };
+    resp = phantom.onNavigationRequested('http://www.example2.com', '', '', '');
+    test.assertEquals(resp, true);
+
+    phantom.url = 'http://www.example.com';
+    phantom.exit = function () { return true; };
+    resp = phantom.onNavigationRequested('http://www.example.com', '', '', '');
+    test.assertEquals(resp, undefined);
+
     test.done();
 });
 
-// TODO: do it
 casper.test.begin('putPageInStack', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        phantom;
+        phantom,
+        page;
 
     phantom = new PhantomParser(require('webpage').create());
+    page = {data:{}, evaluate: function (a, b) { this.data = b; }};
+    phantom.cloneWebPage = function() {
+        return {data:{}, evaluate: function (a, b) { this.data = b; }};
+    };
+
+    page.data.event = '';
+    page.data.xPath = '';
+    phantom.putPageInStack('', '', '');
+    test.assertEquals(phantom.stackPages, [page]);
+
+    page = {data:{}, evaluate: function (a, b) { this.data = b; }};
+    page.data.event = 'evt';
+    page.data.xPath = 'xPath';
+    phantom.stackPages = [];
+    phantom.putPageInStack('', 'evt', 'xPath');
+    test.assertEquals(phantom.stackPages, [page]);
+
+    page = {data:{}, evaluate: function (a, b) { this.data = b; }};
+    page.data.event = 'click';
+    page.data.xPath = 'window';
+    phantom.stackPages = [];
+    phantom.putPageInStack('', 'click', 'window');
+    test.assertEquals(phantom.stackPages, [page]);
+
+    page = {data:{}, evaluate: function (a, b) { this.data = b; }};
+    page.data.event = 'click';
+    page.data.xPath = '/html/body';
+    phantom.stackPages = [];
+    phantom.putPageInStack('', 'click', '/html/body');
+    test.assertEquals(phantom.stackPages, [page]);
+
     test.done();
 });
 
@@ -294,11 +372,19 @@ casper.test.begin('exit', function (test) {
     test.done();
 });
 
-// TODO: do it
 casper.test.begin('cloneWebPage', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        phantom;
+        phantom,
+        resp;
 
     phantom = new PhantomParser(require('webpage').create());
+
+    phantom.setUpPage = function(page) {
+        page.onInitialized = function() {
+        }
+    };
+    resp = phantom.cloneWebPage({content: 'content', url: 'url'});
+    test.assertEquals(resp.content, '<html><head></head><body>content</body></html>');
+    test.assertEquals(resp.url, 'url');
     test.done();
 });

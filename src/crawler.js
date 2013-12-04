@@ -328,9 +328,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @param {} reply
      * @param {} redisId
      * @param {} container
+     * @param {} spawn
      * @return undefined
      */
-    this.analiseRedisResponse = function (err, reply, redisId, container) {
+    this.analiseRedisResponse = function (err, reply, redisId, container, spawn) {
         var id               = redisId.substr(0, 8),
             winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']',
             newId,
@@ -352,8 +353,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             );
 
             currentCrawler.possibleCrawlers--;
-            currentCrawler.checkRunningCrawlers('No items left to be processed');
-            return;
+            return currentCrawler.checkRunningCrawlers('No items left to be processed');
         }
 
         newId = currentCrawler.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath).substr(0, 8);
@@ -371,7 +371,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             container.url, container.type, JSON.stringify(container.container), container.evt, container.xPath
         ];
 
-        childProcess = require('child_process').spawn('node', args, { detached: true });
+        childProcess = spawn('node', args, { detached: true });
         childProcess.stdout.on('data', spawnStdout);
         childProcess.stderr.on('data', spawnStderr);
         childProcess.on('exit', function () {
@@ -417,7 +417,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         );
 
         client.hgetall(redisId, function (err, reply) {
-            return currentCrawler.analiseRedisResponse(err, reply, redisId, container);
+            return currentCrawler.analiseRedisResponse(err, reply, redisId, container, require('child_process').spawn);
         });
     };
 
