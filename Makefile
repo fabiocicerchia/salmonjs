@@ -39,15 +39,6 @@ install-casper:
 test:
 	$(CASPERJS) test $(FILES)
 
-changelog:
-	$(ECHO) "CHANGELOG" > ./docs/CHANGELOG
-	$(ECHO) "----------------------" >> ./docs/CHANGELOG
-	for date in `git log --no-merges --format="%cd" --date=short | sort -u -r`; do \
-	    $(ECHO) -e "\n[$$date]\n" >> ./docs/CHANGELOG; \
-	    $(GIT) log --no-merges --format=" * %s" --since="$$date 00:00:00" --until="$$date 24:00:00" >> ./docs/CHANGELOG; \
-	done
-	$(ECHO) "Generated"
-
 coverage:
 	$(RM) src-cov 2> /dev/null
 	$(JSCOVERAGE) src src-cov
