@@ -179,7 +179,7 @@ casper.test.begin('checkAndRun', function (test) {
         data,
         resp;
 
-    utils.sha1 = function (str) { test.assertEquals(str, 'GET{"POST":{},"CONFIRM":{}}'); return ''; };
+    utils.sha1 = function (str) { test.assertEquals(str, 'GET{"POST":{},"CONFIRM":{},"PROMPT":{}}'); return ''; };
     var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
     crawler.checkAndRun('', '', '', '', '');
