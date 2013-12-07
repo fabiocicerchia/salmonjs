@@ -96,6 +96,14 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
             }
         }
 
+        content += '\n';
+        content += '[PROMPT]\n';
+
+        for (k in data.PROMPT) {
+            if (data.PROMPT.hasOwnProperty(k)) {
+               content += data.PROMPT[k] + '=""\n';
+            }
+        }
 
         var parts = testCaseFile.split(/\//),
             currDir = '',

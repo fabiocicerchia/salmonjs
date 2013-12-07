@@ -70,7 +70,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      */
     this.data = {
         POST:    {},
-        CONFIRM: {}
+        CONFIRM: {},
+        PROMPT:  {}
     };
 
     /**
@@ -266,7 +267,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.run = function (url, type, data, evt, xPath) {
         this.url   = url;
         this.type  = type || 'GET';
-        this.data  = data || { POST: {}, CONFIRM: {} };
+        this.data  = data || { POST: {}, CONFIRM: {}, PROMPT: {} };
         this.evt   = evt || '';
         this.xPath = xPath || '';
 
@@ -368,7 +369,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         container.url   = url.action || url;
         container.type  = type || 'GET';
-        container.data  = data || { POST: {}, CONFIRM: {} };
+        container.data  = data || { POST: {}, CONFIRM: {}, PROMPT: {} };
         container.evt   = evt || '';
         container.xPath = xPath || '';
 
@@ -662,7 +663,12 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     }
                 }
 
-                test.createNewCaseFile(element.action, element.type, { POST: fieldData, CONFIRM: result.report.confirms.filter(utils.onlyUnique) });
+                var data = {
+                    POST: fieldData,
+                    CONFIRM: result.report.confirms.filter(utils.onlyUnique),
+                    PROMPT:  result.result.prompts.filter(utils.onlyUnique)
+                };
+                test.createNewCaseFile(element.action, element.type, data);
                 //test.createNewCaseFile(id + '-' + 'get', fieldData);
                 //test.createNewCaseFile(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
 
@@ -693,7 +699,12 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             });
 
             var confirms = result.report.confirms || [];
-            test.createNewCaseFile(currentCrawler.url, currentCrawler.type, { POST: [], CONFIRM: confirms.filter(utils.onlyUnique) });
+            var data = {
+                POST: [],
+                CONFIRM: confirms.filter(utils.onlyUnique),
+                PROMPT: confirms.filter(utils.onlyUnique),
+            };
+            test.createNewCaseFile(currentCrawler.url, currentCrawler.type, data);
             cases = test.getCases(currentCrawler.url); // TODO: Possible duplicates
             currentCrawler.possibleCrawlers += cases.length;
             for (j in cases) {

@@ -319,6 +319,12 @@ var PhantomParser = function (utils, page) {
      */
     this.onPrompt = function (msg, defaultVal) {
         currentParser.report.prompts.push({msg: msg, defaultVal: defaultVal});
+
+        // possible entrypoints: parseGet, putPageInStack.
+        if (data !== undefined && data.PROMPT !== undefined && data.PROMPT[msg] !== undefined) {
+            return data.PROMPT[msg];
+        }
+
         return defaultVal;
     };
 

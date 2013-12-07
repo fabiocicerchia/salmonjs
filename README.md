@@ -124,6 +124,9 @@ variable2=value2
 
 [CONFIRM]
 Message=true ; true = OK, false = Cancel
+
+[PROMPT]
+Question="Answer"
 ```
 
 ## Usage

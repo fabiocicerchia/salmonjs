@@ -736,4 +736,86 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             test.done();
         });
     });
+
+    casper.test.begin("Test #28 #2", function (test) {
+        var phantom,
+            resp;
+
+        var params  = [
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'file://' + rootdir + '/test/assets/test_28.html',
+            'GET',
+            { POST: {}, CONFIRM: {}, PROMPT: { "whatever": 'aaa'} },
+            undefined,
+            undefined,
+            false,
+            false
+        ];
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().substr(0, 3) === '###') {
+                resp = JSON.parse(data.toString().substr(3));
+                test.assertEquals(resp.report.prompts, [{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''}]);
+                test.assertEquals(resp.links.a, [
+                   'file://' + rootdir + '/test/assets/test_28.html#whatever3',
+                ]);
+            }
+        });
+        phantom.stderr.on('data', function(data) {
+            test.assertEquals(true, false);
+        });
+        phantom.on('exit', function() {
+            test.done();
+        });
+    });
+
+    casper.test.begin("Test #28", function (test) {
+        var phantom,
+            resp;
+
+        var params  = [
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'file://' + rootdir + '/test/assets/test_28.html',
+            'GET',
+            { POST: {}, CONFIRM: {}, PROMPT: { "whatever": ''} },
+            undefined,
+            undefined,
+            false,
+            false
+        ];
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().substr(0, 3) === '###') {
+                resp = JSON.parse(data.toString().substr(3));
+                test.assertEquals(resp.report.prompts, [{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''}]);
+                test.assertEquals(resp.links.a, [
+                   'file://' + rootdir + '/test/assets/test_28.html#something2',
+                ]);
+            }
+        });
+        phantom.stderr.on('data', function(data) {
+            test.assertEquals(true, false);
+        });
+        phantom.on('exit', function() {
+            test.done();
+        });
+    });
 }
