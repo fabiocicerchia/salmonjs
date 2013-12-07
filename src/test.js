@@ -80,9 +80,17 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
         content += '\n';
         content += '[POST]\n';
 
-        for (k in data) {
-            if (data.hasOwnProperty(k)) {
-               content += k + '=' + data[k] + "\n";
+        for (k in data.POST) {
+            if (data.POST.hasOwnProperty(k)) {
+               content += k + '=' + data.POST[k] + '\n';
+            }
+        }
+
+        content += '[CONFIRM]\n';
+
+        for (k in data.CONFIRM) {
+            if (data.CONFIRM.hasOwnProperty(k)) {
+               content += data.CONFIRM[k] + '=true\n';
             }
         }
 

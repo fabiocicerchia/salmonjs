@@ -109,9 +109,10 @@ var PhantomParser = function (utils, page) {
      * @return undefined
      */
     this.parseGet = function () {
-        this.setUpPage(this.page);
+        var getParams = this.data.GET || '';
 
-        this.page.open(this.url + this.data, this.onOpen);
+        this.setUpPage(this.page);
+        this.page.open(this.url + getParams, this.onOpen);
         this.page.onLoadFinished = this.onLoadFinished;
     };
 
@@ -124,7 +125,7 @@ var PhantomParser = function (utils, page) {
     this.parsePost = function () {
         this.setUpPage(this.page);
 
-        this.page.open(this.url, 'post', this.data, this.onOpen);
+        this.page.open(this.url, 'post', this.data.POST, this.onOpen);
         this.page.onLoadFinished = this.onLoadFinished;
     };
 
@@ -160,7 +161,9 @@ var PhantomParser = function (utils, page) {
     this.putPageInStack = function (page, evt, xPath) {
         var id, pageFork = currentParser.cloneWebPage(page);
 
+        // TODO: Do I want to get a "snapshot" freezing the current instance? (page, url, content, type, event & xPath)
         id = evt + xPath;
+
         if (currentParser.stepHashes.indexOf(id) === -1) {
             currentParser.stepHashes.push(id);
             console.log('FIRE(' + evt + ', ' + xPath + ')');
@@ -294,9 +297,16 @@ var PhantomParser = function (utils, page) {
      * @return undefined
      */
     this.onConfirm = function (msg) {
+        var retVal = true;
+
+        // possible entrypoints: parseGet, putPageInStack.
         currentParser.report.confirms.push(msg);
+        if (data !== undefined && data.CONFIRM !== undefined && data.CONFIRM[msg] !== undefined) {
+            retVal = data.CONFIRM[msg];
+        }
+
         // `true` === pressing the "OK" button, `false` === pressing the "Cancel" button
-        return true;
+        return retVal;
     };
 
     /**
@@ -404,10 +414,6 @@ var PhantomParser = function (utils, page) {
                 }
             }
 
-            while (Object.keys(currentParser.stackPages).length !== 0) {
-                currentParser.parsePage(currentParser.stackPages.pop());
-            }
-
             currentParser.links.a = [].map.call(links.a, function (item) {
                 return utils.normaliseUrl(item, url);
             }).concat(currentParser.links.a).filter(utils.onlyUnique);
@@ -434,6 +440,10 @@ var PhantomParser = function (utils, page) {
 
                 return item;
             }).concat(currentParser.links.form).filter(utils.onlyUnique);
+
+            while (Object.keys(currentParser.stackPages).length !== 0) {
+                currentParser.parsePage(currentParser.stackPages.pop());
+            }
         }
 
         currentParser.exit();
@@ -463,7 +473,7 @@ var PhantomParser = function (utils, page) {
             if (tags.hasOwnProperty(tag)) {
                 attribute = tags[tag];
                 urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) {
-                    return item.hasAttribute(attribute) ? item.getAttribute(attribute) : undefined;
+                    return item[attribute];
                 });
             }
         }

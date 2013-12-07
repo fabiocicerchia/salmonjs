@@ -1,0 +1,35 @@
+<html>
+    <head>
+    </head>
+    <body onload="load()">
+        <script>
+            function load() {
+                if (confirm('whatever')) {
+                    if (confirm('something')) {
+                        var anchor = document.createElement('a');
+                        anchor.innerHTML = 'test 2';
+                        anchor.setAttribute('href', '#something');
+                        document.body.appendChild(anchor);
+                    } else {
+                        var anchor = document.createElement('a');
+                        anchor.innerHTML = 'test 2';
+                        anchor.setAttribute('href', '#whatever2');
+                        document.body.appendChild(anchor);
+                    }
+                } else {
+                    if (confirm('something')) {
+                        var anchor = document.createElement('a');
+                        anchor.innerHTML = 'test 2';
+                        anchor.setAttribute('href', '#something2');
+                        document.body.appendChild(anchor);
+                    } else {
+                        var anchor = document.createElement('a');
+                        anchor.innerHTML = 'test 3';
+                        anchor.setAttribute('href', '#whatever3');
+                        document.body.appendChild(anchor);
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

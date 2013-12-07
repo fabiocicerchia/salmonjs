@@ -96,7 +96,7 @@ casper.test.begin('createNewCaseFile #3', function (test) {
         testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
 
     testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
-    testObj.createNewCaseFile('http://www.example.com', 'test', {a: 1, b: 2}, function () {
+    testObj.createNewCaseFile('http://www.example.com', 'test', {POST:{a: 1, b: 2}}, function () {
         var content;
         try {
             content = fs.read(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http___www_example_com/test.tst');

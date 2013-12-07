@@ -30,7 +30,8 @@
 
 var casper   = casper || {},
     fs       = require('fs'),
-    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
+    rootdir  = fs.absolute('.'),
+    srcdir   = rootdir + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
     glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/../test/assets/';
 
@@ -243,10 +244,7 @@ casper.test.begin('parsePage', function (test) {
         utils         = {},
         phantom;
 
-    /*
     // TBD
-    test.assertEquals(false, true);*/
-
     test.done();
 });
 
@@ -256,11 +254,7 @@ casper.test.begin('onEvaluate', function (test) {
         utils         = {},
         phantom;
 
-    /*
     // TBD
-    test.assertEquals(false, true);
-    */
-
     test.done();
 });
 
@@ -294,20 +288,18 @@ casper.test.begin('parsePost', function (test) {
     test.assertEquals(phantom.parsePost(), undefined);
 });
 
-/*
-casper.test.begin('onInitialized', function (test) {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
-        utils         = {},
-        phantom;
-
-    phantom = new PhantomParser(utils, require('webpage').create());
-    phantom.page.injectJs = function() {
-        test.done();
-    };
-    test.assertEquals(phantom.onInitialized(), undefined);
-});
-*/
+//casper.test.begin('onInitialized', function (test) {
+//    var PhantomParser = require(srcdir + '/parser/phantom'),
+//        config        = require(srcdir + '/config'),
+//        utils         = {},
+//        phantom;
+//
+//    phantom = new PhantomParser(utils, require('webpage').create());
+//    phantom.page.injectJs = function() {
+//        test.done();
+//    };
+//    test.assertEquals(phantom.onInitialized(), undefined);
+//});
 
 casper.test.begin('onNavigationRequested', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
@@ -408,4 +400,334 @@ casper.test.begin('cloneWebPage', function (test) {
     test.assertEquals(resp.content, '<html><head></head><body>content</body></html>');
     test.assertEquals(resp.url, 'url');
     test.done();
+});
+
+casper.test.begin("Test #25", function (test) {
+    var phantom,
+        resp;
+
+    var params  = [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'file://' + rootdir + '/test/assets/test_25.html',
+        'GET',
+        { POST: {}, CONFIRM: {} },
+        undefined,
+        undefined,
+        false,
+        false
+    ];
+    phantom = require('child_process').spawn('phantomjs', [
+        //'--debug=true',
+        srcdir + '/parser/phantom.js',
+        JSON.stringify(params)
+    ]);
+
+    phantom.stdout.on('data', function(data) {
+        if (data.toString().substr(0, 3) === '###') {
+            resp = JSON.parse(data.toString().substr(3));
+            test.assertEquals(resp.report.confirms, ['whatever']);
+            test.assertEquals(resp.links.a, [
+               'file://' + rootdir + '/test/assets/test_25.html',
+               'file://' + rootdir + '/test/assets/test_25.html#whatever2',
+            ]);
+        }
+    });
+    phantom.stderr.on('data', function(data) {
+        test.assertEquals(true, false);
+    });
+    phantom.on('exit', function() {
+        test.done();
+    });
+});
+
+casper.test.begin("Test #25 #2", function (test) {
+    var phantom,
+        resp;
+
+    var params  = [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'file://' + rootdir + '/test/assets/test_25.html',
+        'GET',
+        { POST: {}, CONFIRM: {"whatever": false} },
+        undefined,
+        undefined,
+        false,
+        false
+    ];
+    phantom = require('child_process').spawn('phantomjs', [
+        //'--debug=true',
+        srcdir + '/parser/phantom.js',
+        JSON.stringify(params)
+    ]);
+
+    phantom.stdout.on('data', function(data) {
+        if (data.toString().substr(0, 3) === '###') {
+            resp = JSON.parse(data.toString().substr(3));
+            test.assertEquals(resp.report.confirms, ['whatever']);
+            test.assertEquals(resp.links.a, [
+               'file://' + rootdir + '/test/assets/test_25.html',
+               'file://' + rootdir + '/test/assets/test_25.html#whatever3',
+            ]);
+        }
+    });
+    phantom.stderr.on('data', function(data) {
+        test.assertEquals(true, false);
+    });
+    phantom.on('exit', function() {
+        test.done();
+    });
+});
+
+casper.test.begin("Test #26", function (test) {
+    var phantom,
+        resp;
+
+    var params  = [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'file://' + rootdir + '/test/assets/test_26.html',
+        'GET',
+        { POST: {}, CONFIRM: {} },
+        undefined,
+        undefined,
+        false,
+        false
+    ];
+    phantom = require('child_process').spawn('phantomjs', [
+        //'--debug=true',
+        srcdir + '/parser/phantom.js',
+        JSON.stringify(params)
+    ]);
+
+    phantom.stdout.on('data', function(data) {
+        if (data.toString().substr(0, 3) === '###') {
+            resp = JSON.parse(data.toString().substr(3));
+            test.assertEquals(resp.report.confirms, ['whatever', 'whatever', 'whatever']);
+            test.assertEquals(resp.links.a, [
+               'file://' + rootdir + '/test/assets/test_26.html#whatever2'
+            ]);
+        }
+    });
+    phantom.stderr.on('data', function(data) {
+        test.assertEquals(true, false);
+    });
+    phantom.on('exit', function() {
+        test.done();
+    });
+});
+
+casper.test.begin("Test #26 #2", function (test) {
+    var phantom,
+        resp;
+
+    var params  = [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'file://' + rootdir + '/test/assets/test_26.html',
+        'GET',
+        { POST: {}, CONFIRM: { "whatever": false } },
+        undefined,
+        undefined,
+        false,
+        false
+    ];
+    phantom = require('child_process').spawn('phantomjs', [
+        //'--debug=true',
+        srcdir + '/parser/phantom.js',
+        JSON.stringify(params)
+    ]);
+
+    phantom.stdout.on('data', function(data) {
+        if (data.toString().substr(0, 3) === '###') {
+            resp = JSON.parse(data.toString().substr(3));
+            test.assertEquals(resp.report.confirms, ['whatever', 'whatever', 'whatever']);
+            test.assertEquals(resp.links.a, [
+               'file://' + rootdir + '/test/assets/test_26.html#whatever3'
+            ]);
+        }
+    });
+    phantom.stderr.on('data', function(data) {
+        test.assertEquals(true, false);
+    });
+    phantom.on('exit', function() {
+        test.done();
+    });
+});
+
+casper.test.begin("Test #27", function (test) {
+    var phantom,
+        resp;
+
+    var params  = [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'file://' + rootdir + '/test/assets/test_27.html',
+        'GET',
+        { POST: {}, CONFIRM: {} },
+        undefined,
+        undefined,
+        false,
+        false
+    ];
+    phantom = require('child_process').spawn('phantomjs', [
+        //'--debug=true',
+        srcdir + '/parser/phantom.js',
+        JSON.stringify(params)
+    ]);
+
+    phantom.stdout.on('data', function(data) {
+        if (data.toString().substr(0, 3) === '###') {
+            resp = JSON.parse(data.toString().substr(3));
+            test.assertEquals(resp.report.confirms, ['whatever', 'something','whatever', 'something', 'whatever', 'something']);
+            test.assertEquals(resp.links.a, [
+               'file://' + rootdir + '/test/assets/test_27.html#something',
+            ]);
+        }
+    });
+    phantom.stderr.on('data', function(data) {
+        test.assertEquals(true, false);
+    });
+    phantom.on('exit', function() {
+        test.done();
+    });
+});
+
+casper.test.begin("Test #27 #2", function (test) {
+    var phantom,
+        resp;
+
+    var params  = [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'file://' + rootdir + '/test/assets/test_27.html',
+        'GET',
+        { POST: {}, CONFIRM: { "whatever": true, "something": false} },
+        undefined,
+        undefined,
+        false,
+        false
+    ];
+    phantom = require('child_process').spawn('phantomjs', [
+        //'--debug=true',
+        srcdir + '/parser/phantom.js',
+        JSON.stringify(params)
+    ]);
+
+    phantom.stdout.on('data', function(data) {
+        if (data.toString().substr(0, 3) === '###') {
+            resp = JSON.parse(data.toString().substr(3));
+            test.assertEquals(resp.report.confirms, ['whatever', 'something','whatever', 'something', 'whatever', 'something']);
+            test.assertEquals(resp.links.a, [
+               'file://' + rootdir + '/test/assets/test_27.html#whatever2',
+            ]);
+        }
+    });
+    phantom.stderr.on('data', function(data) {
+        test.assertEquals(true, false);
+    });
+    phantom.on('exit', function() {
+        test.done();
+    });
+});
+
+casper.test.begin("Test #27 #3", function (test) {
+    var phantom,
+        resp;
+
+    var params  = [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'file://' + rootdir + '/test/assets/test_27.html',
+        'GET',
+        { POST: {}, CONFIRM: { "whatever": false, "something": true} },
+        undefined,
+        undefined,
+        false,
+        false
+    ];
+    phantom = require('child_process').spawn('phantomjs', [
+        //'--debug=true',
+        srcdir + '/parser/phantom.js',
+        JSON.stringify(params)
+    ]);
+
+    phantom.stdout.on('data', function(data) {
+        if (data.toString().substr(0, 3) === '###') {
+            resp = JSON.parse(data.toString().substr(3));
+            test.assertEquals(resp.report.confirms, ['whatever', 'something','whatever', 'something', 'whatever', 'something']);
+            test.assertEquals(resp.links.a, [
+               'file://' + rootdir + '/test/assets/test_27.html#something2',
+            ]);
+        }
+    });
+    phantom.stderr.on('data', function(data) {
+        test.assertEquals(true, false);
+    });
+    phantom.on('exit', function() {
+        test.done();
+    });
+});
+
+casper.test.begin("Test #27 #4", function (test) {
+    var phantom,
+        resp;
+
+    var params  = [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'file://' + rootdir + '/test/assets/test_27.html',
+        'GET',
+        { POST: {}, CONFIRM: { "whatever": false, "something": false} },
+        undefined,
+        undefined,
+        false,
+        false
+    ];
+    phantom = require('child_process').spawn('phantomjs', [
+        //'--debug=true',
+        srcdir + '/parser/phantom.js',
+        JSON.stringify(params)
+    ]);
+
+    phantom.stdout.on('data', function(data) {
+        if (data.toString().substr(0, 3) === '###') {
+            resp = JSON.parse(data.toString().substr(3));
+            test.assertEquals(resp.report.confirms, ['whatever', 'something','whatever', 'something', 'whatever', 'something']);
+            test.assertEquals(resp.links.a, [
+               'file://' + rootdir + '/test/assets/test_27.html#whatever3',
+            ]);
+        }
+    });
+    phantom.stderr.on('data', function(data) {
+        test.assertEquals(true, false);
+    });
+    phantom.on('exit', function() {
+        test.done();
+    });
 });

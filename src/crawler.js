@@ -68,7 +68,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @type {Object}
      * @default {}
      */
-    this.data = {};
+    this.data = {
+        POST:    {},
+        CONFIRM: {}
+    };
 
     /**
      * URI ID.
@@ -225,7 +228,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 this.password,
                 this.url,
                 this.type,
-                utils.serialise(this.data),
+                this.data,
                 this.evt,
                 this.xPath,
                 this.storeDetails,
@@ -263,7 +266,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.run = function (url, type, data, evt, xPath) {
         this.url   = url;
         this.type  = type || 'GET';
-        this.data  = data || {};
+        this.data  = data || { POST: {}, CONFIRM: {} };
         this.evt   = evt || '';
         this.xPath = xPath || '';
 
@@ -365,7 +368,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         container.url   = url.action || url;
         container.type  = type || 'GET';
-        container.data  = data || {};
+        container.data  = data || { POST: {}, CONFIRM: {} };
         container.evt   = evt || '';
         container.xPath = xPath || '';
 
@@ -659,7 +662,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     }
                 }
 
-                test.createNewCaseFile(element.action, id + '-' + element.type, fieldData);
+                test.createNewCaseFile(element.action, id + '-' + element.type, { POST: fieldData, CONFIRM: result.report.confirms.filter(utils.onlyUnique) });
                 //test.createNewCaseFile(id + '-' + 'get', fieldData);
                 //test.createNewCaseFile(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
 
@@ -670,7 +673,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                         currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
 
                         cases[j].POST = utils.normaliseData(cases[j].POST);
-                        currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j].POST);
+                        currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]);
                     }
                 }
 
@@ -688,6 +691,18 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 }
                 */
             });
+
+            var id = currentCrawler.url.replace(/[^a-zA-Z0-9_]/g, '_'),
+                confirms = result.report.confirms || [];
+            test.createNewCaseFile(currentCrawler.url, id + '-' + currentCrawler.type, { POST: [], CONFIRM: confirms.filter(utils.onlyUnique) });
+            cases = test.getCases(currentCrawler.url); // TODO: Possible duplicates
+            currentCrawler.possibleCrawlers += cases.length;
+            for (j in cases) {
+                if (cases.hasOwnProperty(j)) {
+                    cases[j].POST = utils.normaliseData(cases[j].POST);
+                    currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, cases[j]);
+                }
+            }
         }
 
         return currentCrawler.checkRunningCrawlers('No links in the page');

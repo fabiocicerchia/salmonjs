@@ -20,5 +20,5 @@ node_modules
 npm-debug.log
 
 # Project
-tests/cases/*.tst
+tests/cases/*
 report/*

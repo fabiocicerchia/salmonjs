@@ -60,7 +60,7 @@ module.exports = function Parser(utils) {
      *
      * @property data
      * @type {String}
-     * @default """
+     * @default ""
      */
     this.data = '';
 
