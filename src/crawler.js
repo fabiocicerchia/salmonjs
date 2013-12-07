@@ -662,7 +662,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     }
                 }
 
-                test.createNewCaseFile(element.action, id + '-' + element.type, { POST: fieldData, CONFIRM: result.report.confirms.filter(utils.onlyUnique) });
+                test.createNewCaseFile(element.action, element.type, { POST: fieldData, CONFIRM: result.report.confirms.filter(utils.onlyUnique) });
                 //test.createNewCaseFile(id + '-' + 'get', fieldData);
                 //test.createNewCaseFile(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
 
@@ -692,9 +692,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 */
             });
 
-            var id = currentCrawler.url.replace(/[^a-zA-Z0-9_]/g, '_'),
-                confirms = result.report.confirms || [];
-            test.createNewCaseFile(currentCrawler.url, id + '-' + currentCrawler.type, { POST: [], CONFIRM: confirms.filter(utils.onlyUnique) });
+            var confirms = result.report.confirms || [];
+            test.createNewCaseFile(currentCrawler.url, currentCrawler.type, { POST: [], CONFIRM: confirms.filter(utils.onlyUnique) });
             cases = test.getCases(currentCrawler.url); // TODO: Possible duplicates
             currentCrawler.possibleCrawlers += cases.length;
             for (j in cases) {

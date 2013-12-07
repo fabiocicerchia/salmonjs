@@ -56,7 +56,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         crypto          = require('crypto'),
         optimist        = require('optimist'),
         utils           = new (require('../src/utils'))(crypto),
-        test            = new (require('../src/test'))(fs, glob, '.');
+        test            = new (require('../src/test'))(fs, glob, '.', utils);
 
     winston.cli();
     winston.remove(winston.transports.Console);

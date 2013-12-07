@@ -65,9 +65,10 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
      */
     this.createNewCaseFile = function (url, name, data, callback) {
         var k,
+            mainUrl      = url.replace(/^(.+):\/\/(\/?[^\/]+)\/?.*$/, '$1://$2')
             content      = '',
-            dir          = mainDir + currentTest.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_'),
-            testCaseFile = dir + '/' + name + '.tst';
+            dir          = mainDir + currentTest.TEST_CASE_DIRECTORY + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),
+            testCaseFile = dir + '/' + (url === mainUrl ? '' : url.replace(mainUrl, '') + '/') + name + '.tst';
 
         if (url === '' || name === '' || Object.keys(data).length === 0) {
             return (callback !== undefined) ? callback() : undefined;
@@ -86,6 +87,7 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
             }
         }
 
+        content += '\n';
         content += '[CONFIRM]\n';
 
         for (k in data.CONFIRM) {
@@ -94,8 +96,16 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
             }
         }
 
-        if (!fsWrapper.existsSync(dir)) {
-            fsWrapper.mkdirSync(dir, '0777');
+
+        var parts = testCaseFile.split(/\//),
+            currDir = '',
+            i;
+        for (i = 0; i < parts.length - 1; i++) {
+            currDir += parts[i] + '/';
+            if (!fsWrapper.existsSync(currDir)) {
+                console.log(currDir);
+                fsWrapper.mkdirSync(currDir);
+            }
         }
 
         fsWrapper.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
@@ -113,13 +123,17 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
      * @return {Object}
      */
     this.getCases = function (url) {
-        if (url === '' || !fsWrapper.existsSync(mainDir + this.TEST_CASE_DIRECTORY + url)) {
+        var mainUrl     = url.replace(/^(.+):\/\/(\/?[^\/]+)\/.+$/, '$1://$2')
+            dir         = mainDir + currentTest.TEST_CASE_DIRECTORY + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),
+            testCaseDir = dir + '/' + (url === mainUrl ? '' : url.replace(mainUrl, '') + '/');
+
+        if (url === '' || !fsWrapper.existsSync(testCaseDir)) {
             return [];
         }
 
         var testCase,
             cases = [],
-            files = glob.sync(mainDir + this.TEST_CASE_DIRECTORY + url.replace(/[^a-zA-Z0-9]/g, '_') + '/*.tst');
+            files = glob.sync(testCaseDir + '/*.tst');
 
         files.forEach(function (value) {
             testCase = currentTest.parseCaseFile(value);

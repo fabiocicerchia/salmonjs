@@ -91,8 +91,11 @@ var FSWrapper = function (fs) {
      * @return undefined
      */
     this.mkdirSync = function (path, mode) {
-        var method = (fs.mkdirSync !== undefined) ? 'mkdirSync' : 'makeDirectory';
-        return fs[method].call(fs, path, mode);
+        if (fs.mkdirSync !== undefined) {
+            return fs.mkdirSync(path, mode);
+        }
+
+        return fs.makeDirectory(path);
     };
 
     /**
