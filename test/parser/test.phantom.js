@@ -35,8 +35,6 @@ var casper   = casper || {},
     glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/../test/assets/';
 
-casper.options.waitTimeout = 5000;
-
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/sha1.js');
     casper.page.injectJs(srcdir + '/events.js');
@@ -822,50 +820,48 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
     });
 
-    casper.test.begin("Upload", function (test) {
-        var phantom,
-            resp,
-            nickname = 'spidey_' + Date.now();
+    if (require('system').env.TRAVIS !== true) {
+        casper.test.begin("Upload", function (test) {
+            var phantom,
+                resp,
+                nickname = 'spidey_' + Date.now();
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'http://imagebin.org/index.php?page=add',
-            'POST',
-            { POST: {image: '@' + rootdir + '/test/assets/pixel.gif', nickname: nickname, disclaimer_agree: 'Y', title: '', description: '', Submit: 'Submit', mode: 'add'} },
-            undefined,
-            undefined,
-            false,
-            true
-        ];
-        phantom = require('child_process').spawn('phantomjs', [
-            //'--debug=true',
-            srcdir + '/parser/phantom.js',
-            JSON.stringify(params)
-        ]);
+            var params  = [
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                'http://imagebin.org/index.php?page=add',
+                'POST',
+                { POST: {image: '@' + rootdir + '/test/assets/pixel.gif', nickname: nickname, disclaimer_agree: 'Y', title: '', description: '', Submit: 'Submit', mode: 'add'} },
+                undefined,
+                undefined,
+                false,
+                true
+            ];
+            phantom = require('child_process').spawn('phantomjs', [
+                //'--debug=true',
+                srcdir + '/parser/phantom.js',
+                JSON.stringify(params)
+            ]);
 
-        phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
-                test.assertEquals(resp.links.a, []);
-            }
-        });
-        phantom.stderr.on('data', function(data) {
-            test.assertEquals(true, false);
-        });
-        phantom.on('exit', function() {
-            casper.start('http://imagebin.org/index.php', function() {
-                if (this.status().currentHTTPStatus === 200) {
-                    test.assertTextExists(nickname);
-                } else {
-                    test.skip(1, 'TIMEOUT REACHED');
+            phantom.stdout.on('data', function(data) {
+                if (data.toString().substr(0, 3) === '###') {
+                    resp = JSON.parse(data.toString().substr(3));
+                    test.assertEquals(resp.links.a, []);
                 }
-            }).run(function() {
-                test.done();
+            });
+            phantom.stderr.on('data', function(data) {
+                test.assertEquals(true, false);
+            });
+            phantom.on('exit', function() {
+                casper.start('http://imagebin.org/index.php', function() {
+                    test.assertTextExists(nickname);
+                }).run(function() {
+                    test.done();
+                });
             });
         });
-    });
+    }
 }
