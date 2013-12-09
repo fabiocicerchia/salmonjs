@@ -35,6 +35,8 @@ var casper   = casper || {},
     glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/../test/assets/';
 
+casper.options.waitTimeout = 5000;
+
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/sha1.js');
     casper.page.injectJs(srcdir + '/events.js');
@@ -856,7 +858,11 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
         phantom.on('exit', function() {
             casper.start('http://imagebin.org/index.php', function() {
-                test.assertTextExists(nickname);
+                if (this.status().currentHTTPStatus === 200) {
+                    test.assertTextExists(nickname);
+                } else {
+                    test.skip(1, 'TIMEOUT REACHED');
+                }
             }).run(function() {
                 test.done();
             });
