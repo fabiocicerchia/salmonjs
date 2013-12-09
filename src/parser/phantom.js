@@ -53,7 +53,7 @@ var Parser          = require('../parser'),
 if (username !== undefined && password !== undefined) {
     page.customHeaders = {
         'Authorization': 'Basic ' + btoa(username + ':' + password)
-    };
+    }
 }
 
 /**
@@ -111,7 +111,12 @@ var PhantomParser = function (utils, page) {
     this.parseGet = function () {
         var getParams = this.data.GET || '';
 
+        // InitPhantomJs
         this.setUpPage(this.page);
+
+        // RestoreFreezedInstance: set all the variables need for ReExecuteJsEvents
+
+        // Open
         this.page.open(this.url + getParams, this.onOpen);
         this.page.onLoadFinished = this.onLoadFinished;
     };
@@ -125,8 +130,39 @@ var PhantomParser = function (utils, page) {
     this.parsePost = function () {
         this.setUpPage(this.page);
 
-        this.page.open(this.url, 'post', this.data.POST, this.onOpen);
-        this.page.onLoadFinished = this.onLoadFinished;
+        var doNotContinue = false;
+        for (var i in this.data.POST) {
+            if (this.data.POST.hasOwnProperty(i)) {
+                if (this.data.POST[i].substr(0, 1) === '@' && fs.exists(this.data.POST[i].substr(1))) {
+                    doNotContinue = true;
+                    this.spawnAndUseNodeJs(this.url, this.data.POST);
+                }
+            }
+        }
+
+        if (!doNotContinue) {
+            this.page.open(this.url, 'post', this.data.POST, this.onOpen);
+            this.page.onLoadFinished = this.onLoadFinished;
+        }
+    };
+
+    /**
+     * TBD
+     */
+    this.spawnAndUseNodeJs = function (url, data) {
+        var spawn   = require('child_process').spawn,
+            args    = [ '/home/fabio/c9/spidey/src/upload.js', url, JSON.stringify(data) ],
+            process = spawn('node', args);
+
+        process.stdout.on('data', function(data) {
+            currentParser.page.setContent(data, currentParser.url);
+            currentParser.page.onInitialized(currentParser.page);
+            currentParser.onLoadFinished();
+        });
+
+        process.stderr.on('data', function(data) {
+            // TODO: Handle the failure
+        });
     };
 
     /**
@@ -211,7 +247,7 @@ var PhantomParser = function (utils, page) {
         currentParser.report.time.total = currentParser.report.time.end - currentParser.report.time.start;
 
         if (status === 'success') {
-            currentParser.page.navigationLocked = true;
+            //currentParser.page.navigationLocked = true;
         }
     };
 
@@ -351,6 +387,7 @@ var PhantomParser = function (utils, page) {
     this.onLoadFinished = function () {
         var step;
 
+        // ReExecuteJsEvents
         // Execute all the events to be sure to follow the right path to the
         // right page to be processed.
         for (step in currentParser.stepStack) {
@@ -363,6 +400,7 @@ var PhantomParser = function (utils, page) {
             }
         }
 
+        // Process
         currentParser.parsePage(currentParser.page);
     };
 

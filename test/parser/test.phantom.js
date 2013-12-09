@@ -91,7 +91,7 @@ casper.test.begin('onOpen', function (test) {
     test.assertType(phantom.report.time.end, 'number');
     test.assertType(phantom.report.time.total, 'number');
     test.assertType(phantom.page.navigationLocked, 'boolean');
-    test.assertEquals(phantom.page.navigationLocked, true);
+    test.assertEquals(phantom.page.navigationLocked, false);
 
     test.done();
 });
@@ -137,6 +137,7 @@ casper.test.begin('onResourceReceived', function (test) {
 
     phantom = new PhantomParser(utils, require('webpage').create());
     phantom.onResourceReceived({stage: 'end', url: 'about:blank', headers: []});
+    console.log(JSON.stringify(phantom.report.resources));
     test.assertEquals(phantom.report.resources, { 'about:blank': { headers: [] } });
 
     test.done();
@@ -816,6 +817,49 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
         phantom.on('exit', function() {
             test.done();
+        });
+    });
+
+    casper.test.begin("Upload", function (test) {
+        var phantom,
+            resp,
+            nickname = 'spidey_' + Date.now();
+
+        var params  = [
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'http://imagebin.org/index.php?page=add',
+            'POST',
+            { POST: {image: '@' + rootdir + '/test/assets/pixel.gif', nickname: nickname, disclaimer_agree: 'Y', title: '', description: '', Submit: 'Submit', mode: 'add'} },
+            undefined,
+            undefined,
+            false,
+            true
+        ];
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().substr(0, 3) === '###') {
+                resp = JSON.parse(data.toString().substr(3));
+                test.assertEquals(resp.links.a, []);
+            }
+        });
+        phantom.stderr.on('data', function(data) {
+            test.assertEquals(true, false);
+        });
+        phantom.on('exit', function() {
+            casper.start('http://imagebin.org/index.php', function() {
+                test.assertTextExists(nickname);
+            }).run(function() {
+                test.done();
+            });
         });
     });
 }

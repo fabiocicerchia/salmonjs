@@ -121,6 +121,7 @@ Here an example of a test case file:
 [POST]
 variable1=value1
 variable2=value2
+variable3=@/path/to/file.ext ; use @ in front to use the upload feature (the file MUST exists)
 
 [CONFIRM]
 Message=true ; true = OK, false = Cancel

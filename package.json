@@ -29,9 +29,10 @@
     "path": "0.4.9",
     "colors": "0.6.2",
     "redis": "0.9.1",
-    "glob": "*",
+    "glob": "3.2.7",
     "winston": "0.7.2",
-    "insight": "0.3.0"
+    "insight": "0.3.0",
+    "request": "2.29.0"
   },
   "devDependencies": {
     "visionmedia-jscoverage": "1.0.0"
