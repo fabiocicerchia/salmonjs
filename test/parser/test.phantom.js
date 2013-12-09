@@ -820,7 +820,7 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
     });
 
-    if (require('system').env.TRAVIS !== true) {
+    if (require('system').env.TRAVIS !== 'true') {
         casper.test.begin("Upload", function (test) {
             var phantom,
                 resp,
