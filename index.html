@@ -17,17 +17,17 @@
         $('#main_content').headsmart()
       })
     </script>
-    <title>Spidey by fabiocicerchia</title>
+    <title>salmonJS by fabiocicerchia</title>
   </head>
 
   <body>
-    <a id="forkme_banner" href="https://github.com/fabiocicerchia/spidey">View on GitHub</a>
+    <a id="forkme_banner" href="https://github.com/fabiocicerchia/salmonjs">View on GitHub</a>
     <div class="shell">
 
       <header>
         <span class="ribbon-outer">
           <span class="ribbon-inner">
-            <h1>Spidey</h1>
+            <h1>salmonJS</h1>
             <h2>Web Crawler in Node.js to spider dynamically whole websites.</h2>
           </span>
           <span class="left-tail"></span>
@@ -37,7 +37,7 @@
 
       <section id="downloads">
         <span class="inner">
-          <a href="https://github.com/fabiocicerchia/spidey/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/fabiocicerchia/spidey/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+          <a href="https://github.com/fabiocicerchia/salmonjs/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/fabiocicerchia/salmonjs/tarball/master" class="tgz"><em>download</em> .TGZ</a>
         </span>
       </section>
 
@@ -47,23 +47,46 @@
 
       <section id="main_content">
         <h1>
-<a name="spidey" class="anchor" href="#spidey"><span class="octicon octicon-link"></span></a>SPIDEY</h1>
+<a name="salmonjs" class="anchor" href="#salmonjs"><span class="octicon octicon-link"></span></a>salmonJS</h1>
 
-<p><a href="https://travis-ci.org/fabiocicerchia/spidey"><img src="https://travis-ci.org/fabiocicerchia/spidey.png" alt="Build Status"></a>
-<a href="https://gemnasium.com/fabiocicerchia/spidey"><img src="https://gemnasium.com/fabiocicerchia/spidey.png" alt="Dependency Status"></a>
-<a href="https://coveralls.io/r/fabiocicerchia/spidey"><img src="https://coveralls.io/repos/fabiocicerchia/spidey/badge.png" alt="Coverage Status"></a></p>
+<p><a href="https://travis-ci.org/fabiocicerchia/salmonjs"><img src="https://travis-ci.org/fabiocicerchia/salmonjs.png" alt="Build Status"></a>
+<a href="https://gemnasium.com/fabiocicerchia/salmonjs"><img src="https://gemnasium.com/fabiocicerchia/salmonjs.png" alt="Dependency Status"></a>
+<a href="https://coveralls.io/r/fabiocicerchia/salmonjs"><img src="https://coveralls.io/repos/fabiocicerchia/salmonjs/badge.png" alt="Coverage Status"></a>
+<a href="https://codeclimate.com/github/fabiocicerchia/salmonjs"><img src="https://codeclimate.com/github/fabiocicerchia/salmonjs.png" alt="Code Climate"></a>
+<a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/fabiocicerchia/salmonjs/trend.png" alt="Bitdeli Badge"></a></p>
 
-<p><a href="https://nodei.co/npm/spidey/"><img src="https://nodei.co/npm/spidey.png?downloads=true&amp;stars=true" alt="NPM"></a></p>
+<p><a href="https://nodei.co/npm/salmonjs/"><img src="https://nodei.co/npm/salmonjs.png?downloads=true&amp;stars=true" alt="NPM"></a></p>
 
-<p><a href="https://twitter.com/intent/tweet?text=Spidey+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&amp;url=https%3A%2F%2Ffabiocicerchia.github.io%2Fspidey&amp;hashtags=spidey&amp;original_referer=http%3A%2F%2Fgithub.com%2F&amp;tw_p=tweetbutton"><img src="http://jpillora.com/github-twitter-button/img/tweet.png" alt="Spidey - Web Crawler in Node.js to spider dynamically whole websites."></a></p>
+<p><a href="https://twitter.com/intent/tweet?text=salmonJS+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&amp;url=https%3A%2F%2Ffabiocicerchia.github.io%2Fsalmonjs&amp;hashtags=salmonjs&amp;original_referer=http%3A%2F%2Fgithub.com%2F&amp;tw_p=tweetbutton"><img src="http://jpillora.com/github-twitter-button/img/tweet.png" alt="salmonJS - Web Crawler in Node.js to spider dynamically whole websites."></a></p>
 
 <p>Web Crawler in Node.js to spider dynamically whole websites.</p>
+
+<p><strong>IMPORTANT: This is a DEVELOPMENT tool, therefore SHOULD NOT be used against a
+website you DO NOT OWN!</strong></p>
 
 <p>It helps you to map / process entire websites, spidering them and parsing each
 page in a smart way. It follows all the links and test several times the form
 objects. In this way is possible to check effectively the whole website.</p>
 
-<p>Few suggestion about its usage:</p>
+<h2>
+<a name="whats-this-for" class="anchor" href="#whats-this-for"><span class="octicon octicon-link"></span></a>What's this for?</h2>
+
+<p>This project was born with the aim of improve the legacy code, but it's not
+strictly restricted only to that.</p>
+
+<p>salmonJS will crawl every page from an entry-point URL, retrieving all the links
+in the page and firing all the events bound to any DOM element in the page in
+order to process all the possible combination automatically.
+The only "limitation" of an automatic robot is the user input, so for that cases
+has been implemented the test case files where it's possible to define custom
+input values (e.g.: POST variables for forms, input values for javascript
+prompts, etc).</p>
+
+<p>With this in mind the usage of salmonJS could be different based on your own
+needs, like checking legacy code for dead code or profiling the web app
+performance.</p>
+
+<p>Here below few suggestions about its usage:</p>
 
 <ul>
 <li>Improve the legacy code
@@ -72,6 +95,7 @@ objects. In this way is possible to check effectively the whole website.</p>
 <li>Check the dead code (enabling the code coverage server-side)</li>
 <li>Discover 500 Internal Server Errors</li>
 <li>Discover notices and warnings</li>
+<li>SQL profiling</li>
 </ul>
 </li>
 <li>Testing
@@ -103,26 +127,31 @@ objects. In this way is possible to check effectively the whole website.</p>
 
 <ul>
 <li>Command Line Interface</li>
-<li>Reorder query string params for get and post for uniqueness</li>
+<li>Catch and handle all the events bound to DOM elements (regardless how they have been set)</li>
+<li>Follows any 3xx redirect, JS document.location and meta redirect (can be disabled)</li>
+<li>Ignore duplicated URLs / requests and external URLs</li>
 <li>HTTP authentication</li>
-<li>Handle events bound with <code>addEventListener</code>, HTML attributes (<code>on*</code>)</li>
-<li>Exclude external URIs in the crawling</li>
-<li>Process the page using PhantomJS</li>
-<li>Generate report for each page crawled
+<li>Generate report for each page crawled, with: 6
 
 <ul>
 <li>Screenshot</li>
-<li>HTTP header</li>
+<li>HTTP headers</li>
 <li>HTTP method</li>
-<li>Data sent</li>
+<li>Data sent (GET and POST)</li>
 <li>Page output</li>
 <li>Execution time</li>
 <li>Console messages</li>
 <li>Alerts, Confirmations &amp; Prompts</li>
 <li>Errors</li>
-<li>List of requests</li>
+<li>List of successful and failed requests</li>
 </ul>
 </li>
+<li>Multiple crawlers working asynchronously one URL each one</li>
+<li>Support for the following HTML tags:
+a, area, base, form, frame, iframe, img, input, link, script</li>
+<li>URL normalisation</li>
+<li>Process the web page using PhantomJS</li>
+<li>Processing the output content only if it's HTML</li>
 </ul><h2>
 <a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
 
@@ -130,21 +159,21 @@ objects. In this way is possible to check effectively the whole website.</p>
 
 <ul>
 <li><a href="http://nodejs.org/download/">Node.js</a></li>
+<li><a href="http://phantomjs.org/download.html">PhantomJS</a></li>
 <li>
-<a href="http://phantomjs.org/download.html">PhantomJS</a> / <a href="http://casperjs.org/">CasperJS</a>
-</li>
+<a href="http://casperjs.org/">CasperJS</a> (optional, only for tests)</li>
 <li><a href="http://redis.io/download">Redis</a></li>
 </ul><h2>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>You can install it directly from npm:</p>
 
-<pre><code>[user@hostname ~]$ npm install spidey -g
+<pre><code>[user@hostname ~]$ npm install salmonjs -g
 </code></pre>
 
 <p>or you can download the source code from GitHub and run these commands:</p>
 
-<pre><code>[user@hostname ~/spidey]$ npm install
+<pre><code>[user@hostname ~/salmonjs]$ npm install
 </code></pre>
 
 <h2>
@@ -152,49 +181,120 @@ objects. In this way is possible to check effectively the whole website.</p>
 
 <p>Change the file <code>src/config.js</code> accordingly to your needs.</p>
 
+<h3>
+<a name="test-cases" class="anchor" href="#test-cases"><span class="octicon octicon-link"></span></a>Test Cases</h3>
+
+<p>Here an example of a test case file:</p>
+
+<pre><code>; Test Case File
+; generated by salmonJS v0.2.1 (http://fabiocicerchia.github.io/salmonjs) at Sat, 01 Jan 1970 00:00:00 GMT
+; url = http://www.example.com
+; id = http___www_example_com
+
+[POST]
+variable1=value1
+variable2=value2
+variable3=@/path/to/file.ext ; use @ in front to use the upload feature (the file MUST exists)
+
+[CONFIRM]
+Message=true ; true = OK, false = Cancel
+
+[PROMPT]
+Question="Answer"
+</code></pre>
+
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<pre><code>              __     __
-.-----.-----.|__|.--|  |.-----.--.--.
-|__ --|  _  ||  ||  _  ||  -__|  |  |
-|_____|   __||__||_____||_____|___  |
-      |__|                    |_____|
+<pre><code>              __                         _____ _______
+.-----.---.-.|  |.--------.-----.-----._|     |     __|
+|__ --|  _  ||  ||        |  _  |     |       |__     |
+|_____|___._||__||__|__|__|_____|__|__|_______|_______|
 
-SPIDEY v0.2.1
+salmonJS v0.2.1
 
 Copyright (C) 2013 Fabio Cicerchia &lt;info@fabiocicerchia.it&gt;
 
 Web Crawler in Node.js to spider dynamically whole websites.
-Usage: ./bin/spidey
+Usage: ./bin/salmonjs
 
 Options:
-  --uri              The URI to be crawled             [required]
-  -u, --username     Username for HTTP authentication
-  -p, --password     Password for HTTP authentication
-  -d, --details      Store details for each page       [default: false]
-  --help             Show the help
+  --uri            The URI to be crawled                 [required]
+  -u, --username   Username for HTTP authentication
+  -p, --password   Password for HTTP authentication
+  -d, --details    Store details for each page           [default: false]
+  -f, --follow     Follows redirects                     [default: false]
+  --disable-stats  Disable anonymous report usage stats  [default: false]
+  --help           Show the help
 </code></pre>
 
 <h2>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
 
-<pre><code>[user@hostname ~]$ spidey --uri "http://www.google.com"
-[user@hostname ~]$ spidey --uri "www.google.com"
-[user@hostname ~]$ spidey --uri "/tmp/file.html"
-[user@hostname ~]$ spidey --uri "file.html"
+<pre><code>[user@hostname ~]$ salmonjs --uri "http://www.google.com"
+[user@hostname ~]$ salmonjs --uri "www.google.com"
+[user@hostname ~]$ salmonjs --uri "/tmp/file.html"
+[user@hostname ~]$ salmonjs --uri "file.html"
 </code></pre>
 
 <h2>
 <a name="tests" class="anchor" href="#tests"><span class="octicon octicon-link"></span></a>Tests</h2>
 
-<pre><code>[user@hostname ~/spidey]$ npm test
+<pre><code>[user@hostname ~/salmonjs]$ npm test
 </code></pre>
 
 <h2>
+<a name="how-it-works" class="anchor" href="#how-it-works"><span class="octicon octicon-link"></span></a>How it works</h2>
+
+<ul>
+<li>Start processing an URL</li>
+<li>Open a system process to PhantomJS
+
+<ul>
+<li>Open the URL</li>
+<li>If there is a JS event, put it into a dedicate stack</li>
+<li>Inject custom event listener
+
+<ul>
+<li>Override existent event listener</li>
+</ul>
+</li>
+<li>Collect all the relevant info from the page for the report</li>
+<li>On load complete, execute the events in the stack</li>
+<li>Start to process the web page</li>
+<li>Get all the links from the page content</li>
+<li>Normalise and filter by uniqueness all the URLs collected</li>
+<li>Get all the JS events bound to DOM elements</li>
+<li>Clone the web page for each new combination in the page (confirm)</li>
+<li>Put the web page instance in a dedicate stack for each JS event</li>
+<li>Process the all the web pages in the stack</li>
+<li>Get all the links from the page content</li>
+<li>Reiterate until there are no more JS events</li>
+</ul>
+</li>
+<li>If there is an error retry up to 5 times</li>
+<li>Collect all the data sent by the parser</li>
+<li>Create test cases for POST data with normalised fields</li>
+<li>Get POST test cases for current URL</li>
+<li>Launch a new crawler for each test case</li>
+<li>Store details in report file</li>
+<li>Increase the counter for possible crawlers to be launched based on the links</li>
+<li>Check the links if are already been processed
+
+<ul>
+<li>If not, launch a new process for each link</li>
+</ul>
+</li>
+<li>If there are no more links to be processed, check if there are still sub-crawlers running
+
+<ul>
+<li>If not so, terminate the process</li>
+</ul>
+</li>
+</ul><h2>
 <a name="bugs" class="anchor" href="#bugs"><span class="octicon octicon-link"></span></a>Bugs</h2>
 
-<p>For a list of bugs please go to the <a href="https://github.com/fabiocicerchia/spidey/issues?labels=Bug&amp;page=1&amp;state=open">GitHub Issue Page</a>.</p>
+<p>For a list of bugs please go to the <a href="https://github.com/fabiocicerchia/salmonjs/issues?labels=Bug&amp;page=1&amp;state=open">GitHub Issue Page</a>.</p>
 
 <h2>
 <a name="licence" class="anchor" href="#licence"><span class="octicon octicon-link"></span></a>Licence</h2>
@@ -222,7 +322,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
       <footer>
         <span class="ribbon-outer">
           <span class="ribbon-inner">
-            <p>this project by <a href="https://github.com/fabiocicerchia">fabiocicerchia</a> can be found on <a href="https://github.com/fabiocicerchia/spidey">GitHub</a></p>
+            <p>this project by <a href="https://github.com/fabiocicerchia">fabiocicerchia</a> can be found on <a href="https://github.com/fabiocicerchia/salmonjs">GitHub</a></p>
           </span>
           <span class="left-tail"></span>
           <span class="right-tail"></span>
