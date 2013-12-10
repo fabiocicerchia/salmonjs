@@ -1,28 +1,28 @@
 {
-  "name": "spidey",
+  "name": "salmonJS",
   "preferGlobal": true,
   "version": "0.2.1",
   "author": "Fabio Cicerchia <info@fabiocicerchia.it> (http://www.fabiocicerchia.it)",
-  "homepage": "http://fabiocicerchia.github.io/spidey",
+  "homepage": "http://fabiocicerchia.github.io/salmonjs",
   "description": "Web Crawler in Node.js to spider dynamically whole websites.",
   "contributors": [
     "Fabio Cicerchia <info@fabiocicerchia.it>"
   ],
   "bin": {
-    "spidey": "./bin/spidey"
+    "salmonjs": "./bin/salmonjs"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabiocicerchia/spidey.git"
+    "url": "https://github.com/fabiocicerchia/salmonjs.git"
   },
   "bugs": {
-    "url": "https://github.com/fabiocicerchia/spidey/issues"
+    "url": "https://github.com/fabiocicerchia/salmonjs/issues"
   },
   "keywords": [
     "cli",
     "web",
     "crawler",
-    "spidey"
+    "salmonjs"
   ],
   "dependencies": {
     "optimist": "0.6.0",
@@ -46,7 +46,7 @@
   "engines": {
     "node": ">=0.10"
   },
-  "main": "bin/spidey",
+  "main": "bin/salmonjs",
   "directories": {
     "lib": "src",
     "bin": "bin",

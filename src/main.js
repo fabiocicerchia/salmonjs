@@ -1,11 +1,10 @@
 /**
- *               __     __
- * .-----.-----.|__|.--|  |.-----.--.--.
- * |__ --|  _  ||  ||  _  ||  -__|  |  |
- * |_____|   __||__||_____||_____|___  |
- *       |__|                    |_____|
+ *               __                         _____ _______
+ * .-----.---.-.|  |.--------.-----.-----._|     |     __|
+ * |__ --|  _  ||  ||        |  _  |     |       |__     |
+ * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * SPIDEY v0.2.1
+ * salmonJS v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -87,13 +86,12 @@ winston.add(
     }
 );
 
-console.log('              __     __'.yellow);
-console.log('.-----.-----.|__|.--|  |.-----.--.--.'.yellow);
-console.log('|__ --|  _  ||  ||  _  ||  -__|  |  |'.yellow);
-console.log('|_____|   __||__||_____||_____|___  |'.yellow);
-console.log('      |__|                    |_____|'.yellow);
+console.log('              __                         _____ _______'.yellow);
+console.log('.-----.---.-.|  |.--------.-----.-----._|     |     __|'.yellow);
+console.log('|__ --|  _  ||  ||        |  _  |     |       |__     |'.yellow);
+console.log('|_____|___._||__||__|__|__|_____|__|__|_______|_______|'.yellow);
 console.log('');
-console.log('SPIDEY v0.2.1'.grey);
+console.log('salmonJS v0.2.1'.grey);
 console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
 console.log('');
 
@@ -151,8 +149,7 @@ function start() {
     insight.track('cli', 'release',  os.release());
     insight.track('cli', 'node',     process.versions.node);
     insight.track('cli', 'engine',   process.versions.v8);
-    insight.track('cli', 'spidey',   '0.2.1');
-    insight.track('cli', 'spidey',   uniqId);
+    insight.track('cli', 'salmonJS', '0.2.1');
 
     winston.info('Start processing "' + uri.green + '"...');
 

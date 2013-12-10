@@ -2,7 +2,7 @@
 
 assert () {
     echo -n "Test '$1': "
-    RESPONSE=$(./bin/spidey --uri "$1" | grep "Launching crawler" | wc -l)
+    RESPONSE=$(./bin/salmonjs --uri "$1" | grep "Launching crawler" | wc -l)
     [ "$RESPONSE" -eq "$2" ] && echo "true" || echo "false ($RESPONSE)"
 }
 

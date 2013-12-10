@@ -1,11 +1,10 @@
 /**
- *               __     __
- * .-----.-----.|__|.--|  |.-----.--.--.
- * |__ --|  _  ||  ||  _  ||  -__|  |  |
- * |_____|   __||__||_____||_____|___  |
- *       |__|                    |_____|
+ *               __                         _____ _______
+ * .-----.---.-.|  |.--------.-----.-----._|     |     __|
+ * |__ --|  _  ||  ||        |  _  |     |       |__     |
+ * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * SPIDEY v0.2.1
+ * salmonJS v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -65,7 +64,7 @@ casper.test.begin('setUpPage', function (test) {
     test.assertEquals(phantom.page.onConsoleMessage,         phantom.onConsoleMessage, 'it has been set up properly');
     test.assertEquals(phantom.page.onNavigationRequested,    phantom.onNavigationRequested, 'it has been set up properly');
     test.assertEquals(phantom.page.viewportSize,             { width: 1024, height: 800 }, 'it has been set up properly');
-    test.assertEquals(phantom.page.settings.userAgent,      'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)', 'it has been set up properly');
+    test.assertEquals(phantom.page.settings.userAgent,       'salmonJS/0.2.1 (+http://fabiocicerchia.github.io/salmonjs)', 'it has been set up properly');
 
     test.done();
 });
@@ -824,7 +823,7 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         casper.test.begin("Upload", function (test) {
             var phantom,
                 resp,
-                nickname = 'spidey_' + Date.now();
+                nickname = 'salmonJS_' + Date.now();
 
             var params  = [
                 undefined,

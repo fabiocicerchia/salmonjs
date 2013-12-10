@@ -1,11 +1,10 @@
 /**
- *               __     __
- * .-----.-----.|__|.--|  |.-----.--.--.
- * |__ --|  _  ||  ||  _  ||  -__|  |  |
- * |_____|   __||__||_____||_____|___  |
- *       |__|                    |_____|
+ *               __                         _____ _______
+ * .-----.---.-.|  |.--------.-----.-----._|     |     __|
+ * |__ --|  _  ||  ||        |  _  |     |       |__     |
+ * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * SPIDEY v0.2.1
+ * salmonJS v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -38,7 +37,7 @@ var request = require('request'),
         uri: url,
         timeout: 5000,
         headers: {
-            'User-Agent': 'Spidey/0.2.1 (+http://fabiocicerchia.github.io/spidey)'
+            'User-Agent': 'salmonJS/0.2.1 (+http://fabiocicerchia.github.io/salmonjs)'
         }
     },
     req,

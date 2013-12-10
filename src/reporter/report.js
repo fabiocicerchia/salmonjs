@@ -1,11 +1,10 @@
 /**
- *               __     __
- * .-----.-----.|__|.--|  |.-----.--.--.
- * |__ --|  _  ||  ||  _  ||  -__|  |  |
- * |_____|   __||__||_____||_____|___  |
- *       |__|                    |_____|
+ *               __                         _____ _______
+ * .-----.---.-.|  |.--------.-----.-----._|     |     __|
+ * |__ --|  _  ||  ||        |  _  |     |       |__     |
+ * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * SPIDEY v0.2.1
+ * salmonJS v0.2.1
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -181,7 +180,7 @@ var reporter = function (utils) {
         html += utils.htmlEscape(report.content);
         html += '</pre>\n';
         html += '        </div>\n';
-        html += '        <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/spidey">Spidey</a> version 0.2.1</div>\n';
+        html += '        <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/salmonjs">salmonJS</a> version 0.2.1</div>\n';
         html += '    </body>\n';
         html += '</html>\n';
 
