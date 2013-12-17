@@ -225,7 +225,7 @@ var Utils = function (crypto) {
             }
         }
 
-        return str.join('&');
+        return str.join('&').replace('%23', '#');
     };
 
     /**

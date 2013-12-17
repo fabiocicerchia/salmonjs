@@ -871,6 +871,7 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
+            console.log(data+'');
             if (data.toString().substr(0, 3) === '###') {
                 resp = JSON.parse(data.toString().substr(3));
                 test.assertEquals(resp.links.a, []);
@@ -988,6 +989,7 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
+            console.log(data+'');
             if (data.toString().substr(0, 3) === '###') {
                 resp = JSON.parse(data.toString().substr(3));
                 test.assertEquals(resp.links.a, [
