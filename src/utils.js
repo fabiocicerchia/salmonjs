@@ -249,21 +249,25 @@ var Utils = function (crypto) {
             baseUrl += '/';
         }
 
+        baseUrl = baseUrl.replace(/#.*$/, '');
+
         if (url.indexOf('/') === 0) {
             normalised = baseDomain.substr(0, baseDomain.length - 1) + url;
         } else if (url.indexOf('?') === 0) {
             normalised = baseDomain + url;
         } else if (url.indexOf('#') === 0) {
-            normalised = baseUrl.replace(/#.*$/, '') + url;
+            normalised = baseUrl + url;
         } else if (url === baseUrl || url === '') {
             normalised = baseUrl;
         } else if (url.indexOf('://') !== -1 && url.indexOf(baseDomain) === 0) {
             normalised = url;
+        } else if (url.indexOf('://') !== -1 && url.indexOf(baseUrl) === 0) {
+            normalised = url;
         }
 
         if (normalised !== undefined && normalised.indexOf('?') > 0) {
-            qs = normalised.replace(/\?(.+)(#.*)?/, '$1');
-            normalised = normalised.replace(qs, '?' + this.arrayToQuery(this.normaliseData(qs)));
+            qs = normalised.replace(/.*\?(.+)(#.*)?/, '$1');
+            normalised = normalised.replace('?' + qs, '?' + this.arrayToQuery(this.normaliseData(qs)));
         }
 
         return normalised;

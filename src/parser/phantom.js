@@ -150,7 +150,7 @@ var PhantomParser = function (utils, page) {
      */
     this.spawnAndUseNodeJs = function (url, data) {
         var spawn   = require('child_process').spawn,
-            args    = [ '../src/upload.js', url, JSON.stringify(data) ],
+            args    = [ fs.workingDirectory + '/src/upload.js', url, JSON.stringify(data) ],
             process = spawn('node', args);
 
         process.stdout.on('data', function(data) {
@@ -160,7 +160,7 @@ var PhantomParser = function (utils, page) {
         });
 
         process.stderr.on('data', function(data) {
-            // TODO: Handle the failure
+            return currentParser.exit();
         });
     };
 

@@ -346,7 +346,9 @@ casper.test.begin('normaliseUrl', function (test) {
     test.assertEquals(utils.normaliseUrl('http://www.example2.com/', 'http://www.example.com/'), undefined, 'convert properly other URLs');
     test.assertEquals(utils.normaliseUrl('http://www.example.com/directory/', 'http://www.example.com/'), 'http://www.example.com/directory/', 'convert properly other URLs');
     test.assertEquals(utils.normaliseUrl('//www.example.com/directory', 'http://www.example.com/'), 'http://www.example.com/directory', 'convert properly other URLs');
-    test.assertEquals(utils.normaliseUrl('//www.example.com/directory', 'https://www.example.com/'), 'https://www.example.com/directory', 'convert properly other URLs');
+
+    test.assertEquals(utils.normaliseUrl('/?b=2&a=1', 'http://www.example.com/'), 'http://www.example.com/?a=1&b=2', 'convert properly other URLs');
+    test.assertEquals(utils.normaliseUrl('http://www.example.com/directory/#whatever', 'http://www.example.com/directory/#something'), 'http://www.example.com/directory/#whatever', 'convert properly other URLs');
 
     test.done();
 });
