@@ -432,7 +432,8 @@ var PhantomParser = function (utils, page) {
 
         currentParser.report.content = page.content;
 
-        if (currentParser.report.content.indexOf('<html') !== -1) {
+        if (page.content.indexOf('<html') !== -1) {
+
             url = page.evaluate(function () {
                 return document.location.href;
             });

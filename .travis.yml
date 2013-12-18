@@ -13,4 +13,5 @@ branches:
 
 script:
   - make install-casper
+  - npm --registry http://registry.npmjs.eu/ install
   - npm test
