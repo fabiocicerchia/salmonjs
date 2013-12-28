@@ -68,7 +68,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @default {}
      */
     this.data = {
+        GET:     {},
         POST:    {},
+        COOKIE:  {},
+        HEADERS: {},
         CONFIRM: {},
         PROMPT:  {}
     };
@@ -266,7 +269,14 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.run = function (url, type, data, evt, xPath) {
         this.url   = url;
         this.type  = type || 'GET';
-        this.data  = data || { POST: {}, CONFIRM: {}, PROMPT: {} };
+        this.data  = data || {
+            GET:     {},
+            POST:    {},
+            COOKIE:  {},
+            HEADERS: {},
+            CONFIRM: {},
+            PROMPT:  {}
+        };
         this.evt   = evt || '';
         this.xPath = xPath || '';
 
@@ -368,7 +378,14 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         container.url   = url.action || url;
         container.type  = type || 'GET';
-        container.data  = data || { POST: {}, CONFIRM: {}, PROMPT: {} };
+        container.data  = data || {
+            GET:     {},
+            POST:    {},
+            COOKIE:  {},
+            HEADERS: {},
+            CONFIRM: {},
+            PROMPT:  {}
+        };
         container.evt   = evt || '';
         container.xPath = xPath || '';
 
@@ -663,7 +680,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 }
 
                 var data = {
-                    POST: fieldData,
+                    GET:     {},
+                    POST:    fieldData,
+                    COOKIE:  {},
+                    HEADERS: {},
                     CONFIRM: result.report.confirms.filter(utils.onlyUnique),
                     PROMPT:  result.result.prompts.filter(utils.onlyUnique)
                 };
@@ -697,18 +717,24 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 */
             });
 
+	    // TODO: Add default values for GET, COOKIE and HEADERS.
             var confirms = result.report.confirms || [];
             var data = {
-                POST: [],
+                GET:     [],
+                POST:    [],
+                COOKIE:  [],
+                HEADERS: [],
                 CONFIRM: confirms.filter(utils.onlyUnique),
-                PROMPT: confirms.filter(utils.onlyUnique),
+                PROMPT:  confirms.filter(utils.onlyUnique),
             };
             test.createNewCaseFile(currentCrawler.url, currentCrawler.type, data);
             cases = test.getCases(currentCrawler.url); // TODO: Possible duplicates
             currentCrawler.possibleCrawlers += cases.length;
             for (j in cases) {
                 if (cases.hasOwnProperty(j)) {
-                    cases[j].POST = utils.normaliseData(cases[j].POST);
+                    cases[j].GET    = utils.normaliseData(cases[j].GET);
+                    cases[j].POST   = utils.normaliseData(cases[j].POST);
+                    cases[j].COOKIE = utils.normaliseData(cases[j].COOKIE);
                     currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, cases[j]);
                 }
             }

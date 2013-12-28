@@ -1431,6 +1431,81 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
     });
 
+    casper.test.begin("Test #29", function (test) {
+        var phantom,
+            resp;
+
+        var params  = [
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'file://' + rootdir + '/test/assets/test_29.html',
+            'GET',
+            { POST: {}, HEADERS: {}, CONFIRM: {}, PROMPT: {} },
+            undefined,
+            undefined,
+            false,
+            false
+        ];
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().substr(0, 3) === '###') {
+                resp = JSON.parse(data.toString().substr(3));
+                test.assertEquals(resp.links.a, []);
+                test.done();
+            }
+        });
+        phantom.stderr.on('data', function(data) {
+            test.assertEquals(true, false);
+            test.done();
+        });
+    });
+
+    casper.test.begin("Test #30", function (test) {
+        var phantom,
+            resp;
+
+        var params  = [
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'file://' + rootdir + '/test/assets/test_30.html',
+            'GET',
+            { POST: {}, COOKIE: { test: 1}, HEADERS: {}, CONFIRM: {}, PROMPT: {} },
+            undefined,
+            undefined,
+            false,
+            false
+        ];
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().substr(0, 3) === '###') {
+                resp = JSON.parse(data.toString().substr(3));
+                test.assertEquals(resp.links.a, []);
+                test.assertEquals(resp.report.console, [{"msg":"test=1"}]);
+                test.done();
+            }
+        });
+        phantom.stderr.on('data', function(data) {
+            test.assertEquals(true, false);
+            test.done();
+        });
+    });
+
     if (require('system').env.TRAVIS !== 'true') {
         casper.test.begin("Upload", function (test) {
             var phantom,
@@ -1475,4 +1550,6 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             });
         });
     }
+} else {
+    test.done();
 }

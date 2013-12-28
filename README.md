@@ -118,10 +118,19 @@ Here an example of a test case file:
 ; url = http://www.example.com
 ; id = http___www_example_com
 
+[GET]
+variable1=value1
+
 [POST]
 variable1=value1
 variable2=value2
 variable3=@/path/to/file.ext ; use @ in front to use the upload feature (the file MUST exists)
+
+[COOKIE]
+name=value
+
+[HTTP_HEADERS]
+header=value
 
 [CONFIRM]
 Message=true ; true = OK, false = Cancel

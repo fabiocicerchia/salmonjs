@@ -49,12 +49,6 @@ var Parser          = require('../parser'),
     page            = require('webpage').create(),
     utils           = new (require('../utils'));
 
-if (username !== undefined && password !== undefined) {
-    page.customHeaders = {
-        'Authorization': 'Basic ' + btoa(username + ':' + password)
-    }
-}
-
 /**
  * PhantomParser Class.
  *
@@ -99,6 +93,11 @@ var PhantomParser = function (utils, page) {
         page.onNavigationRequested    = this.onNavigationRequested;
         page.viewportSize             = { width: 1024, height: 800 };
         page.settings.userAgent       = 'salmonJS/0.2.1 (+http://fabiocicerchia.github.io/salmonjs)';
+
+        page.customHeaders = {}
+        if (username !== undefined && password !== undefined) {
+            page.customHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+        }
     };
 
     /**
@@ -108,15 +107,46 @@ var PhantomParser = function (utils, page) {
      * @return undefined
      */
     this.parseGet = function () {
-        var getParams = this.data.GET || '';
+        var currentQS = this.url.replace(/.*\?(.+)(#.*)?/, '$1');
+        currentQS = currentQS === this.url ? '' : currentQS;
+        currentQS = utils.normaliseData(currentQS);
+        var get = this.data.GET || {};
+        for (var p in get) { currentQS[p] = get[p]; }
+
+        var getParams = utils.arrayToQuery(utils.normaliseData(utils.arrayToQuery(currentQS)));
+        this.url = this.url.replace(/\?(.+)(#.*)?/, '') + (getParams !== '' ? ('?' + getParams) : '');
 
         // InitPhantomJs
         this.setUpPage(this.page);
 
+        for (var cookie in this.data.COOKIE) {
+            if (this.data.COOKIE.hasOwnProperty(cookie)) {
+                this.page.addCookie({
+                    'name'   : cookie,
+                    'value'  : this.data.COOKIE[cookie],
+                    'domain' : '' // this.url.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, '$2')
+                });
+            }
+        }
+
+        var headers = {};
+        for (var header in this.page.customHeaders) {
+            if (this.page.customHeaders.hasOwnProperty(header)) {
+                headers[header] = this.page.customHeaders[header];
+            }
+        }
+
+        for (var header in this.data.HEADERS) {
+            if (this.data.HEADERS.hasOwnProperty(header)) {
+                headers[header] = this.data.HEADERS[header];
+            }
+        }
+        this.page.customHeaders = headers;
+
         // RestoreFreezedInstance: set all the variables need for ReExecuteJsEvents
 
         // Open
-        this.page.open(this.url + getParams, this.onOpen);
+        this.page.open(this.url, this.onOpen);
         this.page.onLoadFinished = this.onLoadFinished;
     };
 
@@ -127,7 +157,37 @@ var PhantomParser = function (utils, page) {
      * @return undefined
      */
     this.parsePost = function () {
+        var currentQS = this.url.replace(/.*\?(.+)(#.*)?/, '$1');
+        currentQS = currentQS === this.url ? '' : currentQS;
+        currentQS = utils.normaliseData(currentQS);
+        var get = this.data.GET || {};
+        for (var p in get) { currentQS[p] = get[p]; }
+
+        var getParams = utils.arrayToQuery(utils.normaliseData(utils.arrayToQuery(currentQS)));
+        this.url = this.url.replace(/\?(.+)(#.*)?/, '') + (getParams !== '' ? ('?' + getParams) : '');
+
         this.setUpPage(this.page);
+
+        for (var cookie in this.data.COOKIE) {
+            this.page.addCookie({
+                'name'  : cookie,
+                'value' : this.data.COOKIE[cookie]
+            });
+        }
+
+        var headers = {};
+        for (var header in this.page.customHeaders) {
+            if (this.page.customHeaders.hasOwnProperty(header)) {
+                headers[header] = this.page.customHeaders[header];
+            }
+        }
+
+        for (var header in this.data.HEADERS) {
+            if (this.data.HEADERS.hasOwnProperty(header)) {
+                headers[header] = this.data.HEADERS[header];
+            }
+        }
+        this.page.customHeaders = headers;
 
         var doNotContinue = false;
         for (var i in this.data.POST) {
