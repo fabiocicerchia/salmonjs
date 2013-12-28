@@ -29,9 +29,7 @@
 
 var casper   = casper || {},
     fs       = require('fs'),
-    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
-    glob     = require(srcdir + '/glob'),
-    basePath = fs.absolute('.') + '/test/assets/';
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src');
 
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/sha1.js');
@@ -44,19 +42,8 @@ casper.on('remote.message', function (msg) {
 
 casper.test.begin('serialise', function (test) {
     var Utils  = require(srcdir + '/utils'),
-        config   = require(srcdir + '/config'),
-        spawn    = {},
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        testObj  = require(srcdir + '/test'),
-        client   = {},
-        winston  = {error: function () {}, info: function () {}, warn: function () {}},
-        fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils,
-        content,
-        unescaped,
-        data,
-        resp;
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        utils;
 
     utils = new Utils(crypto);
     test.assertEquals(utils.serialise({}), '', 'encode entities properly');
@@ -69,19 +56,8 @@ casper.test.begin('serialise', function (test) {
 
 casper.test.begin('serialise #2', function (test) {
     var Utils  = require(srcdir + '/utils'),
-        config   = require(srcdir + '/config'),
-        spawn    = {},
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        testObj  = require(srcdir + '/test'),
-        client   = {},
-        winston  = {error: function () {}, info: function () {}, warn: function () {}},
-        fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils,
-        content,
-        unescaped,
-        data,
-        resp;
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        utils;
 
     utils = new Utils(crypto);
     test.assertEquals(utils.serialise(''), '', 'doesn\'t process a string');
@@ -92,19 +68,8 @@ casper.test.begin('serialise #2', function (test) {
 
 casper.test.begin('serialise #3', function (test) {
     var Utils  = require(srcdir + '/utils'),
-        config   = require(srcdir + '/config'),
-        spawn    = {},
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        testObj  = require(srcdir + '/test'),
-        client   = {},
-        winston  = {error: function () {}, info: function () {}, warn: function () {}},
-        fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils,
-        content,
-        unescaped,
-        data,
-        resp;
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        utils;
 
     utils = new Utils(crypto);
     test.assertEquals(utils.serialise(1), '', 'doesn\'t process an integer');
@@ -116,14 +81,7 @@ casper.test.begin('serialise #3', function (test) {
 
 casper.test.begin('sha1', function (test) {
     var Utils  = require(srcdir + '/utils'),
-        config   = require(srcdir + '/config'),
-        spawn    = {},
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return 'fake'; }}; }}; }},
-        testObj  = require(srcdir + '/test'),
-        client   = {},
-        winston  = {error: function () {}, info: function () {}, warn: function () {}},
-        fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: []}},
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return 'fake'; }}; }}; }},
         utils;
 
     utils = new Utils(crypto);
@@ -135,19 +93,9 @@ casper.test.begin('sha1', function (test) {
 
 casper.test.begin('htmlEscape', function (test) {
     var Utils  = require(srcdir + '/utils'),
-        config   = require(srcdir + '/config'),
-        spawn    = {},
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        testObj  = require(srcdir + '/test'),
-        client   = {},
-        winston  = {error: function () {}, info: function () {}, warn: function () {}},
-        fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs cli --test']}},
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         utils,
-        content,
-        unescaped,
-        data,
-        resp;
+        unescaped;
 
     utils = new Utils(crypto);
 
@@ -179,19 +127,8 @@ casper.test.begin('htmlEscape', function (test) {
 
 casper.test.begin('normaliseData', function (test) {
     var Utils  = require(srcdir + '/utils'),
-        config   = require(srcdir + '/config'),
-        spawn    = {},
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        testObj  = require(srcdir + '/test'),
-        client   = {},
-        winston  = {error: function () {}, info: function () {}, warn: function () {}},
-        fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils,
-        content,
-        unescaped,
-        data,
-        resp;
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        utils;
 
     // normaliseData
     utils = new Utils(crypto);
@@ -218,10 +155,9 @@ casper.test.begin('normaliseData', function (test) {
 });
 
 casper.test.begin('onlyUnique', function (test) {
-    var Utils = require(srcdir + '/utils'),
-        utils,
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        resp;
+    var Utils  = require(srcdir + '/utils'),
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        utils;
 
     utils = new Utils(crypto);
 
@@ -260,7 +196,7 @@ casper.test.begin('fireEventDOM', function (test) {
     utils = new Utils(crypto);
 
     window.eventContainer = {
-        getElementByXpath: function(xPath) {
+        getElementByXpath: function() {
             return document.createElement('div');
         }
     };
@@ -268,7 +204,7 @@ casper.test.begin('fireEventDOM', function (test) {
     test.assertType(utils.fireEventDOM({'event': 'click', xPath: '//*'}), 'customevent');
 
     window.eventContainer = {
-        getElementByXpath: function(xPath) {
+        getElementByXpath: function() {
             return undefined;
         }
     };
@@ -279,10 +215,9 @@ casper.test.begin('fireEventDOM', function (test) {
 });
 
 casper.test.begin('arrayToQuery', function (test) {
-    var Utils = require(srcdir + '/utils'),
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        utils,
-        resp;
+    var Utils  = require(srcdir + '/utils'),
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        utils;
 
     utils = new Utils(crypto);
 
@@ -306,10 +241,9 @@ casper.test.begin('arrayToQuery', function (test) {
 });
 
 casper.test.begin('normaliseUrl', function (test) {
-    var Utils = require(srcdir + '/utils'),
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        utils,
-        resp;
+    var Utils  = require(srcdir + '/utils'),
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        utils;
 
     utils = new Utils(crypto);
 
@@ -368,22 +302,22 @@ casper.test.begin('parseINIString', function (test) {
     test.assertEquals(utils.parseINIString(ini), {});
 
     ini = '[first_section]\none = 1\nfive = 5\nanimal = BIRD';
-    test.assertEquals(utils.parseINIString(ini), {"first_section":{"one":"1","five":"5","animal":"BIRD"}});
+    test.assertEquals(utils.parseINIString(ini), {'first_section':{'one':'1','five':'5','animal':'BIRD'}});
 
     ini = '[second_section]\npath = "/usr/local/bin"\nURL = "http://www.example.com/~username"';
-    test.assertEquals(utils.parseINIString(ini), {"second_section":{"path":"/usr/local/bin","URL":"http://www.example.com/~username"}});
+    test.assertEquals(utils.parseINIString(ini), {'second_section':{'path':'/usr/local/bin','URL':'http://www.example.com/~username'}});
 
     ini = '[third_section]\ncontainer[] = "1"\ncontainer[] = "2"\ncontainer[] = "3"\ncontainer[] = "4"';
-    test.assertEquals(utils.parseINIString(ini), {"third_section":{"container":["1","2","3","4"]}});
+    test.assertEquals(utils.parseINIString(ini), {'third_section':{'container':['1','2','3','4']}});
 
     ini = 'container[] = "1"\ncontainer[] = "2"\ncontainer[] = "3"\ncontainer[] = "4"';
-    test.assertEquals(utils.parseINIString(ini), {"container":["1","2","3","4"]});
+    test.assertEquals(utils.parseINIString(ini), {'container':['1','2','3','4']});
 
     ini = 'global_value1 = 1\n[section1]\nkey = value';
-    test.assertEquals(utils.parseINIString(ini), {"global_value1":"1","section1":{"key":"value"}});
+    test.assertEquals(utils.parseINIString(ini), {'global_value1':'1','section1':{'key':'value'}});
 
     ini = '[first_section]\none = 1\n\nfive = 5\nanimal = BIRD';
-    test.assertEquals(utils.parseINIString(ini), {"first_section":{"one":"1","five":"5","animal":"BIRD"}});
+    test.assertEquals(utils.parseINIString(ini), {'first_section':{'one':'1','five':'5','animal':'BIRD'}});
 
     test.done();
 });

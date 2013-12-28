@@ -29,9 +29,7 @@
 
 var casper   = casper || {},
     fs       = require('fs'),
-    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
-    glob     = require(srcdir + '/glob'),
-    basePath = fs.absolute('.') + '/test/assets/';
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src');
 
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/sha1.js');
@@ -53,11 +51,7 @@ casper.test.begin('run', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     utils.sha1 = function () { return ''; };
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
@@ -79,11 +73,7 @@ casper.test.begin('run #2', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     utils.sha1 = function () { return ''; };
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
@@ -100,7 +90,7 @@ casper.test.begin('analiseRedisResponse', function (test) {
             return {
                 stdout: { on:function(){}},
                 stderr: { on:function(){}},
-                on: function(param, callback){ if (param ==='exit') { test.done(); }}
+                on: function(param){ if (param ==='exit') { test.done(); }}
             };
         },
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
@@ -110,14 +100,10 @@ casper.test.begin('analiseRedisResponse', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     utils.sha1 = function () { return ''; };
-    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
     __dirname = '';
 
@@ -131,7 +117,7 @@ casper.test.begin('analiseRedisResponse #2', function (test) {
             return {
                 stdout: { on:function(){}},
                 stderr: { on:function(){}},
-                on: function(param, callback){ if (param ==='exit') { test.done(); }}
+                on: function(param){ if (param ==='exit') { test.done(); }}
             };
         },
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
@@ -141,20 +127,16 @@ casper.test.begin('analiseRedisResponse #2', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
-    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
     try {
         crawler.analiseRedisResponse('err', null, '', {url: '', type: '', data: {}, evt: '', xPath: ''}, spawn);
     } catch (err) {
         test.assertEquals(err, 'err');
     }
 
-    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
     crawler.checkRunningCrawlers = function () { test.done(); };
 
     crawler.analiseRedisResponse(undefined, 'whatever', '', {url: '', type: '', data: {}, evt: '', xPath: ''}, spawn);
@@ -167,19 +149,15 @@ casper.test.begin('checkAndRun', function (test) {
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
-        client   = {hgetall: function(id, cb) { test.done(); } },
+        client   = {hgetall: function() { test.done(); } },
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     utils.sha1 = function (str) { test.assertEquals(str, 'GET{"GET":{},"POST":{},"COOKIE":{},"HEADERS":{},"CONFIRM":{},"PROMPT":{}}'); return ''; };
-    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
     crawler.checkAndRun('', '', '', '', '');
 });
@@ -195,11 +173,7 @@ casper.test.begin('checkRunningCrawlers', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
@@ -220,11 +194,7 @@ casper.test.begin('checkRunningCrawlers #1', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
@@ -245,11 +215,7 @@ casper.test.begin('onStdOut', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
@@ -275,9 +241,6 @@ casper.test.begin('onStdErr', function (test) {
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
         crawler,
-        content,
-        unescaped,
-        data,
         resp;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
@@ -301,11 +264,7 @@ casper.test.begin('handleError', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
     crawler.tries = 10;
@@ -327,11 +286,7 @@ casper.test.begin('onExit', function (test) {
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
@@ -353,15 +308,11 @@ casper.test.begin('storeDetailsToFile', function (test) {
         fs       = {mkdir: function() {test.done();}},
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
-        crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        crawler;
 
     utils.sha1 = function () { return ''; };
     utils.htmlEscape = function () { return ''; };
-    var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
     var report = {
         errors:     [],
@@ -396,9 +347,7 @@ casper.test.begin('processPage', function (test) {
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
         content,
-        unescaped,
-        data,
-        resp;
+        data;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
@@ -451,9 +400,7 @@ casper.test.begin('processPage #2', function (test) {
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
         content,
-        unescaped,
-        data,
-        resp;
+        data;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
@@ -506,9 +453,7 @@ casper.test.begin('processPage #3', function (test) {
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
         content,
-        unescaped,
-        data,
-        resp;
+        data;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
@@ -561,9 +506,7 @@ casper.test.begin('processPage #4', function (test) {
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
         content,
-        unescaped,
-        data,
-        resp;
+        data;
 
     utils.sha1 = function () { return ''; };
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
@@ -623,9 +566,7 @@ casper.test.begin('processPage #5', function (test) {
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
         content,
-        unescaped,
-        data,
-        resp;
+        data;
 
     utils.sha1 = function () { return ''; };
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
@@ -685,15 +626,12 @@ casper.test.begin('processPage #6', function (test) {
         glob     = {},
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        content;
 
     utils.sha1 = function () { return ''; };
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
-    data = {
+    var data = {
         idCrawler: '',
         links:     {
             a:      ['#'],
@@ -748,9 +686,7 @@ casper.test.begin('processPage #7', function (test) {
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
         content,
-        unescaped,
-        data,
-        resp;
+        data;
 
     utils.sha1 = function () { return ''; };
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
@@ -840,10 +776,7 @@ casper.test.begin('processPage #10', function (test) {
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
         crawler,
-        content,
-        unescaped,
-        data,
-        resp;
+        content;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
@@ -869,7 +802,7 @@ casper.test.begin('execPhantomjs', function(test) {
                 on: function(param, callback){ if (param ==='exit') { callback(); }}
             };
         },
-        crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''}}}}; }},
+        crypto   = {createHash: function() { return {update: function () { return {digest: function() { return '';}}; }}; }},
         testObj  = require(srcdir + '/test'),
         client   = {},
         winston  = {error:function(){},info:function(){},warn:function(){}},
@@ -900,7 +833,7 @@ casper.test.begin('execPhantomjs #2', function(test) {
                 on: function(param, callback){ if (param ==='exit') { callback(); }}
             };
         },
-        crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''}}}}; }},
+        crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
         client   = {},
         winston  = {error:function(){},info:function(){},warn:function(){}},

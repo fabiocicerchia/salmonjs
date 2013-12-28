@@ -30,7 +30,6 @@
 var casper   = casper || {},
     fs       = require('fs'),
     srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
-    glob     = require(srcdir + '/glob'),
     basePath = fs.absolute('.') + '/test/assets/';
 
 casper.options.onPageInitialized = function () {
@@ -49,7 +48,7 @@ casper.on('run.complete', function () {
 });
 
 // TEST #01 --------------------------------------------------------------------
-casper.test.begin("Test #01", function (test) {
+casper.test.begin('Test #01', function (test) {
     casper.start(basePath + 'test_01.html', function () {
         test.assertEvalEquals(
             function () {
@@ -66,7 +65,7 @@ casper.test.begin("Test #01", function (test) {
 });
 
 // TEST #02 --------------------------------------------------------------------
-casper.test.begin("Test #02", function (test) {
+casper.test.begin('Test #02', function (test) {
     casper.start(basePath + 'test_02.html', function () {
         test.assertEvalEquals(
             function () {
@@ -83,7 +82,7 @@ casper.test.begin("Test #02", function (test) {
 });
 
 // TEST #03 --------------------------------------------------------------------
-casper.test.begin("Test #03", function (test) {
+casper.test.begin('Test #03', function (test) {
     casper.start(basePath + 'test_03.html', function () {
         test.assertEvalEquals(
             function () {
@@ -100,7 +99,7 @@ casper.test.begin("Test #03", function (test) {
 });
 
 // TEST #04 --------------------------------------------------------------------
-casper.test.begin("Test #04", function (test) {
+casper.test.begin('Test #04', function (test) {
     casper.start(basePath + 'test_04.html', function () {
         test.assertEvalEquals(
             function () {
@@ -117,7 +116,7 @@ casper.test.begin("Test #04", function (test) {
 });
 
 // TEST #05 --------------------------------------------------------------------
-casper.test.begin("Test #05", function (test) {
+casper.test.begin('Test #05', function (test) {
     casper.start(basePath + 'test_05.html', function () {
         test.assertEvalEquals(
             function () {
@@ -134,7 +133,7 @@ casper.test.begin("Test #05", function (test) {
 });
 
 // TEST #06 --------------------------------------------------------------------
-casper.test.begin("Test #06", function (test) {
+casper.test.begin('Test #06', function (test) {
     casper.start(basePath + 'test_06.html', function () {
         test.assertEvalEquals(
             function () {
@@ -151,7 +150,7 @@ casper.test.begin("Test #06", function (test) {
 });
 
 // TEST #07 --------------------------------------------------------------------
-casper.test.begin("Test #07", function (test) {
+casper.test.begin('Test #07', function (test) {
     casper.start(basePath + 'test_07.html', function () {
         test.assertEvalEquals(
             function () {
@@ -168,7 +167,7 @@ casper.test.begin("Test #07", function (test) {
 });
 
 // TEST #08 --------------------------------------------------------------------
-casper.test.begin("Test #08", function (test) {
+casper.test.begin('Test #08', function (test) {
     casper.start(basePath + 'test_08.html', function () {
         test.assertEvalEquals(
             function () {
@@ -185,7 +184,7 @@ casper.test.begin("Test #08", function (test) {
 });
 
 // TEST #09 --------------------------------------------------------------------
-casper.test.begin("Test #09", function (test) {
+casper.test.begin('Test #09', function (test) {
     casper.start(basePath + 'test_09.html', function () {
         test.assertEvalEquals(
             function () {
@@ -202,7 +201,7 @@ casper.test.begin("Test #09", function (test) {
 });
 
 // TEST #10 --------------------------------------------------------------------
-casper.test.begin("Test #10", function (test) {
+casper.test.begin('Test #10', function (test) {
     casper.start(basePath + 'test_10.html', function () {
         test.assertEvalEquals(
             function () {
@@ -219,7 +218,7 @@ casper.test.begin("Test #10", function (test) {
 });
 
 // TEST #11 --------------------------------------------------------------------
-casper.test.begin("Test #11", function (test) {
+casper.test.begin('Test #11', function (test) {
     casper.start(basePath + 'test_11.html', function () {
         test.assertEvalEquals(
             function () {
@@ -236,7 +235,7 @@ casper.test.begin("Test #11", function (test) {
 });
 
 // TEST #12 --------------------------------------------------------------------
-casper.test.begin("Test #12", function (test) {
+casper.test.begin('Test #12', function (test) {
     casper.start(basePath + 'test_12.html', function () {
 
         test.assertEvalEquals(
@@ -254,7 +253,7 @@ casper.test.begin("Test #12", function (test) {
 });
 
 // TEST #13 --------------------------------------------------------------------
-casper.test.begin("Test #13", function (test) {
+casper.test.begin('Test #13', function (test) {
     casper.start(basePath + 'test_13.html', function () {
         test.assertEvalEquals(
             function () {
@@ -271,7 +270,7 @@ casper.test.begin("Test #13", function (test) {
 });
 
 // TEST #14 --------------------------------------------------------------------
-casper.test.begin("Test #14", function (test) {
+casper.test.begin('Test #14', function (test) {
     casper.start(basePath + 'test_14.html', function () {
         test.assertEvalEquals(
             function () {
@@ -288,7 +287,7 @@ casper.test.begin("Test #14", function (test) {
 });
 
 // TEST #15 --------------------------------------------------------------------
-casper.test.begin("Test #15", function (test) {
+casper.test.begin('Test #15', function (test) {
     casper.start(basePath + 'test_15.html', function () {
         test.assertEvalEquals(
             function () {
@@ -305,7 +304,7 @@ casper.test.begin("Test #15", function (test) {
 });
 
 // TEST #16 --------------------------------------------------------------------
-casper.test.begin("Test #16", function (test) {
+casper.test.begin('Test #16', function (test) {
     casper.start(basePath + 'test_16.html', function () {
         test.assertEvalEquals(
             function () {
@@ -322,7 +321,7 @@ casper.test.begin("Test #16", function (test) {
 });
 
 // TEST #17 --------------------------------------------------------------------
-casper.test.begin("Test #17", function (test) {
+casper.test.begin('Test #17', function (test) {
     casper.start(basePath + 'test_17.html', function () {
         test.assertEvalEquals(
             function () {
@@ -339,7 +338,7 @@ casper.test.begin("Test #17", function (test) {
 });
 
 // TEST #18 --------------------------------------------------------------------
-casper.test.begin("Test #18", function (test) {
+casper.test.begin('Test #18', function (test) {
     casper.start(basePath + 'test_18.html', function () {
         test.assertEvalEquals(
             function () {
@@ -356,7 +355,7 @@ casper.test.begin("Test #18", function (test) {
 });
 
 // TEST #19 --------------------------------------------------------------------
-casper.test.begin("Test #19", function (test) {
+casper.test.begin('Test #19', function (test) {
     casper.start(basePath + 'test_19.html', function () {
         test.assertEvalEquals(
             function () {
@@ -373,7 +372,7 @@ casper.test.begin("Test #19", function (test) {
 });
 
 // TEST #20 --------------------------------------------------------------------
-casper.test.begin("Test #20", function (test) {
+casper.test.begin('Test #20', function (test) {
     casper.start(basePath + 'test_20.html', function () {
         test.assertEvalEquals(
             function () {

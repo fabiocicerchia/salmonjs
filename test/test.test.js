@@ -31,8 +31,7 @@ var casper   = casper || {},
     fs       = require('fs'),
     rootdir  = fs.absolute('.'),
     srcdir   = rootdir + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
-    glob     = require(srcdir + '/glob'),
-    basePath = fs.absolute('.') + '/test/assets/';
+    glob     = require(srcdir + '/glob');
 
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/sha1.js');

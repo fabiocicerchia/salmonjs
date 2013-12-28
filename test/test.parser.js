@@ -29,9 +29,7 @@
 
 var casper   = casper || {},
     fs       = require('fs'),
-    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
-    glob     = require(srcdir + '/glob'),
-    basePath = fs.absolute('.') + '/test/assets/';
+    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src');
 
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/sha1.js');
@@ -44,8 +42,7 @@ casper.on('remote.message', function (msg) {
 
 casper.test.begin('parse', function (test) {
     var Parser = require(srcdir + '/parser'),
-        parser,
-        resp;
+        parser;
 
     parser = new Parser();
 
@@ -71,8 +68,7 @@ casper.test.begin('parse', function (test) {
 
 casper.test.begin('parse #2', function (test) {
     var Parser = require(srcdir + '/parser'),
-        parser,
-        resp;
+        parser;
 
     parser = new Parser();
 
@@ -91,8 +87,7 @@ casper.test.begin('parse #2', function (test) {
 
 casper.test.begin('parse #3', function (test) {
     var Parser = require(srcdir + '/parser'),
-        parser,
-        resp;
+        parser;
 
     parser = new Parser();
 
@@ -105,8 +100,7 @@ casper.test.begin('parse #3', function (test) {
 
 casper.test.begin('initReport', function (test) {
     var Parser = require(srcdir + '/parser'),
-        parser,
-        resp;
+        parser;
 
     parser = new Parser();
 

@@ -488,7 +488,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         if (currentCrawler.tries < config.crawler.attempts) {
             winston.info('%s' + ' Trying again in %s msec'.grey, winstonCrawlerId, config.crawler.delay);
 
-            setTimeout((function () {
+            setTimeout(function () {
                 currentCrawler.tries++;
                 winston.warn(
                     '%s' + ' Trying again (%d) to get a response...'.yellow,
@@ -503,7 +503,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     currentCrawler.event,
                     currentCrawler.xPath
                 );
-            }), config.crawler.delay);
+            }, config.crawler.delay);
         } else {
             var report = {
                 errors:     [],
@@ -667,8 +667,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             });
 
             links.form.forEach(function (element) {
-                var id        = element.action.toString().replace(/[^a-zA-Z0-9_]/g, '_'),
-                    fieldData = {},
+                var fieldData = {},
                     cases,
                     i,
                     j;
@@ -717,20 +716,21 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 */
             });
 
-	    // TODO: Add default values for GET, COOKIE and HEADERS.
-            var confirms = result.report.confirms || [];
-            var data = {
-                GET:     [],
-                POST:    [],
-                COOKIE:  [],
-                HEADERS: [],
-                CONFIRM: confirms.filter(utils.onlyUnique),
-                PROMPT:  confirms.filter(utils.onlyUnique),
-            };
+            // TODO: Add default values for GET, COOKIE and HEADERS.
+            var confirms = result.report.confirms || [],
+                data = {
+                    GET:     [],
+                    POST:    [],
+                    COOKIE:  [],
+                    HEADERS: [],
+                    CONFIRM: confirms.filter(utils.onlyUnique),
+                    PROMPT:  confirms.filter(utils.onlyUnique),
+                },
+                cases;
             test.createNewCaseFile(currentCrawler.url, currentCrawler.type, data);
             cases = test.getCases(currentCrawler.url); // TODO: Possible duplicates
             currentCrawler.possibleCrawlers += cases.length;
-            for (j in cases) {
+            for (var j in cases) {
                 if (cases.hasOwnProperty(j)) {
                     cases[j].GET    = utils.normaliseData(cases[j].GET);
                     cases[j].POST   = utils.normaliseData(cases[j].POST);

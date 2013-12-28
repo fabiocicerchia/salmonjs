@@ -57,7 +57,7 @@ var EventContainer = function () {
      * @return {String}
      */
     this.hashString = function (string) {
-        if (SHA1 !== undefined) {
+        if (typeof SHA1 !== 'undefined') {
             return SHA1(string);
         }
 
@@ -76,7 +76,7 @@ var EventContainer = function () {
             nodeList = [],
             id;
 
-        for (; element && element.nodeType == 1; element = element.parentNode) {
+        for (; element && parseInt(element.nodeType) === 1; element = element.parentNode) {
             if (element.parentNode) {
                 nodeList = Array.prototype.slice.call(
                     element.parentNode.getElementsByTagName(element.tagName)
@@ -301,9 +301,11 @@ var EventContainer = function () {
             if (staticEvents.hasOwnProperty(evt)) {
                 type = evt.substr(2);
                 for (el in staticEvents[evt]) {
-                    signature = currentEventContainer.hashString(staticEvents[evt][el].getAttribute(evt));
+                    if (staticEvents[evt].hasOwnProperty(el)) {
+                        signature = currentEventContainer.hashString(staticEvents[evt][el].getAttribute(evt));
 
-                    currentEventContainer.pushEvent(type, signature, staticEvents[evt][el]);
+                        currentEventContainer.pushEvent(type, signature, staticEvents[evt][el]);
+                    }
                 }
             }
         }

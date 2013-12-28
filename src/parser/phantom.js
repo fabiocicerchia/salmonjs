@@ -47,7 +47,7 @@ var Parser          = require('../parser'),
     storeDetails    = input[10] === 'true',
     followRedirects = input[11] === 'true',
     page            = require('webpage').create(),
-    utils           = new (require('../utils'));
+    utils           = new (require('../utils'))();
 
 /**
  * PhantomParser Class.
@@ -94,7 +94,7 @@ var PhantomParser = function (utils, page) {
         page.viewportSize             = { width: 1024, height: 800 };
         page.settings.userAgent       = 'salmonJS/0.2.1 (+http://fabiocicerchia.github.io/salmonjs)';
 
-        page.customHeaders = {}
+        page.customHeaders = {};
         if (username !== undefined && password !== undefined) {
             page.customHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
         }
@@ -108,7 +108,11 @@ var PhantomParser = function (utils, page) {
         currentQS = currentQS === this.url ? '' : currentQS;
         currentQS = utils.normaliseData(currentQS);
         var get = this.data.GET || {};
-        for (var p in get) { currentQS[p] = get[p]; }
+        for (var p in get) {
+            if (get.hasOwnProperty(p)) {
+                currentQS[p] = get[p];
+            }
+        }
 
         var getParams = utils.arrayToQuery(utils.normaliseData(utils.arrayToQuery(currentQS)));
         this.url = this.url.replace(/\?(.+)(#.*)?/, '') + (getParams !== '' ? ('?' + getParams) : '');
@@ -144,7 +148,7 @@ var PhantomParser = function (utils, page) {
             }
         }
 
-        for (var header in this.data.HEADERS) {
+        for (header in this.data.HEADERS) {
             if (this.data.HEADERS.hasOwnProperty(header)) {
                 headers[header] = this.data.HEADERS[header];
             }
@@ -170,10 +174,12 @@ var PhantomParser = function (utils, page) {
         this.setUpPage(this.page);
 
         for (var cookie in this.data.COOKIE) {
-            this.page.addCookie({
-                'name'  : cookie,
-                'value' : this.data.COOKIE[cookie]
-            });
+            if (this.data.COOKIE.hasOwnProperty(cookie)) {
+                this.page.addCookie({
+                    'name'  : cookie,
+                    'value' : this.data.COOKIE[cookie]
+                });
+            }
         }
 
         var headers = {};
@@ -183,7 +189,7 @@ var PhantomParser = function (utils, page) {
             }
         }
 
-        for (var header in this.data.HEADERS) {
+        for (header in this.data.HEADERS) {
             if (this.data.HEADERS.hasOwnProperty(header)) {
                 headers[header] = this.data.HEADERS[header];
             }
@@ -220,7 +226,7 @@ var PhantomParser = function (utils, page) {
             currentParser.onLoadFinished();
         });
 
-        process.stderr.on('data', function(data) {
+        process.stderr.on('data', function() {
             return currentParser.exit();
         });
     };
@@ -512,9 +518,15 @@ var PhantomParser = function (utils, page) {
             });
 
             for (var type in events) {
-                for (var act in events[type]) {
-                    for (var evt in events[type][act]) {
-                        currentParser.putPageInStack(page, type, events[type][act][evt]);
+                if (events.hasOwnProperty(type)) {
+                    for (var act in events[type]) {
+                        if (events[type].hasOwnProperty(act)) {
+                            for (var evt in events[type][act]) {
+                                if (events[type][act].hasOwnProperty(evt)) {
+                                    currentParser.putPageInStack(page, type, events[type][act][evt]);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -584,11 +596,11 @@ var PhantomParser = function (utils, page) {
         }
 
         urls.meta = [].map.call(document.querySelectorAll('meta'), function (item) {
-           if (item.getAttribute('http-equiv') === 'refresh') {
-               return item.getAttribute('content').split(/=/, 2)[1];
-           }
+            if (item.getAttribute('http-equiv') === 'refresh') {
+                return item.getAttribute('content').split(/=/, 2)[1];
+            }
 
-           return undefined;
+            return undefined;
         });
 
         urls.form = [].map.call(document.querySelectorAll('form'), function (item) {
@@ -617,7 +629,7 @@ var PhantomParser = function (utils, page) {
     };
 };
 
-PhantomParser.prototype = new Parser(utils);
+PhantomParser.prototype = new Parser();
 if (args.join(' ').indexOf('casperjs --cli test') === -1) {
     new PhantomParser(utils, page).parse(url, type, data, evt, xPath);
 } else {

@@ -27,6 +27,8 @@
  * SOFTWARE.
  */
 
+var utils = utils || new (require('./utils'))();
+
 /**
  * Glob Emulation Module
  * It emulates the behaviour of glob.

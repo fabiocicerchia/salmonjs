@@ -35,7 +35,7 @@
  *
  * @module Parser
  */
-module.exports = function Parser(utils) {
+module.exports = function Parser() {
     /**
      * URL.
      *

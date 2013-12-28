@@ -28,6 +28,8 @@
 ECHO=echo
 RM=rm -rf
 GIT=git
+FIND=find
+JSHINT=./node_modules/jshint/bin/jshint
 CASPERJS=./casperjs/bin/casperjs
 JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
 FILES=test/test.*.js test/*/test.*.js
@@ -43,5 +45,8 @@ coverage:
 	$(JSCOVERAGE) src src-cov
 	$(CASPERJS) test $(FILES) --post=src/reporter/coverage.js --coverage --concise
 	$(RM) src-cov
+
+lint:
+	$(FIND) bin src test -type f -name "*.js" | xargs $(JSHINT)
 
 .PHONY: test

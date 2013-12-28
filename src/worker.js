@@ -47,7 +47,6 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         Crawler         = require('../src/crawler'),
         winston         = require('winston'),
         fs              = require('fs'),
-        path            = require('path'),
         glob            = require('glob'),
         redis           = require('redis'),
         client          = redis.createClient(config.redis.port, config.redis.hostname),
@@ -56,6 +55,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         optimist        = require('optimist'),
         utils           = new (require('../src/utils'))(crypto),
         test            = new (require('../src/test'))(fs, glob, '.', utils);
+    require('path');
 
     winston.cli();
     winston.remove(winston.transports.Console);

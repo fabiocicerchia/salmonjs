@@ -58,9 +58,9 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
      */
     this.buildSection = function (data) {
         var content = '';
-        for (k in data) {
+        for (var k in data) {
             if (data.hasOwnProperty(k)) {
-               content += k + '=' + data[k] + '\n';
+                content += k + '=' + data[k] + '\n';
             }
         }
 
@@ -77,8 +77,7 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
      * @return undefined
      */
     this.createNewCaseFile = function (url, name, data, callback) {
-        var k,
-            mainUrl      = url.replace(/^(.+):\/\/(\/?[^\/]+)\/?.*$/, '$1://$2')
+        var mainUrl      = url.replace(/^(.+):\/\/(\/?[^\/]+)\/?.*$/, '$1://$2'),
             content      = '',
             dir          = mainDir + currentTest.TEST_CASE_DIRECTORY + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),
             testCaseFile = dir + '/' + (url === mainUrl ? '' : url.replace(mainUrl, '') + '/') + name + '.tst';
@@ -138,7 +137,7 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
      * @return {Object}
      */
     this.getCases = function (url) {
-        var mainUrl     = url.replace(/^(.+):\/\/(\/?[^\/]+)\/.+$/, '$1://$2')
+        var mainUrl     = url.replace(/^(.+):\/\/(\/?[^\/]+)\/.+$/, '$1://$2'),
             dir         = mainDir + currentTest.TEST_CASE_DIRECTORY + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),
             testCaseDir = dir + '/' + (url === mainUrl ? '' : url.replace(mainUrl, '') + '/');
 

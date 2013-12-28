@@ -54,9 +54,10 @@ var jscov = global._$jscoverage || {},
     file,
     id,
     line,
-    status,
+    st,
     len,
-    color;
+    color,
+    casper = casper || undefined;
 
 for (file in jscov) {
     if (jscov.hasOwnProperty(file)) {
@@ -65,11 +66,11 @@ for (file in jscov) {
         for (id in jscov[file].source) {
             if (jscov[file].source.hasOwnProperty(id)) {
                 line = jscov[file].source[id];
-                status = jscov[file][parseInt(id) + 1] === undefined ? '-' : jscov[file][parseInt(id) + 1];
-                if (status > 0) {
+                st = jscov[file][parseInt(id) + 1] === undefined ? '-' : jscov[file][parseInt(id) + 1];
+                if (st > 0) {
                     cov.files[file].executed++;
                 }
-                cov.files[file].source[id] = { status: status, line: line };
+                cov.files[file].source[id] = { status: st, line: line };
             }
         }
 
@@ -164,17 +165,19 @@ for (file in cov.files) {
         html += '                   <pre>\n';
 
         for (line in cov.files[file].source) {
-            len = Object.keys(cov.files[file].source).length.toString().length;
-            html += '                   <span class="lineno" title="' + cov.files[file].source[line].status + ' times">' + (repeat('0', len) + line).slice(-len) + '</span> ';
-            if (cov.files[file].source[line].status === '-') {
-                html += '<span class="line grey">';
-            } else if (cov.files[file].source[line].status.toString() === '0') {
-                html += '<span class="line red">';
-            } else {
-                html += '<span class="line green">';
+            if (cov.files[file].source.hasOwnProperty(line)) {
+                len = Object.keys(cov.files[file].source).length.toString().length;
+                html += '                   <span class="lineno" title="' + cov.files[file].source[line].status + ' times">' + (repeat('0', len) + line).slice(-len) + '</span> ';
+                if (cov.files[file].source[line].status === '-') {
+                    html += '<span class="line grey">';
+                } else if (cov.files[file].source[line].status.toString() === '0') {
+                    html += '<span class="line red">';
+                } else {
+                    html += '<span class="line green">';
+                }
+                html += cov.files[file].source[line].line;
+                html += '</span>\n';
             }
-            html += cov.files[file].source[line].line;
-            html += '</span>\n';
         }
         html += '                   </pre>\n';
         html += '               </td>\n';
@@ -191,4 +194,6 @@ fs.write('report/coverage.json', JSON.stringify(cov));
 fs.write('report/coverage.html', html);
 console.log('JSON code coverage saved in: ' + fs.absolute('report/coverage.json'));
 console.log('HTML code coverage saved in: ' + fs.absolute('report/coverage.html'));
-casper.test.done();
+if (casper !== undefined) {
+    casper.test.done();
+}

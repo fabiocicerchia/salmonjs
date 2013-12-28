@@ -30,9 +30,7 @@
 var casper   = casper || {},
     fs       = require('fs'),
     rootdir  = fs.absolute('.'),
-    srcdir   = rootdir + (casper.cli.has('coverage') ? '/src-cov' : '/src'),
-    glob     = require(srcdir + '/glob'),
-    basePath = fs.absolute('.') + '/../test/assets/';
+    srcdir   = rootdir + (casper.cli.has('coverage') ? '/src-cov' : '/src');
 
 casper.options.onPageInitialized = function () {
     casper.page.injectJs(srcdir + '/sha1.js');
@@ -71,7 +69,6 @@ casper.test.begin('setUpPage', function (test) {
 
 casper.test.begin('onOpen', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -97,7 +94,6 @@ casper.test.begin('onOpen', function (test) {
 
 casper.test.begin('onResourceTimeout', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -109,7 +105,6 @@ casper.test.begin('onResourceTimeout', function (test) {
 
 casper.test.begin('onError', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -130,7 +125,6 @@ casper.test.begin('onError', function (test) {
 
 casper.test.begin('onResourceReceived', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -143,7 +137,6 @@ casper.test.begin('onResourceReceived', function (test) {
 
 casper.test.begin('onAlert', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -157,7 +150,6 @@ casper.test.begin('onAlert', function (test) {
 
 casper.test.begin('onConfirm', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -171,7 +163,6 @@ casper.test.begin('onConfirm', function (test) {
 
 casper.test.begin('onPrompt', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -185,7 +176,6 @@ casper.test.begin('onPrompt', function (test) {
 
 casper.test.begin('onConsoleMessage', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -199,7 +189,6 @@ casper.test.begin('onConsoleMessage', function (test) {
 
 casper.test.begin('onLoadFinished', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -211,7 +200,6 @@ casper.test.begin('onLoadFinished', function (test) {
 
 casper.test.begin('onLoadFinished #2', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -225,7 +213,6 @@ casper.test.begin('onLoadFinished #2', function (test) {
 
 casper.test.begin('onLoadFinished #3', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
         utils         = {},
         phantom;
 
@@ -238,21 +225,11 @@ casper.test.begin('onLoadFinished #3', function (test) {
 });
 
 casper.test.begin('parsePage', function (test) {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
-        utils         = {},
-        phantom;
-
     // TBD
     test.done();
 });
 
 casper.test.begin('onEvaluate', function (test) {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
-        utils         = {},
-        phantom;
-
     // TBD
     test.done();
 });
@@ -455,7 +432,7 @@ casper.test.begin('cloneWebPage', function (test) {
 
     phantom.setUpPage = function(page) {
         page.onInitialized = function() {
-        }
+        };
     };
     resp = phantom.cloneWebPage({content: 'content', url: 'url'});
     test.assertEquals(resp.content, '<html><head></head><body>content</body></html>');
