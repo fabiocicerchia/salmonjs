@@ -192,7 +192,7 @@ var PhantomParser = function (utils, page) {
         var doNotContinue = false;
         for (var i in this.data.POST) {
             if (this.data.POST.hasOwnProperty(i)) {
-                if (this.data.POST[i].substr(0, 1) === '@' && fs.exists(this.data.POST[i].substr(1))) {
+                if (this.data.POST[i].toString().substr(0, 1) === '@' && fs.exists(this.data.POST[i].toString().substr(1))) {
                     doNotContinue = true;
                     this.spawnAndUseNodeJs(this.url, this.data.POST);
                 }
@@ -215,7 +215,7 @@ var PhantomParser = function (utils, page) {
 
         process.stdout.on('data', function(data) {
             currentParser.page.setContent(data, currentParser.url);
-            currentParser.page.onInitialized(currentParser.page);
+            //currentParser.page.onInitialized(); // TODO: It crashes phantomjs
             currentParser.onLoadFinished();
         });
 

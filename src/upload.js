@@ -48,11 +48,11 @@ var handler = function (err, response, body) {
     console.log(body);
 };
 
-req  = request.post(url, handler);
+req  = request.post(options, handler);
 form = req.form();
 
 for (i in data) {
-    if (data[i].substr(0, 1) === '@') {
+    if (data[i].toString().substr(0, 1) === '@') {
         form.append(i, fs.createReadStream(path.resolve(data[i].substr(1))));
     } else {
         form.append(i, data[i]);

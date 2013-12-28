@@ -1510,7 +1510,7 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         casper.test.begin("Upload", function (test) {
             var phantom,
                 resp,
-                nickname = 'salmonJS_' + Date.now();
+                nickname = Date.now();
 
             var params  = [
                 undefined,
