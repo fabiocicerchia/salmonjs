@@ -71,8 +71,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, []);
                 test.done();
             }
@@ -108,8 +108,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_02.html#',
                 ]);
@@ -147,8 +147,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_03.html#',
                 ]);
@@ -186,8 +186,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_04.html#',
                 ]);
@@ -225,8 +225,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_05.html#',
                 ]);
@@ -264,8 +264,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_06.html#whatever1',
                     'file://' + rootdir + '/test/assets/test_06.html#whatever2',
@@ -304,8 +304,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_07.html#whatever1',
                 ]);
@@ -343,8 +343,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_08.html#whatever1',
                 ]);
@@ -382,8 +382,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_09.html#whatever1',
                 ]);
@@ -421,8 +421,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_10.html#whatever1',
                 ]);
@@ -460,8 +460,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_11.html#whatever1',
                 ]);
@@ -499,8 +499,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 //        ]);
 //
 //        phantom.stdout.on('data', function(data) {
-//            if (data.toString().substr(0, 3) === '###') {
-//                resp = JSON.parse(data.toString().substr(3));
+//            if (data.toString().indexOf('###') > -1) {
+//                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
 //                test.assertEquals(resp.links.a, []);
 //                test.done();
 //            }
@@ -536,8 +536,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 //        ]);
 //
 //        phantom.stdout.on('data', function(data) {
-//            if (data.toString().substr(0, 3) === '###') {
-//                resp = JSON.parse(data.toString().substr(3));
+//            if (data.toString().indexOf('###') > -1) {
+//                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
 //                test.assertEquals(resp.links.a, []);
 //                test.done();
 //            }
@@ -573,8 +573,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_14.html#whatever1',
                     'file://' + rootdir + '/test/assets/test_14.html#whatever2',
@@ -613,8 +613,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_15.html#whatever1',
                     'file://' + rootdir + '/test/assets/test_15.html#whatever2',
@@ -654,8 +654,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_16.html?a=1&b=2',
                 ]);
@@ -693,8 +693,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_17.html#',
                 ]);
@@ -732,8 +732,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_18.html', // TODO: Not totally correct
                 ]);
@@ -771,8 +771,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, []);
                 test.done();
             }
@@ -808,8 +808,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, []);
                 test.assertEquals(resp.links.meta, [
                     'file://' + rootdir + '/test/assets/test_20.html#'
@@ -848,8 +848,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a.sort(), [
                     'file://' + rootdir + '/test/assets/test_21.html#whatever1',
                     'file://' + rootdir + '/test/assets/test_21.html#whatever2',
@@ -888,8 +888,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a.sort(), [
                     'file://' + rootdir + '/test/assets/test_22.html#whatever1',
                     'file://' + rootdir + '/test/assets/test_22.html#whatever2',
@@ -929,8 +929,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a.sort(), [
                     'file://' + rootdir + '/test/assets/test_23.html#whatever1',
                     'file://' + rootdir + '/test/assets/test_23.html#whatever2',
@@ -970,8 +970,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a.sort(), [
                     'file://' + rootdir + '/test/assets/test_24.html#whatever1',
                     'file://' + rootdir + '/test/assets/test_24.html#whatever2',
@@ -1011,8 +1011,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_25.html',
@@ -1052,8 +1052,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_25.html',
@@ -1093,8 +1093,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_25.html',
@@ -1134,8 +1134,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever', 'whatever', 'whatever']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_26.html#whatever2'
@@ -1174,8 +1174,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever', 'whatever', 'whatever']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_26.html#whatever3'
@@ -1214,8 +1214,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever', 'something','whatever', 'something', 'whatever', 'something']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_27.html#something',
@@ -1254,8 +1254,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever', 'something','whatever', 'something', 'whatever', 'something']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_27.html#whatever2',
@@ -1294,8 +1294,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever', 'something','whatever', 'something', 'whatever', 'something']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_27.html#something2',
@@ -1334,8 +1334,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.confirms, ['whatever', 'something','whatever', 'something', 'whatever', 'something']);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_27.html#whatever3',
@@ -1374,8 +1374,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.prompts, [{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''}]);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_28.html#whatever3',
@@ -1414,8 +1414,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.report.prompts, [{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''}]);
                 test.assertEquals(resp.links.a, [
                     'file://' + rootdir + '/test/assets/test_28.html#something2',
@@ -1454,8 +1454,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, []);
                 test.done();
             }
@@ -1491,8 +1491,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         ]);
 
         phantom.stdout.on('data', function(data) {
-            if (data.toString().substr(0, 3) === '###') {
-                resp = JSON.parse(data.toString().substr(3));
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 test.assertEquals(resp.links.a, []);
                 test.assertEquals(resp.report.console, [{'msg':'test=1'}]);
                 test.done();
@@ -1531,8 +1531,8 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             ]);
 
             phantom.stdout.on('data', function(data) {
-                if (data.toString().substr(0, 3) === '###') {
-                    resp = JSON.parse(data.toString().substr(3));
+                if (data.toString().indexOf('###') > -1) {
+                    resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                     test.assertEquals(resp.links.a, []);
                 }
             });

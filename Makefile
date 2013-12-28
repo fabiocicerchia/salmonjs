@@ -29,6 +29,9 @@ ECHO=echo
 RM=rm -rf
 GIT=git
 FIND=find
+PHANTOMJS=phantomjs
+NODE=node
+NPM=npm
 JSHINT=./node_modules/jshint/bin/jshint
 CASPERJS=./casperjs/bin/casperjs
 JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
@@ -37,14 +40,25 @@ FILES=test/test.*.js test/*/test.*.js
 install-casper:
 	$(GIT) clone git://github.com/n1k0/casperjs.git
 
+versions:
+	$(CASPERJS) --version
+	$(JSCOVERAGE) --version
+	$(PHANTOMJS) --version
+	$(NODE) --version
+	$(NPM) version
+
 test:
-	$(CASPERJS) test $(FILES)
+	$(CASPERJS) --debug=true test $(FILES)
 
 coverage:
 	$(RM) src-cov 2> /dev/null
 	$(JSCOVERAGE) src src-cov
 	$(CASPERJS) test $(FILES) --post=src/reporter/coverage.js --coverage --concise
 	$(RM) src-cov
+
+show-report:
+	cd /tmp && chmod 777 *.dmp && tar -pzcf phantomjs.tar.gz *.dmp
+	cat /tmp/phantomjs.tar.gz | base64
 
 lint:
 	$(FIND) bin src test -type f -name "*.js" | xargs $(JSHINT)

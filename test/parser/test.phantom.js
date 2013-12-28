@@ -280,20 +280,22 @@ casper.test.begin('parseGet #3', function (test) {
     test.assertEquals(phantom.page.customHeaders['X-Test'], 1);
 });
 
-casper.test.begin('parsePost', function (test) {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        utils         = new (require(srcdir + '/utils'))(),
-        phantom;
+if (require('system').env.TRAVIS !== 'true') {
+    casper.test.begin('parsePost', function (test) {
+        var PhantomParser = require(srcdir + '/parser/phantom'),
+            utils         = new (require(srcdir + '/utils'))(),
+            phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
-    phantom.url = 'about:blank';
-    phantom.data = {};
-    phantom.onOpen = function () {};
-    phantom.onLoadFinished = function () {
-        test.done();
-    };
-    test.assertEquals(phantom.parsePost(), undefined);
-});
+        phantom = new PhantomParser(utils, require('webpage').create());
+        phantom.url = 'about:blank';
+        phantom.data = {};
+        phantom.onOpen = function () {};
+        phantom.onLoadFinished = function () {
+            test.done();
+        };
+        test.assertEquals(phantom.parsePost(), undefined);
+    });
+}
 
 casper.test.begin('parsePost #2', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
@@ -310,21 +312,23 @@ casper.test.begin('parsePost #2', function (test) {
     test.done();
 });
 
-casper.test.begin('parsePost #3', function (test) {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        utils         = new (require(srcdir + '/utils'))(),
-        phantom;
+if (require('system').env.TRAVIS !== 'true') {
+    casper.test.begin('parsePost #3', function (test) {
+        var PhantomParser = require(srcdir + '/parser/phantom'),
+            utils         = new (require(srcdir + '/utils'))(),
+            phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
-    phantom.url = 'about:blank';
-    phantom.data = {HEADERS:{ 'X-Test': 1}};
-    phantom.onOpen = function () {};
-    phantom.onLoadFinished = function () {
-        test.done();
-    };
-    test.assertEquals(phantom.parsePost(), undefined);
-    test.assertEquals(phantom.page.customHeaders['X-Test'], 1);
-});
+        phantom = new PhantomParser(utils, require('webpage').create());
+        phantom.url = 'about:blank';
+        phantom.data = {HEADERS:{ 'X-Test': 1}};
+        phantom.onOpen = function () {};
+        phantom.onLoadFinished = function () {
+            test.done();
+        };
+        test.assertEquals(phantom.parsePost(), undefined);
+        test.assertEquals(phantom.page.customHeaders['X-Test'], 1);
+    });
+}
 
 //casper.test.begin('onInitialized', function (test) {
 //    var PhantomParser = require(srcdir + '/parser/phantom'),
