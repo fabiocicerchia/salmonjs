@@ -243,7 +243,7 @@ var PhantomParser = function (utils, page) {
      */
     this.onNavigationRequested = function (url, type, willNavigate, main) {
         // TODO: What to do with reloads?
-        if (!followRedirects && url.indexOf(currentParser.url) === -1) {
+        if (url !== 'about:blank' && !followRedirects && url.indexOf(currentParser.url) === -1) {
             return currentParser.exit();
         }
 

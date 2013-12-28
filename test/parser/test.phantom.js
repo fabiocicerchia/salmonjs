@@ -356,7 +356,7 @@ casper.test.begin('onNavigationRequested', function (test) {
     phantom.url = 'http://www.example.com';
     phantom.exit = function () { return true; };
     resp = phantom.onNavigationRequested('about:blank', '', '', '');
-    test.assertEquals(resp, true);
+    test.assertEquals(resp, undefined);
 
     phantom.url = 'http://www.example.com';
     phantom.exit = function () { return true; };
