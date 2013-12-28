@@ -128,8 +128,8 @@ function spawnStderr(data) {
     console.log(data.substr(0, data.length - 1).red);
 }
 
-function start() {
-    var uri = path.resolve(argv.uri);
+function resolveURI(uri) {
+    uri = path.resolve(uri);
     if (fs.existsSync(uri)) {
         uri = 'file://' + encodeURI(uri);
     } else {
@@ -140,6 +140,10 @@ function start() {
         }
     }
 
+    return uri;
+}
+
+function tracker() {
     winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
     var uniqId = os.type() + os.platform() + os.arch() + os.release() + process.versions.node + process.versions.v8 + '0.2.1';
     uniqId = crypto.createHash('sha1').update(uniqId).digest('hex');
@@ -150,7 +154,12 @@ function start() {
     insight.track('cli', 'node',     process.versions.node);
     insight.track('cli', 'engine',   process.versions.v8);
     insight.track('cli', 'salmonJS', '0.2.1');
+}
 
+function start() {
+    var uri = resolveURI(argv.uri);
+
+    tracker();
     winston.info('Start processing "' + uri.green + '"...');
 
     client.send_command('FLUSHDB', []);

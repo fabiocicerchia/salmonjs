@@ -101,12 +101,9 @@ var PhantomParser = function (utils, page) {
     };
 
     /**
-     * Parse the URL as GET request.
-     *
-     * @method parseGet
-     * @return undefined
+     * TBD
      */
-    this.parseGet = function () {
+    this.handleQueryString = function () {
         var currentQS = this.url.replace(/.*\?(.+)(#.*)?/, '$1');
         currentQS = currentQS === this.url ? '' : currentQS;
         currentQS = utils.normaliseData(currentQS);
@@ -115,6 +112,17 @@ var PhantomParser = function (utils, page) {
 
         var getParams = utils.arrayToQuery(utils.normaliseData(utils.arrayToQuery(currentQS)));
         this.url = this.url.replace(/\?(.+)(#.*)?/, '') + (getParams !== '' ? ('?' + getParams) : '');
+
+    };
+
+    /**
+     * Parse the URL as GET request.
+     *
+     * @method parseGet
+     * @return undefined
+     */
+    this.parseGet = function () {
+        this.handleQueryString();
 
         // InitPhantomJs
         this.setUpPage(this.page);
@@ -157,14 +165,7 @@ var PhantomParser = function (utils, page) {
      * @return undefined
      */
     this.parsePost = function () {
-        var currentQS = this.url.replace(/.*\?(.+)(#.*)?/, '$1');
-        currentQS = currentQS === this.url ? '' : currentQS;
-        currentQS = utils.normaliseData(currentQS);
-        var get = this.data.GET || {};
-        for (var p in get) { currentQS[p] = get[p]; }
-
-        var getParams = utils.arrayToQuery(utils.normaliseData(utils.arrayToQuery(currentQS)));
-        this.url = this.url.replace(/\?(.+)(#.*)?/, '') + (getParams !== '' ? ('?' + getParams) : '');
+        this.handleQueryString();
 
         this.setUpPage(this.page);
 
