@@ -4,7 +4,7 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.2.1
+ * salmonJS v0.3.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -37,7 +37,7 @@ var request = require('request'),
         uri: url,
         timeout: 5000,
         headers: {
-            'User-Agent': 'salmonJS/0.2.1 (+http://fabiocicerchia.github.io/salmonjs)'
+            'User-Agent': 'salmonJS/0.3.0 (+http://fabiocicerchia.github.io/salmonjs)'
         }
     },
     req,

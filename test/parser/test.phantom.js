@@ -4,7 +4,7 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.2.1
+ * salmonJS v0.3.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -62,7 +62,7 @@ casper.test.begin('setUpPage', function (test) {
     test.assertEquals(phantom.page.onConsoleMessage,         phantom.onConsoleMessage, 'it has been set up properly');
     test.assertEquals(phantom.page.onNavigationRequested,    phantom.onNavigationRequested, 'it has been set up properly');
     test.assertEquals(phantom.page.viewportSize,             { width: 1024, height: 800 }, 'it has been set up properly');
-    test.assertEquals(phantom.page.settings.userAgent,       'salmonJS/0.2.1 (+http://fabiocicerchia.github.io/salmonjs)', 'it has been set up properly');
+    test.assertEquals(phantom.page.settings.userAgent,       'salmonJS/0.3.0 (+http://fabiocicerchia.github.io/salmonjs)', 'it has been set up properly');
 
     test.done();
 });

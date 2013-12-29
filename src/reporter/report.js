@@ -4,7 +4,7 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.2.1
+ * salmonJS v0.3.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -180,7 +180,7 @@ var reporter = function (utils) {
         html += utils.htmlEscape(report.content);
         html += '</pre>\n';
         html += '        </div>\n';
-        html += '        <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/salmonjs">salmonJS</a> version 0.2.1</div>\n';
+        html += '        <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/salmonjs">salmonJS</a> version 0.3.0</div>\n';
         html += '    </body>\n';
         html += '</html>\n';
 
