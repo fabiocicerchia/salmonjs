@@ -78,6 +78,7 @@ Here below few suggestions about its usage:
  * Support for the following HTML tags:
    a, area, base, form, frame, iframe, img, input, link, script
  * URL normalisation
+ * Politeness Policy
  * Process the web page using PhantomJS
  * Processing the output content only if it's HTML
 

@@ -187,6 +187,15 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.idCrawler = '';
 
     /**
+     * Politeness policy interval (millisec).
+     *
+     * @property politeInterval
+     * @type {Integer}
+     * @default 1000
+     */
+    this.politeInterval = 1000;
+
+    /**
      * Current instance.
      *
      * @property currentCrawler
@@ -300,6 +309,9 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         this.idUri = utils.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath).substr(0, 8);
 
         var winstonCrawlerId = '[' + this.idUri.cyan + '-' + this.idCrawler.magenta + ']';
+
+        winston.info('Waiting %s seconds to be polite', this.politeInterval);
+        utils.sleep(this.politeInterval);
 
         winston.info(
             '%s Launching crawler to parse "%s" - %s on %s ...',

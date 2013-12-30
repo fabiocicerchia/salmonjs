@@ -106,7 +106,7 @@ var PhantomParser = function (utils, page) {
         customHeaders['Accept-Encoding'] = 'identity'; // TODO: Replace with 'gzip,deflate'
         customHeaders.Connection = 'keep-alive';
 
-        if (username !== undefined && password !== undefined) {
+        if (username !== null && password !== null) {
             customHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
         }
 

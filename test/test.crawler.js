@@ -50,7 +50,7 @@ casper.test.begin('run', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {},
+        utils    = {sleep: function () {}},
         crawler;
 
     utils.sha1 = function () { return ''; };
@@ -72,7 +72,7 @@ casper.test.begin('run #2', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {},
+        utils    = {sleep: function () {}},
         crawler;
 
     utils.sha1 = function () { return ''; };
@@ -934,4 +934,40 @@ casper.test.begin('proxy settings', function (test) {
     crawler.onExit = function() {};
 
     crawler.execPhantomjs();
+});
+
+casper.test.begin('politeness', function (test) {
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
+        spawn    = function(cmd, params) {
+            return {
+                stdout: { on:function(act, cb){ cb(params); }},
+                stderr: { on:function(){}},
+                on: function(param, callback){ if (param ==='exit') { callback(); }}
+            };
+        },
+        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        testObj  = require(srcdir + '/test'),
+        client   = {on: function (evt, cb) { cb({}); }},
+        winston  = {error: function () {}, info: function () {}, warn: function () {}},
+        fs       = require(srcdir + '/fs'),
+        optimist = {argv: {$0: ['casperjs --cli test']}},
+        utils    = new (require(srcdir + '/utils'))(crypto),
+        crawler;
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler.execPhantomjs = function () { return 'OK'; };
+
+    var start = Date.now();
+    crawler.run('', '', '', '', '');
+    var end = Date.now();
+    test.assertEquals((end-start)/1000 >= 1, true, 'It waits 1 second');
+
+    start = Date.now();
+    crawler.politeInterval = 2000;
+    crawler.run('', '', '', '', '');
+    end = Date.now();
+    test.assertEquals((end-start)/1000 >= 2, true, 'It waits 2 second');
+
+    test.done();
 });
