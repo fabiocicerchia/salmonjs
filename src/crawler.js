@@ -259,11 +259,12 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         var settings = [];
         if (this.proxy !== '') {
-            var parts = this.proxy.split('@');
-            if (parts.length === 2) {
-                settings.push('--proxy-auth=' + parts.shift());
+            auth = this.proxy.replace(/^(.+):(.+)@(.+):(.+)$/, '$1:$2');
+            host = this.proxy.replace(/^(.+):(.+)@(.+):(.+)$/, '$3:$4');
+            if (auth !== this.proxy) {
+                settings.push('--proxy-auth=' + auth);
             }
-            settings.push('--proxy=' + parts.shift());
+            settings.push('--proxy=' + host);
         }
         settings.push('./src/parser/' + config.parser.interface + '.js');
         settings.push(JSON.stringify(params));
@@ -449,7 +450,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
 
             if (optimist.argv.$0.indexOf('casperjs cli --test') === -1) {
-                // TODO: This is called at the wrong time.
                 process.exit();
             }
 
@@ -513,7 +513,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.handleError = function () {
         var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + this.idCrawler.magenta + ']';
 
-        // TODO: Add the request in the report as failed if reach the threshold.
         if (currentCrawler.tries < config.crawler.attempts) {
             winston.info('%s' + ' Trying again in %s msec'.grey, winstonCrawlerId, config.crawler.delay);
 
@@ -667,32 +666,26 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                         }
                     }
                 }
-                //currentCrawler.checkAndRun(element, 'GET');
-                //currentCrawler.checkAndRun(element, 'GET', data);
             }
 
             currentCrawler.possibleCrawlers += links.a.length;
             links.a.forEach(function (element) {
                 currentCrawler.checkAndRun(element, 'GET');
-                //currentCrawler.checkAndRun(element, 'GET', data);
             });
 
             currentCrawler.possibleCrawlers += links.link.length;
             links.link.forEach(function (element) {
                 currentCrawler.checkAndRun(element, 'GET');
-                //currentCrawler.checkAndRun(element, 'GET', data);
             });
 
             currentCrawler.possibleCrawlers += links.script.length;
             links.script.forEach(function (element) {
                 currentCrawler.checkAndRun(element, 'GET');
-                //currentCrawler.checkAndRun(element, 'GET', data);
             });
 
             currentCrawler.possibleCrawlers += links.meta.length;
             links.meta.forEach(function (element) {
                 currentCrawler.checkAndRun(element, 'GET');
-                //currentCrawler.checkAndRun(element, 'GET', data);
             });
 
             links.form.forEach(function (element) {
@@ -716,8 +709,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     PROMPT:  result.result.prompts.filter(utils.onlyUnique)
                 };
                 test.createNewCaseFile(element.action, element.type, data);
-                //test.createNewCaseFile(id + '-' + 'get', fieldData);
-                //test.createNewCaseFile(id + '-' + 'post', fieldData); // TODO: REMOVE DUPLICATE
 
                 cases = test.getCases(element.action); // TODO: Possible duplicates
                 currentCrawler.possibleCrawlers += cases.length;
@@ -729,20 +720,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                         currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]);
                     }
                 }
-
-                /*
-                var cases = test.getCases(id + '-get');
-                for (var j in cases) {
-                  currentCrawler.checkAndRun(element, 'GET', []);
-                  currentCrawler.checkAndRun(element, 'GET', cases[j]);
-                }
-
-                cases = test.getCases(id + '-post');
-                for (j in cases) {
-                  currentCrawler.checkAndRun(element, 'POST', []);
-                  currentCrawler.checkAndRun(element, 'POST', cases[j]);
-                }
-                */
             });
 
             // TODO: Add default values for GET, COOKIE and HEADERS.

@@ -919,7 +919,7 @@ casper.test.begin('proxy settings', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs --cli test']}},
-        utils    = {sha1: function(str) { return str; }},
+        utils    = {sha1: function(str) { return str; }, sleep: function () {}},
         crawler;
 
     crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
@@ -928,6 +928,39 @@ casper.test.begin('proxy settings', function (test) {
     crawler.onStdOut = function(data) {
         test.assertEquals(data.toString().indexOf('--proxy-auth=username:password,--proxy=ip:port,') > -1, true);
         test.assertEquals(data.toString().indexOf('"username:password@ip:port"') > -1, true);
+        test.done();
+    };
+    crawler.onStdErr = function() {};
+    crawler.onExit = function() {};
+
+    crawler.execPhantomjs();
+});
+
+casper.test.begin('proxy settings #2', function (test) {
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
+        spawn    = function(cmd, params) {
+            return {
+                stdout: { on:function(act, cb){ cb(params); }},
+                stderr: { on:function(){}},
+                on: function(param, callback){ if (param ==='exit') { callback(); }}
+            };
+        },
+        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        testObj  = require(srcdir + '/test'),
+        client   = {on: function (evt, cb) { cb({}); }},
+        winston  = {error: function () {}, info: function () {}, warn: function () {}},
+        fs       = require(srcdir + '/fs'),
+        optimist = {argv: {$0: ['casperjs --cli test']}},
+        utils    = {sha1: function(str) { return str; }},
+        crawler;
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler.proxy = 'ip:port';
+
+    crawler.onStdOut = function(data) {
+        test.assertEquals(data.toString().indexOf('--proxy=ip:port,') > -1, true);
+        test.assertEquals(data.toString().indexOf('"ip:port"') > -1, true);
         test.done();
     };
     crawler.onStdErr = function() {};

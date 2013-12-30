@@ -62,7 +62,15 @@ Here below few suggestions about its usage:
  * Catch and handle all the events bound to DOM elements (regardless how they have been set)
  * Follows any 3xx redirect, JS document.location and meta redirect (can be disabled)
  * Ignore duplicated URLs / requests and external URLs
+ * Test case files, with support of:
+  * COOKIEs
+  * FILES upload
+  * GET parameters
+  * HTTP headers
+  * POST parameters
  * HTTP authentication
+ * Proxy settings
+ * Politeness Policy
  * Generate report for each page crawled, with: 6
   * Screenshot
   * HTTP headers
@@ -78,7 +86,6 @@ Here below few suggestions about its usage:
  * Support for the following HTML tags:
    a, area, base, form, frame, iframe, img, input, link, script
  * URL normalisation
- * Politeness Policy
  * Process the web page using PhantomJS
  * Processing the output content only if it's HTML
 
@@ -156,14 +163,13 @@ Web Crawler in Node.js to spider dynamically whole websites.
 Usage: ./bin/salmonjs
 
 Options:
-  --uri            The URI to be crawled                                              [required]
-  -u, --username   Username for HTTP authentication
-  -p, --password   Password for HTTP authentication
-  -d, --details    Store details for each page                                        [default: false]
-  -f, --follow     Follows redirects                                                  [default: false]
-  -x, --proxy      Proxy settings (format: "ip:port" or "username:password@ip:port")
-  --disable-stats  Disable anonymous report usage stats                               [default: false]
-  --help           Show the help
+  --uri              The URI to be crawled                                                       [required]
+  -c, --credentials  Username and password for HTTP authentication (format "username:password")
+  -d, --details      Store details for each page                                                 [default: false]
+  -f, --follow       Follows redirects                                                           [default: false]
+  -p, --proxy        Proxy settings (format: "ip:port" or "username:password@ip:port")
+  --disable-stats    Disable anonymous report usage stats                                        [default: false]
+  --help             Show the help
 ```
 
 ## Examples

@@ -98,17 +98,15 @@ console.log('');
 argv = require('optimist')
     .usage('Web Crawler in Node.js to spider dynamically whole websites.\nUsage: $0')
     .demand('uri')
-    .alias('u', 'username')
-    .alias('p', 'password')
+    .alias('c', 'credentials')
     .alias('d', 'details')
     .alias('f', 'follow')
-    .alias('x', 'proxy')
+    .alias('p', 'proxy')
     .describe('uri', 'The URI to be crawled')
-    .describe('u', 'Username for HTTP authentication')
-    .describe('p', 'Password for HTTP authentication')
+    .describe('c', 'Username and password for HTTP authentication (format "username:password")')
     .describe('d', 'Store details for each page')
     .describe('f', 'Follows redirects')
-    .describe('x', 'Proxy settings (format: "ip:port" or "username:password@ip:port")')
+    .describe('p', 'Proxy settings (format: "ip:port" or "username:password@ip:port")')
     .describe('disable-stats', 'Disable anonymous report usage stats')
     .describe('help', 'Show the help')
     .string('uri')
@@ -166,9 +164,13 @@ function start() {
 
     client.send_command('FLUSHDB', []);
 
+    var username, password;
+    username = argv.credentials.replace(/^([^:]+):.+/, '$1');
+    password = argv.credentials.replace(/^[^:]+:(.+)/, '$1');
+
     var args = [
         __dirname + '/worker.js',
-        Date.now(), argv.username, argv.password, argv.details, argv.follow,
+        Date.now(), username, password, argv.details, argv.follow,
         argv.proxy, uri, 'GET'
     ];
 

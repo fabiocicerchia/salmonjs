@@ -112,6 +112,7 @@ module.exports = function Parser() {
      * @default {Object}
      */
     this.tags = {
+        // TODO: Use the following
         // HTML 4
         a: 'href',
         area: 'href',

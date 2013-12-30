@@ -146,10 +146,15 @@ var PhantomParser = function (utils, page) {
 
         for (var cookie in this.data.COOKIE) {
             if (this.data.COOKIE.hasOwnProperty(cookie)) {
+                domain = '';
+                if (this.url.substr(0, 7) !== 'file://') {
+                    domain = this.url.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, '$2');
+                }
+
                 this.page.addCookie({
                     'name'   : cookie,
                     'value'  : this.data.COOKIE[cookie],
-                    'domain' : '' // this.url.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, '$2')
+                    'domain' : domain
                 });
             }
         }
