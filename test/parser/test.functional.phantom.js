@@ -1548,6 +1548,53 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             });
         });
     }
+
+    casper.test.begin('Keep Alive', function (test) {
+        var phantom,
+            resp,
+            nickname = Date.now();
+
+        var params  = [
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'http://www.example.com',
+            'GET',
+            {},
+            undefined,
+            undefined,
+            false,
+            true
+        ];
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
+                var found = false;
+                resp.report.resources['http://www.example.com/'].headers.forEach(function (item) {
+                    if (item.name.toLowerCase() === 'connection') {
+                        found = true;
+                        test.assertEquals(item.value.toLowerCase() === 'close', false, 'Connection set to keep-alive');
+                    }
+                });
+                if (found === false) {
+                    test.assertEquals(found, false, 'No Connection header was set (therefore the keep-alive is implicit)');
+                }
+                test.done();
+            }
+        });
+        phantom.stderr.on('data', function() {
+            test.assertEquals(true, false);
+            test.done();
+        });
+    });
 } else if (typeof test !== 'undefined') {
     test.done();
 }

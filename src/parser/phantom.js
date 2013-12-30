@@ -94,7 +94,10 @@ var PhantomParser = function (utils, page) {
         page.viewportSize             = { width: 1024, height: 800 };
         page.settings.userAgent       = 'salmonJS/0.3.0 (+http://fabiocicerchia.github.io/salmonjs)';
 
-        page.customHeaders = {};
+        page.customHeaders = {
+            'Connection': 'keep-alive'
+        };
+
         if (username !== undefined && password !== undefined) {
             page.customHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
         }
