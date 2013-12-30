@@ -102,11 +102,13 @@ argv = require('optimist')
     .alias('p', 'password')
     .alias('d', 'details')
     .alias('f', 'follow')
+    .alias('x', 'proxy')
     .describe('uri', 'The URI to be crawled')
     .describe('u', 'Username for HTTP authentication')
     .describe('p', 'Password for HTTP authentication')
     .describe('d', 'Store details for each page')
     .describe('f', 'Follows redirects')
+    .describe('x', 'Proxy settings (format: "ip:port" or "username:password@ip:port")')
     .describe('disable-stats', 'Disable anonymous report usage stats')
     .describe('help', 'Show the help')
     .string('uri')
@@ -167,7 +169,7 @@ function start() {
     var args = [
         __dirname + '/worker.js',
         Date.now(), argv.username, argv.password, argv.details, argv.follow,
-        uri, 'GET'
+        argv.proxy, uri, 'GET'
     ];
 
     var childProcess = require('child_process').spawn('node', args);

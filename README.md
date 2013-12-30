@@ -155,12 +155,13 @@ Web Crawler in Node.js to spider dynamically whole websites.
 Usage: ./bin/salmonjs
 
 Options:
-  --uri            The URI to be crawled                 [required]
+  --uri            The URI to be crawled                                              [required]
   -u, --username   Username for HTTP authentication
   -p, --password   Password for HTTP authentication
-  -d, --details    Store details for each page           [default: false]
-  -f, --follow     Follows redirects                     [default: false]
-  --disable-stats  Disable anonymous report usage stats  [default: false]
+  -d, --details    Store details for each page                                        [default: false]
+  -f, --follow     Follows redirects                                                  [default: false]
+  -x, --proxy      Proxy settings (format: "ip:port" or "username:password@ip:port")
+  --disable-stats  Disable anonymous report usage stats                               [default: false]
   --help           Show the help
 ```
 

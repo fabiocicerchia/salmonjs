@@ -122,6 +122,15 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.followRedirects = false;
 
     /**
+     * Proxy settings.
+     *
+     * @property proxy
+     * @type {String}
+     * @default ""
+     */
+    this.proxy = '';
+
+    /**
      * The report directory.
      *
      * @property REPORT_DIRECTORY
@@ -235,15 +244,23 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 this.evt,
                 this.xPath,
                 this.storeDetails,
-                this.followRedirects
+                this.followRedirects,
+                this.proxy
             ];
 
+        var settings = [];
+        if (this.proxy !== '') {
+            var parts = this.proxy.split('@');
+            if (parts.length === 2) {
+                settings.push('--proxy-auth=' + parts.shift());
+            }
+            settings.push('--proxy=' + parts.shift());
+        }
+        settings.push('./src/parser/' + config.parser.interface + '.js');
+        settings.push(JSON.stringify(params));
+
         try {
-            phantom = spawn(config.parser.cmd, [
-                //'--debug=true',
-                './src/parser/' + config.parser.interface + '.js',
-                JSON.stringify(params)
-            ]);
+            phantom = spawn(config.parser.cmd, settings);
 
             phantom.stdout.on('data', this.onStdOut);
             phantom.stderr.on('data', this.onStdErr);

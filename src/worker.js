@@ -38,11 +38,12 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         password        = args[4],
         storeDetails    = args[5],
         followRedirects = args[6],
-        url             = args[7],
-        type            = args[8],
-        container       = args[9],
-        evt             = args[10],
-        xPath           = args[11],
+        prox            = args[7],
+        url             = args[8],
+        type            = args[9],
+        container       = args[10],
+        evt             = args[11],
+        xPath           = args[12],
         config          = require('../src/config'),
         Crawler         = require('../src/crawler'),
         winston         = require('winston'),
@@ -76,6 +77,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
     crawler.password        = password;
     crawler.storeDetails    = storeDetails;
     crawler.followRedirects = followRedirects;
+    crawler.proxy           = proxy;
     var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
     crawler.run(url, type, data, evt, xPath);
 }

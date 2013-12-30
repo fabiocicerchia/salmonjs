@@ -902,3 +902,36 @@ casper.test.begin('init', function (test) {
 
     test.done();
 });
+
+casper.test.begin('proxy settings', function (test) {
+    var Crawler  = require(srcdir + '/crawler'),
+        config   = require(srcdir + '/config'),
+        spawn    = function(cmd, params) {
+            return {
+                stdout: { on:function(act, cb){ cb(params); }},
+                stderr: { on:function(){}},
+                on: function(param, callback){ if (param ==='exit') { callback(); }}
+            };
+        },
+        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        testObj  = require(srcdir + '/test'),
+        client   = {on: function (evt, cb) { cb({}); }},
+        winston  = {error: function () {}, info: function () {}, warn: function () {}},
+        fs       = require(srcdir + '/fs'),
+        optimist = {argv: {$0: ['casperjs --cli test']}},
+        utils    = {sha1: function(str) { return str; }},
+        crawler;
+
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler.proxy = 'username:password@ip:port';
+
+    crawler.onStdOut = function(data) {
+        test.assertEquals(data.toString().indexOf('--proxy-auth=username:password,--proxy=ip:port,') > -1, true);
+        test.assertEquals(data.toString().indexOf('"username:password@ip:port"') > -1, true);
+        test.done();
+    };
+    crawler.onStdErr = function() {};
+    crawler.onExit = function() {};
+
+    crawler.execPhantomjs();
+});
