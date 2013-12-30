@@ -2,11 +2,18 @@
   "name": "salmonjs",
   "preferGlobal": true,
   "version": "0.3.0",
-  "author": "Fabio Cicerchia <info@fabiocicerchia.it> (http://www.fabiocicerchia.it)",
+  "author": {
+    "name": "Fabio Cicerchia",
+    "email": "info@fabiocicerchia.it",
+    "url": "http://www.fabiocicerchia.it"
+  },
   "homepage": "http://fabiocicerchia.github.io/salmonjs",
   "description": "Web Crawler in Node.js to spider dynamically whole websites.",
   "contributors": [
-    "Fabio Cicerchia <info@fabiocicerchia.it>"
+    {
+      "name": "Fabio Cicerchia",
+      "email": "info@fabiocicerchia.it"
+    }
   ],
   "bin": {
     "salmonjs": "./bin/salmonjs"
@@ -32,7 +39,7 @@
     "glob": "3.2.7",
     "winston": "0.7.2",
     "insight": "0.3.0",
-    "request": "2.29.0"
+    "request": "2.30.0"
   },
   "devDependencies": {
     "visionmedia-jscoverage": "1.0.0",
