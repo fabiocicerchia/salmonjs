@@ -94,13 +94,23 @@ var PhantomParser = function (utils, page) {
         page.viewportSize             = { width: 1024, height: 800 };
         page.settings.userAgent       = 'salmonJS/0.3.0 (+http://fabiocicerchia.github.io/salmonjs)';
 
-        page.customHeaders = {
-            'Connection': 'keep-alive'
-        };
+        this.setHttpHeaders();
+    };
+
+    /**
+     * TBD
+     */
+    this.setHttpHeaders = function () {
+        var customHeaders = {};
+
+        customHeaders['Accept-Encoding'] = 'identity'; // TODO: Replace with 'gzip,deflate'
+        customHeaders.Connection = 'keep-alive';
 
         if (username !== undefined && password !== undefined) {
-            page.customHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+            customHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
         }
+
+        page.customHeaders = customHeaders;
     };
 
     /**

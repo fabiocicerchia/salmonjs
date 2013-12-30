@@ -1595,6 +1595,52 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             test.done();
         });
     });
+
+//    casper.test.begin('GZip', function (test) {
+//        var phantom,
+//            resp,
+//            nickname = Date.now();
+//
+//        var params  = [
+//            undefined,
+//            undefined,
+//            undefined,
+//            undefined,
+//            undefined,
+//            'http://www.fabiocicerchia.it',
+//            'GET',
+//            {},
+//            undefined,
+//            undefined,
+//            false,
+//            true
+//        ];
+//        phantom = require('child_process').spawn('phantomjs', [
+//            //'--debug=true',
+//            srcdir + '/parser/phantom.js',
+//            JSON.stringify(params)
+//        ]);
+//
+//        var output = '';
+//        phantom.stdout.on('data', function(data) {
+//            output += data.toString();
+//        });
+//        phantom.stderr.on('data', function() {
+//            test.assertEquals(true, false);
+//            test.done();
+//        });
+//        phantom.on('exit', function () {
+//            if (output.indexOf('###') > -1) {
+//                resp = JSON.parse(output.substr(output.indexOf('###') + 3));
+//                resp.report.resources['http://www.fabiocicerchia.it/'].headers.forEach(function (item) {
+//                    if (item.name.toLowerCase() === 'content-encoding') {
+//                        test.assertEquals(item.value.toLowerCase() === 'gzip', true, 'Content Encoding is set to gzip');
+//                    }
+//                });
+//                test.done();
+//            }
+//        });
+//    });
 } else if (typeof test !== 'undefined') {
     test.done();
 }
