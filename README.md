@@ -87,7 +87,7 @@ Here below few suggestions about its usage:
    a, area, base, form, frame, iframe, img, input, link, script
  * URL normalisation
  * Process the web page using PhantomJS
- * Processing the output content only if it's HTML
+ * Process all the output content types
 
 ## Dependencies
 

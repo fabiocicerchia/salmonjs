@@ -234,6 +234,154 @@ casper.test.begin('onEvaluate', function (test) {
     test.done();
 });
 
+casper.test.begin('onEvaluateNonHtml', function (test) {
+    var PhantomParser = require(srcdir + '/parser/phantom'),
+        utils         = {},
+        phantom,
+        content,
+        resp;
+
+    phantom = new PhantomParser(utils, require('webpage').create());
+
+    content = 'http://username:password@hostname/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'http://hostname/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'http://username:password@127.0.0.1/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'http://127.0.0.1/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'https://username:password@hostname/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'https://hostname/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'https://username:password@127.0.0.1/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'https://127.0.0.1/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'ftp://username:password@hostname/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'ftp://hostname/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'ftp://username:password@127.0.0.1/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'ftp://127.0.0.1/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = '//username:password@hostname/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = '//hostname/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = '//username:password@127.0.0.1/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = '//127.0.0.1/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    //content = '/path?arg=value#anchor';
+    //resp = phantom.onEvaluateNonHtml(content);
+    //test.assertEquals(resp, {mixed:[content]});
+
+    content = 'http://username:password@hostname:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'http://hostname:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'http://username:password@127.0.0.1:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'http://127.0.0.1:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'https://username:password@hostname:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'https://hostname:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'https://username:password@127.0.0.1:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'https://127.0.0.1:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'ftp://username:password@hostname:21/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'ftp://hostname:21/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'ftp://username:password@127.0.0.1:21/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = 'ftp://127.0.0.1:21/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = '//username:password@hostname:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = '//hostname:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = '//username:password@127.0.0.1:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    content = '//127.0.0.1:80/path?arg=value#anchor';
+    resp = phantom.onEvaluateNonHtml(content);
+    test.assertEquals(resp, {mixed:[content]});
+
+    //content = '/path?arg=value#anchor';
+    //resp = phantom.onEvaluateNonHtml(content);
+    //test.assertEquals(resp, {mixed:[content]});
+
+    test.done();
+});
+
 casper.test.begin('parseGet', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         utils         = new (require(srcdir + '/utils'))(),

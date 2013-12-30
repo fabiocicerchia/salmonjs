@@ -517,12 +517,11 @@ var PhantomParser = function (utils, page) {
 
         currentParser.report.content = page.content;
 
+        url = page.evaluate(function () {
+            return document.location.href;
+        });
+
         if (page.content.indexOf('<html') !== -1) {
-
-            url = page.evaluate(function () {
-                return document.location.href;
-            });
-
             if (storeDetails) {
                 fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
                 page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
@@ -532,7 +531,7 @@ var PhantomParser = function (utils, page) {
 
             // TODO: What if an event will change url? will it be processed in here or just returned back to the crawler?
             events = page.evaluate(function () {
-                return window.eventContainer.getEvents();
+                return window.eventContainer !== undefined ? window.eventContainer.getEvents() : [];
             });
 
             for (var type in events) {
@@ -580,6 +579,12 @@ var PhantomParser = function (utils, page) {
                 currentParser.parsePage(currentParser.stackPages.pop());
             }
         }
+
+        links = page.evaluate(currentParser.onEvaluateNonHtml, page.content);
+
+        currentParser.links.mixed = [].map.call(links.mixed, function (item) {
+            return utils.normaliseUrl(item, url);
+        }).concat(currentParser.links.mixed).filter(utils.onlyUnique);
 
         currentParser.exit();
     };
@@ -642,6 +647,33 @@ var PhantomParser = function (utils, page) {
                 fields: input.concat(select).concat(textarea)
             };
         });
+
+        return urls;
+    };
+
+    /**
+     * TBD
+     */
+    this.onEvaluateNonHtml = function () {
+        var urls = {
+                mixed: [],
+            },
+            content     = arguments[0],
+            protocol    = '((https?|ftp):)?',
+            credentials = '([\w]+:\w+@)?',
+            hostname    = '(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])',
+            ip          = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])',
+            port        = '(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?',
+            path_char   = '(([a-z0-9\\-_.!~*\'\(\):@&=+$,])|(%[0-9a-f][0-9a-f]))',
+            path        = path_char + '*(?:;' + path_char + '*)*(?:/' + path_char + '*(?:;' + path_char + '*)*)*',
+            querystring = '(\\?' + path_char + '*)?',
+            hash        = '(#' + path_char + '*)?',
+            regex       = new RegExp(
+                '(' + protocol + '//' + credentials + '(' + hostname + '|' + ip + ')' + '/' + path + querystring + hash + ')',
+                'igm'
+            );
+
+        urls.mixed = content.match(regex);
 
         return urls;
     };
