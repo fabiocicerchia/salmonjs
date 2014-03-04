@@ -32,18 +32,19 @@
     "salmonjs"
   ],
   "dependencies": {
-    "optimist": "0.6.0",
+    "optimist": "0.6.1",
     "path": "0.4.9",
     "colors": "0.6.2",
-    "redis": "0.10.0",
-    "glob": "3.2.7",
+    "redis": "0.10.1",
+    "glob": "3.2.9",
     "winston": "0.7.2",
-    "insight": "0.3.0",
-    "request": "2.30.0"
+    "insight": "0.3.1",
+    "request": "2.34.0",
+    "fibers": "1.0.1"
   },
   "devDependencies": {
     "visionmedia-jscoverage": "1.0.0",
-    "jshint": "2.4.0"
+    "jshint": "2.4.4"
   },
   "jshintConfig": {
       "bitwise": true,
