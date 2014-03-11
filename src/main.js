@@ -37,6 +37,7 @@ var IOC     = require('./ioc'),
     os      = require('os'),
     pkg     = require('../package.json'),
     redis   = require('redis'),
+    pool    = new (require('./pool'))(),
     client  = redis.createClient(config.redis.port, config.redis.hostname),
     argv;
 
@@ -60,6 +61,7 @@ ioc.add('winston',   winston);
 ioc.add('optimist',  require('optimist'));
 ioc.add('fs',        fs);
 ioc.add('glob',      require('./glob'));
+ioc.add('pool',      pool);
 ioc.add('utils',     ioc.get(require('../src/utils')));
 ioc.add('dirName',   __dirname);
 ioc.add('mainDir',   __dirname + '/..');
@@ -102,11 +104,13 @@ argv = require('optimist')
     .alias('d', 'details')
     .alias('f', 'follow')
     .alias('p', 'proxy')
+    .alias('w', 'workers')
     .describe('uri', 'The URI to be crawled')
     .describe('c', 'Username and password for HTTP authentication (format "username:password")')
     .describe('d', 'Store details for each page')
     .describe('f', 'Follows redirects')
     .describe('p', 'Proxy settings (format: "ip:port" or "username:password@ip:port")')
+    .describe('w', 'Maximum number of asynchronous workers')
     .describe('disable-stats', 'Disable anonymous report usage stats')
     .describe('help', 'Show the help')
     .string('uri')
@@ -115,14 +119,29 @@ argv = require('optimist')
     .boolean('disable-stats')
     .default('d', false)
     .default('f', false)
+    .default('w', 10)
     .default('disable-stats', false)
     .argv;
 
+/**
+ * The spawn's stdout callback.
+ *
+ * @method spawnStdout
+ * @param {Object} data The data sent back from the worker.
+ * @return undefined
+ */
 function spawnStdout(data) {
     data = data.toString();
     console.log(data.substr(0, data.length - 1));
 }
 
+/**
+ * The spawn's stderr callback.
+ *
+ * @method spawnStderr
+ * @param {Object} data The data sent back from the worker.
+ * @return undefined
+ */
 function spawnStderr(data) {
     data = data.toString();
     console.log(data.substr(0, data.length - 1).red);
@@ -165,21 +184,33 @@ function start() {
     client.send_command('FLUSHDB', []);
 
     var username, password;
-    username = argv.credentials.replace(/^([^:]+):.+/, '$1');
-    password = argv.credentials.replace(/^[^:]+:(.+)/, '$1');
+    username = argv.credentials !== undefined ? argv.credentials.replace(/^([^:]+):.+/, '$1') : '';
+    password = argv.credentials !== undefined ? argv.credentials.replace(/^[^:]+:(.+)/, '$1') : '';
 
-    var args = [
-        __dirname + '/worker.js',
-        Date.now(), username, password, argv.details, argv.follow,
-        argv.proxy, uri, 'GET'
-    ];
-
-    var childProcess = require('child_process').spawn('node', args);
-    childProcess.stdout.on('data', spawnStdout);
-    childProcess.stderr.on('data', spawnStderr);
-    childProcess.on('exit', function () {
-        process.exit();
-    });
+    pool.size = argv.workers;
+    pool.addToQueue(
+        {
+            timeStart:       Date.now(),
+            idRequest:       Date.now(),
+            username:        username,
+            password:        password,
+            url:             uri,
+            type:            'GET',
+            data:            {},
+            evt:             '',
+            xPath:           '',
+            storeDetails:    argv.details,
+            followRedirects: argv.follow,
+            proxy:           argv.proxy
+        },
+        {
+            stdout: spawnStdout,
+            stderr: spawnStderr,
+            exit:   function () {
+                process.exit();
+            }
+        }
+    );
 }
 
 if (argv.help !== undefined || argv.uri === undefined) {

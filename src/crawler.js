@@ -32,7 +32,7 @@
  *
  * @module Crawler
  */
-var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist, utils) {
+var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist, utils, pool) {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -343,9 +343,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.analiseRedisResponse = function (err, reply, redisId, container, spawn) {
         var id               = redisId.substr(0, 8),
             winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']',
-            newId,
-            args,
-            childProcess;
+            newId;
 
         if (err) {
             throw err;
@@ -374,19 +372,31 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        args = [
-            __dirname + '/worker.js',
-            currentCrawler.timeStart, currentCrawler.username, currentCrawler.password, currentCrawler.storeDetails, currentCrawler.followRedirects,
-            container.url, container.type, JSON.stringify(container.container), container.evt, container.xPath
-        ];
-
-        childProcess = spawn('node', args, { detached: true });
-        childProcess.stdout.on('data', spawnStdout);
-        childProcess.stderr.on('data', spawnStderr);
-        childProcess.on('exit', function () {
-            currentCrawler.possibleCrawlers--;
-            currentCrawler.checkRunningCrawlers('No items left to be processed');
-        });
+        pool.addToQueue(
+            {
+                idUri:           1,
+                timeStart:       currentCrawler.timeStart,
+                idRequest:       Date.now(),
+                username:        currentCrawler.username,
+                password:        currentCrawler.password,
+                url:             container.url,
+                type:            container.type,
+                data:            container.container,
+                evt:             container.evt,
+                xPath:           container.xPath,
+                storeDetails:    currentCrawler.storeDetails,
+                followRedirects: currentCrawler.followRedirects,
+                proxy:           currentCrawler.proxy
+            },
+            {
+                stdout: spawnStdout,
+                stderr: spawnStderr,
+                exit:   function () {
+                    currentCrawler.possibleCrawlers--;
+                    currentCrawler.checkRunningCrawlers('No items left to be processed');
+                }
+            }
+        );
     };
 
     /**
@@ -617,9 +627,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         var result,
             links,
-            event,
-            signature,
-            element,
             newId,
             winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
@@ -642,31 +649,26 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         }
 
         if (Object.keys(links).length !== 0) {
-            // TODO: Optimise this code
-            for (event in links.events) {
-                if (links.events.hasOwnProperty(event)) {
-                    for (signature in links.events[event]) {
-                        if (links.events[event].hasOwnProperty(signature)) {
-                            for (element in links.events[event][signature]) {
-                                if (links.events[event][signature].hasOwnProperty(element) && element !== undefined) {
-                                    currentCrawler.possibleCrawlers++;
+            utils.loopEach(links.events, function (event, eventValue) {
+                utils.loopEach(eventValue, function (signature, signatureValue) {
+                    utils.loopEach(signatureValue, function (element, elementValue) {
+                        if (element !== undefined) {
+                            currentCrawler.possibleCrawlers++;
 
-                                    newId = utils.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + links.events[event][signature][element]).substr(0, 8);
+                            newId = utils.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + elementValue).substr(0, 8);
 
-                                    winston.info(
-                                        '%s Firing %s on "%s" (%s)...',
-                                        winstonCrawlerId,
-                                        event.toUpperCase().blue,
-                                        links.events[event][signature][element].green,
-                                        newId.cyan
-                                    );
-                                    currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, links.events[event][signature][element]);
-                                }
-                            }
+                            winston.info(
+                                '%s Firing %s on "%s" (%s)...',
+                                winstonCrawlerId,
+                                event.toUpperCase().blue,
+                                elementValue.green,
+                                newId.cyan
+                            );
+                            currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, elementValue);
                         }
-                    }
-                }
-            }
+                    });
+                });
+            });
 
             currentCrawler.possibleCrawlers += links.a.length;
             links.a.forEach(function (element) {
@@ -710,7 +712,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 };
                 test.createNewCaseFile(element.action, element.type, data);
 
-                cases = test.getCases(element.action); // TODO: Possible duplicates
+                cases = test.getCases(element.action); // TODO: Possible duplicates?
                 currentCrawler.possibleCrawlers += cases.length;
                 for (j in cases) {
                     if (cases.hasOwnProperty(j)) {
@@ -722,7 +724,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 }
             });
 
-            // TODO: Add default values for GET, COOKIE and HEADERS.
+            // TODO: Add default values for GET, COOKIE and HEADERS from the current page.
             var confirms = result.report.confirms || [],
                 data = {
                     GET:     [],
@@ -734,7 +736,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 },
                 cases;
             test.createNewCaseFile(currentCrawler.url, currentCrawler.type, data);
-            cases = test.getCases(currentCrawler.url); // TODO: Possible duplicates
+            cases = test.getCases(currentCrawler.url); // TODO: Possible duplicates?
             currentCrawler.possibleCrawlers += cases.length;
             for (var j in cases) {
                 if (cases.hasOwnProperty(j)) {
@@ -750,11 +752,25 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     };
 };
 
+/**
+ * The spawn's stdout callback.
+ *
+ * @method spawnStdout
+ * @param {Object} data The data sent back from the worker.
+ * @return undefined
+ */
 function spawnStdout(data) {
     data = data.toString();
     console.log(data.substr(0, data.length - 1));
 }
 
+/**
+ * The spawn's stderr callback.
+ *
+ * @method spawnStderr
+ * @param {Object} data The data sent back from the worker.
+ * @return undefined
+ */
 function spawnStderr(data) {
     data = data.toString();
     console.log(data.substr(0, data.length - 1).red);

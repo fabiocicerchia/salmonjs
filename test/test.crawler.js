@@ -90,7 +90,7 @@ casper.test.begin('analiseRedisResponse', function (test) {
             return {
                 stdout: { on:function(){}},
                 stderr: { on:function(){}},
-                on: function(param){ if (param ==='exit') { test.done(); }}
+                on: function(param){ }
             };
         },
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
@@ -98,12 +98,13 @@ casper.test.begin('analiseRedisResponse', function (test) {
         client   = {hset: function () {}},
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
+        pool     = {addToQueue: function () { test.done(); }},
         optimist = {argv: {$0: ['casperjs cli --test']}},
         utils    = {},
         crawler;
 
     utils.sha1 = function () { return ''; };
-    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils, pool);
 
     __dirname = '';
 
@@ -342,7 +343,7 @@ casper.test.begin('processPage', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {onlyUnique: function() {}},
+        utils    = new (require(srcdir + '/utils'))(crypto),
         glob     = {},
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
@@ -395,7 +396,7 @@ casper.test.begin('processPage #2', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {onlyUnique: function() {}},
+        utils    = new (require(srcdir + '/utils'))(crypto),
         glob     = {},
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
@@ -448,7 +449,7 @@ casper.test.begin('processPage #3', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {onlyUnique: function() {}},
+        utils    = new (require(srcdir + '/utils'))(crypto),
         glob     = {},
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
@@ -501,7 +502,7 @@ casper.test.begin('processPage #4', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {onlyUnique: function() {}},
+        utils    = new (require(srcdir + '/utils'))(crypto),
         glob     = {},
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
@@ -561,7 +562,7 @@ casper.test.begin('processPage #5', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {onlyUnique: function() {}},
+        utils    = new (require(srcdir + '/utils'))(crypto),
         glob     = {},
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
@@ -622,7 +623,7 @@ casper.test.begin('processPage #6', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {onlyUnique: function() {}},
+        utils    = new (require(srcdir + '/utils'))(crypto),
         glob     = {},
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,
@@ -681,7 +682,7 @@ casper.test.begin('processPage #7', function (test) {
         winston  = {error: function () {}, info: function () {}, warn: function () {}},
         fs       = require(srcdir + '/fs'),
         optimist = {argv: {$0: ['casperjs cli --test']}},
-        utils    = {onlyUnique: function() {}},
+        utils    = new (require(srcdir + '/utils'))(crypto),
         glob     = {},
         testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
         crawler,

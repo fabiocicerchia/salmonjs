@@ -146,7 +146,7 @@ var PhantomParser = function (utils, page) {
 
         for (var cookie in this.data.COOKIE) {
             if (this.data.COOKIE.hasOwnProperty(cookie)) {
-                domain = '';
+                var domain = '';
                 if (this.url.substr(0, 7) !== 'file://') {
                     domain = this.url.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, '$2');
                 }

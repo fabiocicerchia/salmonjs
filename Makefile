@@ -48,7 +48,7 @@ versions:
 	$(NPM) version
 
 test:
-	$(CASPERJS) --debug=true test $(FILES)
+	$(CASPERJS) test $(FILES)
 
 coverage:
 	$(RM) src-cov 2> /dev/null

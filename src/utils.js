@@ -332,6 +332,22 @@ var Utils = function (crypto) {
 
         return value;
     };
+
+    /**
+     * For each for objects.
+     *
+     * @method loopEach
+     * @param {Object}   object   The object to loop through.
+     * @param {Function} callback The callback invoked with key and value for each item.
+     * @return undefined
+     */
+    this.loopEach = function(object, callback) {
+        for (var item in object) {
+            if (object.hasOwnProperty(item)) {
+                callback(item, object[item]);
+            }
+        }
+    };
 };
 
 module.exports = Utils;

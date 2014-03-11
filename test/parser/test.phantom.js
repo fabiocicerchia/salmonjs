@@ -404,7 +404,8 @@ casper.test.begin('parseGet #2', function (test) {
 
     phantom = new PhantomParser(utils, require('webpage').create());
     phantom.url = 'http://www.example.com/?c=1&a=2';
-    phantom.data = {GET:{ a: 1, b: 2}};
+    phantom.data = {GET:{ a: 1, b: 2}, COOKIE: {}};
+    phantom.setUpPage = function () {};
     phantom.onOpen = function () {};
     phantom.onLoadFinished = function () {};
     test.assertEquals(phantom.parseGet(), undefined);
