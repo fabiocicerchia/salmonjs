@@ -4,7 +4,7 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.3.0
+ * salmonJS v0.4.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -186,7 +186,7 @@ for (file in cov.files) {
 }
 html += '           </tbody>\n';
 html += '       </table>\n';
-html += '       <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/salmonjs">salmonJS</a> version 0.3.0</div>\n';
+html += '       <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/salmonjs">salmonJS</a> version 0.4.0</div>\n';
 html += '   </body>\n';
 html += '</html>';
 

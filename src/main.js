@@ -4,7 +4,7 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.3.0
+ * salmonJS v0.4.0
  *
  * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -94,7 +94,7 @@ console.log('.-----.---.-.|  |.--------.-----.-----._|     |     __|'.yellow);
 console.log('|__ --|  _  ||  ||        |  _  |     |       |__     |'.yellow);
 console.log('|_____|___._||__||__|__|__|_____|__|__|_______|_______|'.yellow);
 console.log('');
-console.log('salmonJS v0.3.0'.grey);
+console.log('salmonJS v0.4.0'.grey);
 console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
 console.log('');
 
@@ -165,7 +165,7 @@ function resolveURI(uri) {
 
 function tracker() {
     winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
-    var uniqId = os.type() + os.platform() + os.arch() + os.release() + process.versions.node + process.versions.v8 + '0.3.0';
+    var uniqId = os.type() + os.platform() + os.arch() + os.release() + process.versions.node + process.versions.v8 + '0.4.0';
     uniqId = crypto.createHash('sha1').update(uniqId).digest('hex');
     insight.track('cli', 'os',       os.type());
     insight.track('cli', 'platform', os.platform());
@@ -173,7 +173,7 @@ function tracker() {
     insight.track('cli', 'release',  os.release());
     insight.track('cli', 'node',     process.versions.node);
     insight.track('cli', 'engine',   process.versions.v8);
-    insight.track('cli', 'salmonJS', '0.3.0');
+    insight.track('cli', 'salmonJS', '0.4.0');
 }
 
 function start() {
