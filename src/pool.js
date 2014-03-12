@@ -27,15 +27,12 @@
  * SOFTWARE.
  */
 
-var spawn = require('child_process').spawn,
-    os    = require('os');
-
 /**
  * Pool Module
  *
  * @module Pool
  */
-var Pool = function () {
+var Pool = function (spawn, os) {
     /**
      * Settings queue.
      *
@@ -63,7 +60,7 @@ var Pool = function () {
      *
      * @property size
      * @type {Integer}
-     * @default 10
+     * @default -1
      */
     this.memoryThreshold = -1;
 
@@ -94,8 +91,10 @@ var Pool = function () {
      * @return undefined
      */
     this.addToQueue = function (data, options) {
-        this.queue.push({data: data, options: options});
-        this.processQueue();
+        if (typeof data === 'object' && Object.keys(data).length > 0) {
+            this.queue.push({data: data, options: options});
+            this.processQueue();
+        }
     };
 
     /**
@@ -130,7 +129,7 @@ var Pool = function () {
      * @return undefined
      */
     this.processQueue = function () {
-        if (this.queue.length === 0 || this.queue.length >= this.size) {
+        if (this.queue.length === 0 || this.queue.length > this.size) {
             return;
         }
 
@@ -140,8 +139,12 @@ var Pool = function () {
             return;
         }
 
-        var settings = this.queue.shift(),
-            data     = settings.data,
+        var settings = this.queue.shift();
+        if (settings.data === undefined) {
+            return;
+        }
+
+        var data     = settings.data,
             options  = settings.options,
             args,
             childProcess;

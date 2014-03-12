@@ -37,7 +37,8 @@ var IOC     = require('./ioc'),
     os      = require('os'),
     pkg     = require('../package.json'),
     redis   = require('redis'),
-    pool    = new (require('./pool'))(),
+    spawn   = require('child_process').spawn,
+    pool    = new (require('./pool'))(spawn, os),
     client  = redis.createClient(config.redis.port, config.redis.hostname),
     argv;
 
@@ -53,7 +54,7 @@ var insight = new Insight({
 var ioc = new IOC();
 ioc.add('config',    config);
 ioc.add('insight',   insight);
-ioc.add('spawn',     require('child_process').spawn);
+ioc.add('spawn',     spawn);
 ioc.add('crypto',    crypto);
 ioc.add('redis',     redis);
 ioc.add('client',    client);
