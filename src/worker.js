@@ -44,11 +44,13 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         container       = args[10],
         evt             = args[11],
         xPath           = args[12],
-        pool            = JSON.parse(args[13]),
+        poolSettings    = JSON.parse(args[13]),
         config          = require('../src/config'),
         Crawler         = require('../src/crawler'),
+        Pool            = require('../src/pool'),
         winston         = require('winston'),
         fs              = require('fs'),
+        os              = require('os'),
         glob            = require('glob'),
         redis           = require('redis'),
         client          = redis.createClient(config.redis.port, config.redis.hostname),
@@ -70,6 +72,13 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
             timestamp: true
         }
     );
+    
+    var pool = new Pool(spawn, os);
+    // TODO: add method to set this stuff
+    pool.size            = poolSettings.size;
+    pool.queue           = poolSettings.queue;
+    pool.memoryThreshold = poolSettings.memoryThreshold;
+    pool.delay           = poolSettings.delay;
 
     var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist, utils, pool);
     crawler.init();

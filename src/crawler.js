@@ -255,10 +255,12 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 this.storeDetails,
                 this.followRedirects,
                 this.proxy
-            ];
+            ],
+            auth,
+            host,
+            settings = [];
 
-        var settings = [];
-        if (this.proxy !== '') {
+        if (this.proxy !== 'undefined') {
             auth = this.proxy.replace(/^(.+):(.+)@(.+):(.+)$/, '$1:$2');
             host = this.proxy.replace(/^(.+):(.+)@(.+):(.+)$/, '$3:$4');
             if (auth !== this.proxy) {
