@@ -6,7 +6,7 @@
  *
  * salmonJS v0.4.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -95,7 +95,7 @@ console.log('|__ --|  _  ||  ||        |  _  |     |       |__     |'.yellow);
 console.log('|_____|___._||__||__|__|__|_____|__|__|_______|_______|'.yellow);
 console.log('');
 console.log('salmonJS v0.4.0'.grey);
-console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
+console.log('Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
 console.log('');
 
 argv = require('optimist')

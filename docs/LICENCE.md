@@ -2,7 +2,7 @@ Spidey's license follows:
 
 ====
 
-Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

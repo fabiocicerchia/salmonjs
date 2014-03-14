@@ -157,7 +157,7 @@ Question="Answer"
 
 salmonJS v0.4.0
 
-Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
 
 Web Crawler in Node.js to spider dynamically whole websites.
 Usage: ./bin/salmonjs
@@ -224,7 +224,7 @@ For a list of bugs please go to the [GitHub Issue Page](https://github.com/fabio
 
 ## Licence
 
-Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
