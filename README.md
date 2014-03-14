@@ -82,21 +82,27 @@ Here below few suggestions about its usage:
   * Alerts, Confirmations & Prompts
   * Errors
   * List of successful and failed requests
+ * Pool system to limit the number of workers in the same time, then queue them
  * Multiple crawlers working asynchronously one URL each one
  * Support for the following HTML tags:
    a, area, base, form, frame, iframe, img, input, link, script
  * URL normalisation
  * Process the web page using PhantomJS
  * Process all the output content types
+ * Keep the connection alive for lower CPU and memory load on the server
 
 ## Dependencies
 
 Here the list of main dependencies:
 
  * [Node.js](http://nodejs.org/download/)
+    * Tested with v0.8.26, v0.10.25 and v0.11.11
  * [PhantomJS](http://phantomjs.org/download.html)
+    * Tested with v1.9.7
  * [CasperJS](http://casperjs.org/) (optional, only for tests)
+    * Tested with v1.1.0-beta3
  * [Redis](http://redis.io/download)
+    * Tested with v2.9.6
 
 ## Installation
 
