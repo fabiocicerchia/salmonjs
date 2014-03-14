@@ -68,6 +68,21 @@ var FSWrapper = function (fs) {
     };
 
     /**
+     * Method to handle the differences between Node.js FS.writeFile and
+     * PhantomJS FS.write.
+     *
+     * @method writeFile
+     * @param {String}   filename The filename
+     * @param {String}   data     The data
+     * @param {Function} callback The callback
+     * @return {String}
+     */
+    this.writeFile = function (filename, data, callback) {
+        this.writeFileSync(filename, data);
+        callback();
+    };
+
+    /**
      * Method to handle the differences between Node.js FS.existsSync and
      * PhantomJS FS.exists.
      *

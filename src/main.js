@@ -38,6 +38,7 @@ var IOC     = require('./ioc'),
     pkg     = require('../package.json'),
     redis   = require('redis'),
     spawn   = require('child_process').spawn,
+    zlib    = require('zlib'),
     pool    = new (require('./pool'))(spawn, os),
     client  = redis.createClient(config.redis.port, config.redis.hostname),
     argv;
@@ -63,7 +64,8 @@ ioc.add('optimist',  require('optimist'));
 ioc.add('fs',        fs);
 ioc.add('glob',      require('./glob'));
 ioc.add('pool',      pool);
-ioc.add('utils',     ioc.get(require('../src/utils')));
+var utils = ioc.get(require('../src/utils'));
+ioc.add('utils',     utils);
 ioc.add('dirName',   __dirname);
 ioc.add('mainDir',   __dirname + '/..');
 ioc.add('fsWrapper', ioc.get(require('../src/fs')));
@@ -89,6 +91,40 @@ winston.add(
     }
 );
 
+function handleSignals () {
+    winston.info('Gracefully shutting down');
+
+    var Session = require('./session'),
+        session = new Session(client, fs, zlib, utils, argv, pool);
+
+    client.hset('aaa', 'bbb', 1);
+    client.hset('aaa', 'ccc', 2);
+    winston.info('Dumping the session...');
+    session.dump(function () {
+        winston.info('Exiting...');
+        process.exit();
+    });
+}
+
+function restoreSession (callback) {
+    var Session = require('./session'),
+        session = new Session(client, fs, zlib, utils, argv, pool);
+
+    session.restore(function (conf) {
+        utils.loopEach(conf, function (key, value) {
+            argv[key] = value;
+        });
+
+        callback();
+    });
+}
+
+process.on('SIGTERM', handleSignals);
+process.on('SIGINT', handleSignals);
+process.on('SIGHUP', handleSignals);
+process.on('SIGBREAK', handleSignals);
+process.on('SIGBREAK', handleSignals);
+
 console.log('              __                         _____ _______'.yellow);
 console.log('.-----.---.-.|  |.--------.-----.-----._|     |     __|'.yellow);
 console.log('|__ --|  _  ||  ||        |  _  |     |       |__     |'.yellow);
@@ -106,12 +142,14 @@ argv = require('optimist')
     .alias('f', 'follow')
     .alias('p', 'proxy')
     .alias('w', 'workers')
+    .alias('r', 'restore')
     .describe('uri', 'The URI to be crawled')
     .describe('c', 'Username and password for HTTP authentication (format "username:password")')
     .describe('d', 'Store details for each page')
     .describe('f', 'Follows redirects')
     .describe('p', 'Proxy settings (format: "ip:port" or "username:password@ip:port")')
     .describe('w', 'Maximum number of asynchronous workers')
+    .describe('r', 'Restore the previous interrupted session')
     .describe('disable-stats', 'Disable anonymous report usage stats')
     .describe('help', 'Show the help')
     .string('uri')
@@ -122,6 +160,7 @@ argv = require('optimist')
     .default('f', false)
     .default('w', 10)
     .default('disable-stats', false)
+    .default('r', false)
     .argv;
 
 /**
@@ -221,6 +260,10 @@ if (argv.help !== undefined || argv.uri === undefined) {
         insight.askPermission(undefined, start);
     } else {
         insight.optOut = argv['disable-stats'];
-        start();
+        if (argv.restore) {
+            restoreSession(start);
+        } else {
+            start();
+        }
     }
 }
