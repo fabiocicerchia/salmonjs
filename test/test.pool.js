@@ -50,7 +50,7 @@ casper.test.begin('addToQueue', function (test) {
 
     pool.addToQueue({}, {});
     test.assertEquals(pool.queue, []);
-    
+
     pool.addToQueue({k1: 'v1'}, {});
     test.assertEquals(pool.queue, [{data: {k1: 'v1'}, options: {}}]);
 
@@ -65,7 +65,7 @@ casper.test.begin('processQueue', function (test) {
             return {
                 stdout: { on:function () {}},
                 stderr: { on:function () {}},
-                on: function (param) { }
+                on: function () { }
             };
         },
         os = {freemem: function() { return 100; }};
@@ -75,24 +75,24 @@ casper.test.begin('processQueue', function (test) {
 
     test.assertEquals(pool.processQueue(), undefined);
     test.assertEquals(pool.queue, []);
-    
+
     pool.queue = [{data: {}, options: {}}];
     pool.size = 0;
     pool.processQueue();
     test.assertEquals(pool.queue, [{data: {}, options: {}}], 'check the queue is the same when the size is lower than the elements in queue');
-    
+
     pool.queue = [{data: {}, options: {}}];
     pool.size = 1;
     pool.memoryThreshold = 10;
     pool.processQueue();
     test.assertEquals(pool.queue, [], 'check the memory threshold is not reached');
-    
+
     pool.queue = [{options: {}}];
     pool.size = 10;
     pool.memoryThreshold = 10;
     pool.processQueue();
     test.assertEquals(pool.queue, [], 'check the queue item is invalid');
-    
+
     spawn = function() {
         return {
             stdout: { on:function () {}},
@@ -101,7 +101,7 @@ casper.test.begin('processQueue', function (test) {
         };
     };
     pool = new Pool(spawn, os);
-    pool.queue = [{data: {}, options: { exit: function () { test.done() }}}];
+    pool.queue = [{data: {}, options: { exit: function () { test.done(); }}}];
     pool.size = 10;
     pool.memoryThreshold = 10;
     pool.processQueue();

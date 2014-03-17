@@ -43,7 +43,7 @@ casper.on('remote.message', function (msg) {
 
 var lastMessage, oldLog = console.log;
 console.log = function (message) {
-	lastMessage = message;
+    lastMessage = message;
     oldLog.apply(console, arguments);
 };
 
@@ -1510,26 +1510,26 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
     });
 
-	casper.test.begin('Test #31', function (test) {
-	    var PhantomParser = require(srcdir + '/parser/phantom'),
-	        utils         = {onlyUnique: function() { return true; }, normaliseUrl: function(url, baseUrl) { return url; }},
-	        phantom,
-	        resp,
-	        content = fs.read('test/assets/test_31.xml');
+    casper.test.begin('Test #31', function (test) {
+        var PhantomParser = require(srcdir + '/parser/phantom'),
+            utils         = {onlyUnique: function() { return true; }, normaliseUrl: function(url) { return url; }},
+            phantom,
+            resp,
+            content = fs.read('test/assets/test_31.xml');
 
-	    phantom = new PhantomParser(utils, require('webpage').create());
+        phantom = new PhantomParser(utils, require('webpage').create());
 
-	    phantom.setUpPage = function(page) {
-	        page.onInitialized = function() {
-	        };
-	    };
-	    resp = phantom.cloneWebPage({content: content, url: 'http://www.example.com'});
+        phantom.setUpPage = function(page) {
+            page.onInitialized = function() {
+            };
+        };
+        resp = phantom.cloneWebPage({content: content, url: 'http://www.example.com'});
 
-		phantom.parsePage(resp);
-		json = JSON.parse(lastMessage.substr(3));
-	    test.assertEquals(json.links.mixed, ['http://www.w3.org/2005/Atom','http://example.org/feed/','http://example.org/','http://example.org/2003/12/13/atom03','http://example.org/2003/12/13/atom03.html','http://example.org/2003/12/13/atom03/edit',null]);
-	    test.done();
-	});
+        phantom.parsePage(resp);
+        json = JSON.parse(lastMessage.substr(3));
+        test.assertEquals(json.links.mixed, ['http://www.w3.org/2005/Atom','http://example.org/feed/','http://example.org/','http://example.org/2003/12/13/atom03','http://example.org/2003/12/13/atom03.html','http://example.org/2003/12/13/atom03/edit',null]);
+        test.done();
+    });
 
     if (require('system').env.TRAVIS !== 'true') {
         casper.test.begin('Upload', function (test) {
@@ -1578,8 +1578,7 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 
     casper.test.begin('Keep Alive', function (test) {
         var phantom,
-            resp,
-            nickname = Date.now();
+            resp;
 
         var params  = [
             undefined,

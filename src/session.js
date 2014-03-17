@@ -49,12 +49,12 @@ var Session = function (client, fs, zlib, utils, conf, pool) {
 
         client.keys('*', function (err, replies) {
             replies.forEach(function (key) {
-                dump.redis[key] = new Array();
+                dump.redis[key] = [];
                 client.hgetall(key, function (err, obj) {
                     dump.redis[key].push(obj);
                 });
             });
-            
+
             dump = JSON.stringify(dump);
             zlib.gzip(dump, function(err, result) {
                 var filename = __dirname + '/../session.dmp';
@@ -64,7 +64,7 @@ var Session = function (client, fs, zlib, utils, conf, pool) {
             });
         });
     };
-    
+
     /**
      * Restore a dump into Redis DB.
      *
@@ -76,21 +76,23 @@ var Session = function (client, fs, zlib, utils, conf, pool) {
             data     = fs.readFileSync(filename);
 
         zlib.gunzip(data, function (err, result) {
-            if (err) throw err;
-            
+            if (err) {
+                throw err;
+            }
+
             var dump = JSON.parse(result.toString());
-            
+
             pool.size            = dump.pool.size;
             pool.queue           = dump.pool.queue;
             pool.memoryThreshold = dump.pool.memoryThreshold;
             pool.delay           = dump.pool.delay;
-            
+
             utils.loopEach(dump.redis, function (key, value) {
                 utils.loopEach(value, function (subkey, v) {
                     client.hset(key, subkey, v);
                 });
             });
-            
+
             callback(dump.conf);
         });
     };

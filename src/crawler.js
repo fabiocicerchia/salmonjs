@@ -28,6 +28,30 @@
  */
 
 /**
+ * The spawn's stdout callback.
+ *
+ * @method spawnStdout
+ * @param {Object} data The data sent back from the worker.
+ * @return undefined
+ */
+function spawnStdout(data) {
+    data = data.toString();
+    console.log(data.substr(0, data.length - 1));
+}
+
+/**
+ * The spawn's stderr callback.
+ *
+ * @method spawnStderr
+ * @param {Object} data The data sent back from the worker.
+ * @return undefined
+ */
+function spawnStderr(data) {
+    data = data.toString();
+    console.log(data.substr(0, data.length - 1).red);
+}
+
+/**
  * Crawler Module
  *
  * @module Crawler
@@ -339,10 +363,9 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @param {} reply
      * @param {} redisId
      * @param {} container
-     * @param {} spawn
      * @return undefined
      */
-    this.analiseRedisResponse = function (err, reply, redisId, container, spawn) {
+    this.analiseRedisResponse = function (err, reply, redisId, container) {
         var id               = redisId.substr(0, 8),
             winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']',
             newId;
@@ -445,7 +468,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         );
 
         client.hgetall(redisId, function (err, reply) {
-            return currentCrawler.analiseRedisResponse(err, reply, redisId, container, require('child_process').spawn);
+            return currentCrawler.analiseRedisResponse(err, reply, redisId, container);
         });
     };
 
@@ -481,7 +504,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.onStdOut = function (data) {
         var strPrint, winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
-        winston.info(
+        winston.debug(
             '%s Retrieved %d bytes.',
             winstonCrawlerId,
             data.toString().length
@@ -753,29 +776,5 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         return currentCrawler.checkRunningCrawlers('No links in the page');
     };
 };
-
-/**
- * The spawn's stdout callback.
- *
- * @method spawnStdout
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStdout(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1));
-}
-
-/**
- * The spawn's stderr callback.
- *
- * @method spawnStderr
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStderr(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1).red);
-}
 
 module.exports = Crawler;

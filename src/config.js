@@ -33,7 +33,7 @@ var config = {
         hostname: '127.0.0.1'
     },
     logging: {
-        level: 'info', // Possible values: info, warn, error.
+        level: 'debug', // Possible values: debug, info, warn, error.
         silent: false
     },
     parser: {

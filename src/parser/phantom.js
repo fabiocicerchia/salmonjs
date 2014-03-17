@@ -253,13 +253,10 @@ var PhantomParser = function (utils, page) {
      * Handle the request to change the current URL.
      *
      * @method onNavigationRequested
-     * @param {String}  url          The target URL of this navigation event
-     * @param {String}  type         Type of navigation: 'Undefined', 'LinkClicked', 'FormSubmitted', 'BackOrForward', 'Reload', 'FormResubmitted', 'Other'
-     * @param {Boolean} willNavigate Flag to determine whether the navigation will happen
-     * @param {Boolean} main         Flag to determine whether this event comes from the main frame
+     * @param {String} url The target URL of this navigation event
      * @return undefined
      */
-    this.onNavigationRequested = function (url, type, willNavigate, main) {
+    this.onNavigationRequested = function (url) {
         // TODO: What to do with reloads?
         if (url !== 'about:blank' && !followRedirects && url.indexOf(currentParser.url) === -1) {
             return currentParser.exit();
@@ -660,16 +657,16 @@ var PhantomParser = function (utils, page) {
             },
             content     = arguments[0],
             protocol    = '((https?|ftp):)?',
-            credentials = '([\w]+:\w+@)?',
-            hostname    = '(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])',
-            ip          = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])',
+            credentials = '([\\w]+:\\w+@)?',
+            hostname    = '(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])',
+            ip          = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])',
             port        = '(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?',
-            path_char   = '(([a-z0-9\\-_.!~*\'\(\):@&=+$,])|(%[0-9a-f][0-9a-f]))',
+            path_char   = '(([a-z0-9\\-_.!~*\'\\(\\):@&=+$,])|(%[0-9a-f][0-9a-f]))',
             path        = path_char + '*(?:;' + path_char + '*)*(?:/' + path_char + '*(?:;' + path_char + '*)*)*',
             querystring = '(\\?' + path_char + '*)?',
             hash        = '(#' + path_char + '*)?',
             regex       = new RegExp(
-                '(' + protocol + '//' + credentials + '(' + hostname + '|' + ip + ')' + '/' + path + querystring + hash + ')',
+                '(' + protocol + '//' + credentials + '(' + hostname + '|' + ip + ')' + port + '/' + path + querystring + hash + ')',
                 'igm'
             );
 

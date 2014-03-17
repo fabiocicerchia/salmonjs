@@ -31,9 +31,7 @@
 // In this way the people can embed it in their project and not just use it as a standalone tool.
 
 var SalmonJS = function (redis, argv) {
-    var utils   = require('./utils'),
-        pool    = require('./pool'),
-        IOC     = require('./ioc'),
+    var IOC     = require('./ioc'),
         ioc     = new IOC(),
         config  = require('../src/config'),
         winston = require('winston'),
