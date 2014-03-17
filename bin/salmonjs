@@ -28,4 +28,108 @@
  * SOFTWARE.
  */
 
-require('../src/main');
+var SalmonJS = require('../src/main'),
+    config   = require('../src/config'),
+    winston  = require('winston'),
+    redis    = require('redis'),
+    os       = require('os'),
+    crypto   = require('crypto'),
+    pkg      = require('../package.json'),
+    Insight  = require('insight'),
+    insight  = new Insight({
+        trackingCode:   'UA-439670-13',
+        packageName:    pkg.name,
+        packageVersion: pkg.version
+    }),
+    argv;
+
+winston.cli();
+winston.remove(winston.transports.Console);
+winston.add(
+    winston.transports.Console,
+    {
+        level: config.logging.level,
+        silent: config.logging.silent,
+        colorize: true,
+        timestamp: true
+    }
+);
+
+console.log('              __                         _____ _______'.yellow);
+console.log('.-----.---.-.|  |.--------.-----.-----._|     |     __|'.yellow);
+console.log('|__ --|  _  ||  ||        |  _  |     |       |__     |'.yellow);
+console.log('|_____|___._||__||__|__|__|_____|__|__|_______|_______|'.yellow);
+console.log('');
+console.log('salmonJS v0.4.0'.grey);
+console.log('Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
+console.log('');
+
+argv = require('optimist')
+    .usage('Web Crawler in Node.js to spider dynamically whole websites.\nUsage: $0')
+    .demand('uri')
+    .alias('c', 'credentials')
+    .alias('d', 'details')
+    .alias('f', 'follow')
+    .alias('p', 'proxy')
+    .alias('w', 'workers')
+    .alias('r', 'restore')
+    .alias('s', 'sanitise')
+    .describe('uri', 'The URI to be crawled')
+    .describe('c', 'Username and password for HTTP authentication (format "username:password")')
+    .describe('d', 'Store details for each page')
+    .describe('f', 'Follows redirects')
+    .describe('p', 'Proxy settings (format: "ip:port" or "username:password@ip:port")')
+    .describe('w', 'Maximum number of asynchronous workers')
+    .describe('r', 'Restore the previous interrupted session')
+    .describe('s', 'Sanitise any malformed HTML page')
+    .describe('disable-stats', 'Disable anonymous report usage stats')
+    .describe('help', 'Show the help')
+    .string('uri')
+    .boolean('d')
+    .boolean('f')
+    .boolean('disable-stats')
+    .boolean('s')
+    .default('d', false)
+    .default('f', false)
+    .default('disable-stats', false)
+    .default('w', 10)
+    .default('r', false)
+    .default('s', false)
+    .argv;
+
+function tracker() {
+    winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
+    var uniqId = os.type() + os.platform() + os.arch() + os.release() + process.versions.node + process.versions.v8 + '0.4.0';
+    uniqId = crypto.createHash('sha1').update(uniqId).digest('hex');
+    insight.track('cli', 'os',       os.type());
+    insight.track('cli', 'platform', os.platform());
+    insight.track('cli', 'arch',     os.arch());
+    insight.track('cli', 'release',  os.release());
+    insight.track('cli', 'node',     process.versions.node);
+    insight.track('cli', 'engine',   process.versions.v8);
+    insight.track('cli', 'salmonJS', '0.4.0');
+}
+
+var main = new SalmonJS(redis, argv);
+
+process.on('SIGTERM', main.handleSignals);
+process.on('SIGINT', main.handleSignals);
+process.on('SIGHUP', main.handleSignals);
+process.on('SIGBREAK', main.handleSignals);
+process.on('SIGBREAK', main.handleSignals);
+
+if (argv.help !== undefined || argv.uri === undefined) {
+    argv.showHelp();
+} else {
+    if (insight.optOut === undefined) {
+        insight.askPermission(undefined, main.start);
+    } else {
+        insight.optOut = argv['disable-stats'];
+        tracker();
+        if (argv.restore) {
+            main.restoreSession(main.start);
+        } else {
+            main.start();
+        }
+    }
+}

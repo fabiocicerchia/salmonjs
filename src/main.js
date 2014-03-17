@@ -27,243 +27,152 @@
  * SOFTWARE.
  */
 
-var IOC     = require('./ioc'),
-    config  = require('../src/config'),
-    winston = require('winston'),
-    fs      = require('fs'),
-    path    = require('path'),
-    crypto  = require('crypto'),
-    Insight = require('insight'),
-    os      = require('os'),
-    pkg     = require('../package.json'),
-    redis   = require('redis'),
-    spawn   = require('child_process').spawn,
-    zlib    = require('zlib'),
-    pool    = new (require('./pool'))(spawn, os),
-    client  = redis.createClient(config.redis.port, config.redis.hostname),
-    argv;
+// TODO: Convert this to be an interface, so ut'll be possible to call is with some params and launch the crawler.
+// In this way the people can embed it in their project and not just use it as a standalone tool.
 
-require('path');
-require('colors');
+var SalmonJS = function (redis, argv) {
+    var utils   = require('./utils'),
+        pool    = require('./pool'),
+        IOC     = require('./ioc'),
+        ioc     = new IOC(),
+        config  = require('../src/config'),
+        winston = require('winston'),
+        fs      = require('fs'),
+        path    = require('path'),
+        crypto  = require('crypto'),
+        client  = redis.createClient(config.redis.port, config.redis.hostname),
+        os      = require('os'),
+        spawn   = require('child_process').spawn,
+        zlib    = require('zlib'),
+        pool    = new (require('./pool'))(spawn, os);
 
-var insight = new Insight({
-    trackingCode:   'UA-439670-13',
-    packageName:    pkg.name,
-    packageVersion: pkg.version
-});
+    ioc.add('client',    client);
+    ioc.add('config',    config);
+    ioc.add('crypto',    crypto);
+    ioc.add('dirName',   __dirname);
+    ioc.add('fs',        fs);
+    ioc.add('fsWrapper', ioc.get(require('../src/fs')));
+    ioc.add('glob',      require('./glob'));
+    ioc.add('mainDir',   __dirname + '/..');
+    ioc.add('optimist',  require('optimist'));
+    ioc.add('pool',      pool);
+    ioc.add('spawn',     spawn);
+    ioc.add('test',      ioc.get(require('../src/test')));
+    var utils = ioc.get(require('../src/utils'));
+    ioc.add('utils',     utils);
+    ioc.add('winston',   winston);
 
-var ioc = new IOC();
-ioc.add('config',    config);
-ioc.add('insight',   insight);
-ioc.add('spawn',     spawn);
-ioc.add('crypto',    crypto);
-ioc.add('redis',     redis);
-ioc.add('client',    client);
-ioc.add('winston',   winston);
-ioc.add('optimist',  require('optimist'));
-ioc.add('fs',        fs);
-ioc.add('glob',      require('./glob'));
-ioc.add('pool',      pool);
-var utils = ioc.get(require('../src/utils'));
-ioc.add('utils',     utils);
-ioc.add('dirName',   __dirname);
-ioc.add('mainDir',   __dirname + '/..');
-ioc.add('fsWrapper', ioc.get(require('../src/fs')));
-ioc.add('test',      ioc.get(require('../src/test')));
-
-/**
- * Redis error handler
- */
-client.on('error', function (err) {
-    winston.error('REDIS - %s'.red, err.toString());
-    process.exit(1);
-});
-
-winston.cli();
-winston.remove(winston.transports.Console);
-winston.add(
-    winston.transports.Console,
-    {
-        level: config.logging.level,
-        silent: config.logging.silent,
-        colorize: true,
-        timestamp: true
-    }
-);
-
-function handleSignals () {
-    winston.info('Gracefully shutting down');
-
-    var Session = require('./session'),
-        session = new Session(client, fs, zlib, utils, argv, pool);
-
-    client.hset('aaa', 'bbb', 1);
-    client.hset('aaa', 'ccc', 2);
-    winston.info('Dumping the session...');
-    session.dump(function () {
-        winston.info('Exiting...');
-        process.exit();
+    /**
+     * Redis error handler
+     */
+    client.on('error', function (err) {
+        winston.error('REDIS - %s'.red, err.toString());
+        process.exit(1);
     });
-}
 
-function restoreSession (callback) {
-    var Session = require('./session'),
-        session = new Session(client, fs, zlib, utils, argv, pool);
+    this.handleSignals = function () {
+        winston.info('Gracefully shutting down');
 
-    session.restore(function (conf) {
-        utils.loopEach(conf, function (key, value) {
-            argv[key] = value;
+        var Session = require('./session'),
+            session = new Session(client, fs, zlib, utils, argv, pool);
+
+        winston.info('Dumping the session...');
+        session.dump(function () {
+            winston.info('Exiting...');
+            process.exit();
         });
+    };
 
-        callback();
-    });
-}
+    this.restoreSession = function (callback) {
+        var Session = require('./session'),
+            session = new Session(client, fs, zlib, utils, argv, pool);
 
-process.on('SIGTERM', handleSignals);
-process.on('SIGINT', handleSignals);
-process.on('SIGHUP', handleSignals);
-process.on('SIGBREAK', handleSignals);
-process.on('SIGBREAK', handleSignals);
+        session.restore(function (conf) {
+            utils.loopEach(conf, function (key, value) {
+                argv[key] = value;
+            });
 
-console.log('              __                         _____ _______'.yellow);
-console.log('.-----.---.-.|  |.--------.-----.-----._|     |     __|'.yellow);
-console.log('|__ --|  _  ||  ||        |  _  |     |       |__     |'.yellow);
-console.log('|_____|___._||__||__|__|__|_____|__|__|_______|_______|'.yellow);
-console.log('');
-console.log('salmonJS v0.4.0'.grey);
-console.log('Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
-console.log('');
+            callback();
+        });
+    };
 
-argv = require('optimist')
-    .usage('Web Crawler in Node.js to spider dynamically whole websites.\nUsage: $0')
-    .demand('uri')
-    .alias('c', 'credentials')
-    .alias('d', 'details')
-    .alias('f', 'follow')
-    .alias('p', 'proxy')
-    .alias('w', 'workers')
-    .alias('r', 'restore')
-    .describe('uri', 'The URI to be crawled')
-    .describe('c', 'Username and password for HTTP authentication (format "username:password")')
-    .describe('d', 'Store details for each page')
-    .describe('f', 'Follows redirects')
-    .describe('p', 'Proxy settings (format: "ip:port" or "username:password@ip:port")')
-    .describe('w', 'Maximum number of asynchronous workers')
-    .describe('r', 'Restore the previous interrupted session')
-    .describe('disable-stats', 'Disable anonymous report usage stats')
-    .describe('help', 'Show the help')
-    .string('uri')
-    .boolean('d')
-    .boolean('f')
-    .boolean('disable-stats')
-    .default('d', false)
-    .default('f', false)
-    .default('w', 10)
-    .default('disable-stats', false)
-    .default('r', false)
-    .argv;
+    /**
+     * The spawn's stdout callback.
+     *
+     * @method spawnStdout
+     * @param {Object} data The data sent back from the worker.
+     * @return undefined
+     */
+    this.spawnStdout = function(data) {
+        data = data.toString();
+        console.log(data.substr(0, data.length - 1));
+    };
 
-/**
- * The spawn's stdout callback.
- *
- * @method spawnStdout
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStdout(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1));
-}
+    /**
+     * The spawn's stderr callback.
+     *
+     * @method spawnStderr
+     * @param {Object} data The data sent back from the worker.
+     * @return undefined
+     */
+    this.spawnStderr = function(data) {
+        data = data.toString();
+        console.log(data.substr(0, data.length - 1).red);
+    };
 
-/**
- * The spawn's stderr callback.
- *
- * @method spawnStderr
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStderr(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1).red);
-}
+    this.resolveURI = function (uri) {
+        uri = path.resolve(uri);
+        if (fs.existsSync(uri)) {
+            uri = 'file://' + encodeURI(uri);
+        } else {
+            uri = argv.uri;
 
-function resolveURI(uri) {
-    uri = path.resolve(uri);
-    if (fs.existsSync(uri)) {
-        uri = 'file://' + encodeURI(uri);
-    } else {
-        uri = argv.uri;
-
-        if (uri.indexOf('://') < 0) {
-            uri = 'http://' + uri;
-        }
-    }
-
-    return uri;
-}
-
-function tracker() {
-    winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
-    var uniqId = os.type() + os.platform() + os.arch() + os.release() + process.versions.node + process.versions.v8 + '0.4.0';
-    uniqId = crypto.createHash('sha1').update(uniqId).digest('hex');
-    insight.track('cli', 'os',       os.type());
-    insight.track('cli', 'platform', os.platform());
-    insight.track('cli', 'arch',     os.arch());
-    insight.track('cli', 'release',  os.release());
-    insight.track('cli', 'node',     process.versions.node);
-    insight.track('cli', 'engine',   process.versions.v8);
-    insight.track('cli', 'salmonJS', '0.4.0');
-}
-
-function start() {
-    var uri = resolveURI(argv.uri);
-
-    tracker();
-    winston.info('Start processing "' + uri.green + '"...');
-
-    client.send_command('FLUSHDB', []);
-
-    var username, password;
-    username = argv.credentials !== undefined ? argv.credentials.replace(/^([^:]+):.+/, '$1') : '';
-    password = argv.credentials !== undefined ? argv.credentials.replace(/^[^:]+:(.+)/, '$1') : '';
-
-    pool.size = argv.workers;
-    pool.addToQueue(
-        {
-            timeStart:       Date.now(),
-            idRequest:       Date.now(),
-            username:        username,
-            password:        password,
-            url:             uri,
-            type:            'GET',
-            data:            {},
-            evt:             '',
-            xPath:           '',
-            storeDetails:    argv.details,
-            followRedirects: argv.follow,
-            proxy:           argv.proxy
-        },
-        {
-            stdout: spawnStdout,
-            stderr: spawnStderr,
-            exit:   function () {
-                process.exit();
+            if (uri.indexOf('://') < 0) {
+                uri = 'http://' + uri;
             }
         }
-    );
-}
 
-if (argv.help !== undefined || argv.uri === undefined) {
-    argv.showHelp();
-} else {
-    if (insight.optOut === undefined) {
-        insight.askPermission(undefined, start);
-    } else {
-        insight.optOut = argv['disable-stats'];
-        if (argv.restore) {
-            restoreSession(start);
-        } else {
-            start();
-        }
-    }
-}
+        return uri;
+    };
+
+    this.start = function() {
+        var uri = this.resolveURI(argv.uri);
+
+        winston.info('Start processing "' + uri.green + '"...');
+
+        client.send_command('FLUSHDB', []);
+
+        var username, password;
+        username = argv.credentials !== undefined ? argv.credentials.replace(/^([^:]+):.+/, '$1') : '';
+        password = argv.credentials !== undefined ? argv.credentials.replace(/^[^:]+:(.+)/, '$1') : '';
+
+        pool.size = argv.workers;
+        // TODO: Pass all the argv to pool and to parser. way easier and shorter!
+        pool.addToQueue(
+            {
+                timeStart:       Date.now(),
+                idRequest:       Date.now(),
+                username:        username,
+                password:        password,
+                url:             uri,
+                type:            'GET',
+                data:            {},
+                evt:             '',
+                xPath:           '',
+                storeDetails:    argv.details,
+                followRedirects: argv.follow,
+                proxy:           argv.proxy,
+                sanitise:        argv.sanitise
+            },
+            {
+                stdout: this.spawnStdout,
+                stderr: this.spawnStderr,
+                exit:   function () {
+                    process.exit();
+                }
+            }
+        );
+    };
+};
+
+module.exports = SalmonJS;
