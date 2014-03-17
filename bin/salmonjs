@@ -29,7 +29,6 @@
  */
 
 var SalmonJS = require('../src/main'),
-    config   = require('../src/config'),
     winston  = require('winston'),
     redis    = require('redis'),
     os       = require('os'),
@@ -42,18 +41,6 @@ var SalmonJS = require('../src/main'),
         packageVersion: pkg.version
     }),
     argv;
-
-winston.cli();
-winston.remove(winston.transports.Console);
-winston.add(
-    winston.transports.Console,
-    {
-        level: config.logging.level,
-        silent: config.logging.silent,
-        colorize: true,
-        timestamp: true
-    }
-);
 
 console.log('              __                         _____ _______'.yellow);
 console.log('.-----.---.-.|  |.--------.-----.-----._|     |     __|'.yellow);
@@ -84,6 +71,20 @@ argv = require('optimist')
     .describe('version', 'Display the current version')
     .describe('help', 'Show the help')
     .argv;
+
+var logLevels = [ 'error', 'warn', 'info', 'debug' ];
+var logLevel  = argv.v === undefined ? 2 : (typeof argv.v === 'object' ? argv.v.length : argv.v.length + 1);
+winston.cli();
+winston.remove(winston.transports.Console);
+winston.add(
+    winston.transports.Console,
+    {
+        level: logLevels[(logLevel > logLevels.length) ? logLevels.length - 1 : logLevel],
+        silent: argv.quiet,
+        colorize: true,
+        timestamp: true
+    }
+);
 
 function tracker() {
     winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
