@@ -76,9 +76,9 @@ var SalmonJS = function (redis, argv) {
         var Session = require('./session'),
             session = new Session(client, fs, zlib, utils, argv, pool);
 
-        winston.info('Dumping the session...');
+        winston.debug('Dumping the session...');
         session.dump(function () {
-            winston.info('Exiting...');
+            winston.debug('Exiting...');
             process.exit();
         });
     };

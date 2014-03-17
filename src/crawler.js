@@ -313,7 +313,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         var winstonCrawlerId = '[' + this.idUri.cyan + '-' + this.idCrawler.magenta + ']';
 
-        winston.info('Waiting %s seconds to be polite', this.politeInterval);
+        winston.debug('Waiting %s seconds to be polite', this.politeInterval);
         utils.sleep(this.politeInterval);
 
         winston.info(
@@ -353,7 +353,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         // reply is null when the key is missing
         if (reply !== null) {
-            winston.info(
+            winston.debug(
                 '%s' + ' Match found in Redis for "%s" (event: "%s" - XPath: "%s"). Skip'.yellow,
                 winstonCrawlerId,
                 container.url,
@@ -367,7 +367,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         newId = utils.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath).substr(0, 8);
 
-        winston.info(
+        winston.debug(
             '%s' + ' Match not found in Redis. Continue (%s)'.grey,
             winstonCrawlerId,
             newId
@@ -435,7 +435,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         id      = redisId.substr(0, 8);
 
         winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
-        winston.info(
+        winston.debug(
             '%s Checking %s "%s" - %s on %s',
             winstonCrawlerId,
             container.type.blue,
@@ -490,7 +490,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         strPrint = data.toString().replace(/###.+/, '').replace(/[\r\n]/g, '');
         if (strPrint !== '') {
-            winston.info(
+            winston.debug(
                 'Output from %s: %s'.grey,
                 config.parser.interface.toUpperCase(),
                 strPrint
@@ -508,7 +508,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.onStdErr = function (data) {
         var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
-        winston.info('%s Retrieved response', winstonCrawlerId);
+        winston.debug('%s Retrieved response', winstonCrawlerId);
         winston.error(data.toString().red);
 
         currentCrawler.handleError();
@@ -579,7 +579,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.onExit = function (code) {
         var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
-        winston.info(
+        winston.debug(
             '%s Execution terminated with status: %s',
             winstonCrawlerId,
             code === null ? 'null' : code
@@ -637,7 +637,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         try {
             result = JSON.parse(content.replace(/\n/g, '').replace(/.*###/m, ''));
 
-            winston.info('%s Response ready', winstonCrawlerId);
+            winston.debug('%s Response ready', winstonCrawlerId);
         } catch (err) {
             winston.error('%s %s', winstonCrawlerId, err.toString().red);
             this.handleError();
@@ -659,7 +659,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
                             newId = utils.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + elementValue).substr(0, 8);
 
-                            winston.info(
+                            winston.debug(
                                 '%s Firing %s on "%s" (%s)...',
                                 winstonCrawlerId,
                                 event.toUpperCase().blue,
