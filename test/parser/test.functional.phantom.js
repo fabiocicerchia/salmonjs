@@ -56,20 +56,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_01.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_01.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -93,20 +93,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_02.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_02.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -132,20 +132,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_03.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_03.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -171,20 +171,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_04.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_04.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -210,20 +210,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_05.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_05.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -249,20 +249,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_06.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_06.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -289,20 +289,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_07.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_07.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -328,20 +328,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_08.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_08.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -367,20 +367,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_09.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_09.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -406,20 +406,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_10.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_10.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -445,20 +445,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_11.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_11.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -484,20 +484,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 //        var phantom,
 //            resp;
 //
-//        var params  = [
-//            undefined,
-//            undefined,
-//            undefined,
-//            undefined,
-//            undefined,
-//            'file://' + rootdir + '/test/assets/test_12.html',
-//            'GET',
-//            { POST: {}, CONFIRM: {} },
-//            undefined,
-//            undefined,
-//            false,
-//            false
-//        ];
+//        var params  = {
+//            idCrawler:       undefined,
+//            execId:          undefined,
+//            idRequest:       undefined,
+//            username:        undefined,
+//            password:        undefined,
+//            url:             'file://' + rootdir + '/test/assets/test_12.html',
+//            type:            'GET',
+//            data:            { POST: {}, CONFIRM: {} },
+//            evt:             undefined,
+//            xPath:           undefined,
+//            storeDetails:    false,
+//            followRedirects: false
+//        };
 //        phantom = require('child_process').spawn('phantomjs', [
 //            //'--debug=true',
 //            srcdir + '/parser/phantom.js',
@@ -521,20 +521,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 //        var phantom,
 //            resp;
 //
-//        var params  = [
-//            undefined,
-//            undefined,
-//            undefined,
-//            undefined,
-//            undefined,
-//            'file://' + rootdir + '/test/assets/test_13.html',
-//            'GET',
-//            { POST: {}, CONFIRM: {} },
-//            undefined,
-//            undefined,
-//            false,
-//            false
-//        ];
+//        var params  = {
+//            idCrawler:       undefined,
+//            execId:          undefined,
+//            idRequest:       undefined,
+//            username:        undefined,
+//            password:        undefined,
+//            url:             'file://' + rootdir + '/test/assets/test_13.html',
+//            type:            'GET',
+//            data:            { POST: {}, CONFIRM: {} },
+//            evt:             undefined,
+//            xPath:           undefined,
+//            storeDetails:    false,
+//            followRedirects: false
+//        };
 //        phantom = require('child_process').spawn('phantomjs', [
 //            //'--debug=true',
 //            srcdir + '/parser/phantom.js',
@@ -558,20 +558,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_14.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_14.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -598,20 +598,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_15.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_15.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -639,20 +639,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_16.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_16.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -678,20 +678,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_17.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_17.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -717,20 +717,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_18.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_18.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -756,20 +756,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_19.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_19.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -793,20 +793,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_20.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_20.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -833,20 +833,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_21.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_21.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -873,20 +873,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_22.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_22.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -914,20 +914,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_23.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_23.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -955,20 +955,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_24.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_24.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -996,20 +996,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_25.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_25.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1037,20 +1037,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_25.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_25.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1078,20 +1078,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_25.html',
-            'GET',
-            { POST: {}, CONFIRM: {'whatever': false} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_25.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {'whatever': false} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1119,20 +1119,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_26.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_26.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1159,20 +1159,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_26.html',
-            'GET',
-            { POST: {}, CONFIRM: { 'whatever': false } },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_26.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: { 'whatever': false } },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1199,20 +1199,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_27.html',
-            'GET',
-            { POST: {}, CONFIRM: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_27.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1239,20 +1239,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_27.html',
-            'GET',
-            { POST: {}, CONFIRM: { 'whatever': true, 'something': false} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_27.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: { 'whatever': true, 'something': false} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1279,20 +1279,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_27.html',
-            'GET',
-            { POST: {}, CONFIRM: { 'whatever': false, 'something': true} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_27.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: { 'whatever': false, 'something': true} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1319,20 +1319,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_27.html',
-            'GET',
-            { POST: {}, CONFIRM: { 'whatever': false, 'something': false} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_27.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: { 'whatever': false, 'something': false} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1359,20 +1359,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_28.html',
-            'GET',
-            { POST: {}, CONFIRM: {}, PROMPT: { 'whatever': 'aaa'} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_28.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {}, PROMPT: { 'whatever': 'aaa'} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1399,20 +1399,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_28.html',
-            'GET',
-            { POST: {}, CONFIRM: {}, PROMPT: { 'whatever': ''} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_28.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {}, PROMPT: { 'whatever': ''} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1439,20 +1439,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_29.html',
-            'GET',
-            { POST: {}, HEADERS: {}, CONFIRM: {}, PROMPT: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_29.html',
+            type:            'GET',
+            data:            { POST: {}, HEADERS: {}, CONFIRM: {}, PROMPT: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1476,20 +1476,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'file://' + rootdir + '/test/assets/test_30.html',
-            'GET',
-            { POST: {}, COOKIE: { test: 1}, HEADERS: {}, CONFIRM: {}, PROMPT: {} },
-            undefined,
-            undefined,
-            false,
-            false
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_30.html',
+            type:            'GET',
+            data:            { POST: {}, COOKIE: { test: 1}, HEADERS: {}, CONFIRM: {}, PROMPT: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1537,20 +1537,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
                 resp,
                 nickname = Date.now();
 
-            var params  = [
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                'http://imagebin.org/index.php?page=add',
-                'POST',
-                { POST: {image: '@' + rootdir + '/test/assets/pixel.gif', nickname: nickname, disclaimer_agree: 'Y', title: '', description: '', Submit: 'Submit', mode: 'add'} },
-                undefined,
-                undefined,
-                false,
-                true
-            ];
+            var params  = {
+                idCrawler:       undefined,
+                execId:          undefined,
+                idRequest:       undefined,
+                username:        undefined,
+                password:        undefined,
+                url:             'http://imagebin.org/index.php?page=add',
+                type:            'POST',
+                data:            { POST: {image: '@' + rootdir + '/test/assets/pixel.gif', nickname: nickname, disclaimer_agree: 'Y', title: '', description: '', Submit: 'Submit', mode: 'add'} },
+                evt:             undefined,
+                xPath:           undefined,
+                storeDetails:    false,
+                followRedirects: true
+            };
             phantom = require('child_process').spawn('phantomjs', [
                 //'--debug=true',
                 srcdir + '/parser/phantom.js',
@@ -1580,20 +1580,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         var phantom,
             resp;
 
-        var params  = [
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'http://www.example.com',
-            'GET',
-            {},
-            undefined,
-            undefined,
-            false,
-            true
-        ];
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'http://www.example.com',
+            type:            'GET',
+            data:            {},
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: true
+        };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
             srcdir + '/parser/phantom.js',
@@ -1627,20 +1627,20 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 //            resp,
 //            nickname = Date.now();
 //
-//        var params  = [
-//            undefined,
-//            undefined,
-//            undefined,
-//            undefined,
-//            undefined,
-//            'http://www.fabiocicerchia.it',
-//            'GET',
-//            {},
-//            undefined,
-//            undefined,
-//            false,
-//            true
-//        ];
+//        var params  = {
+//            idCrawler:       undefined,
+//            execId:          undefined,
+//            idRequest:       undefined,
+//            username:        undefined,
+//            password:        undefined,
+//            url:             'http://www.fabiocicerchia.it',
+//            type:            'GET',
+//            data:            {},
+//            evt:             undefined,
+//            xPath:           undefined,
+//            storeDetails:    false,
+//            followRedirects: true
+//        };
 //        phantom = require('child_process').spawn('phantomjs', [
 //            //'--debug=true',
 //            srcdir + '/parser/phantom.js',

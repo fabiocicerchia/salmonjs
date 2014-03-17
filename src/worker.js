@@ -39,12 +39,13 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         storeDetails    = args[5],
         followRedirects = args[6],
         proxy           = args[7],
-        url             = args[8],
-        type            = args[9],
-        container       = args[10],
-        evt             = args[11],
-        xPath           = args[12],
-        poolSettings    = JSON.parse(args[13]),
+        sanitise        = args[8],
+        url             = args[9],
+        type            = args[10],
+        container       = args[11],
+        evt             = args[12],
+        xPath           = args[13],
+        poolSettings    = JSON.parse(args[14]),
         config          = require('../src/config'),
         Crawler         = require('../src/crawler'),
         Pool            = require('../src/pool'),
@@ -88,6 +89,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
     crawler.storeDetails    = storeDetails;
     crawler.followRedirects = followRedirects;
     crawler.proxy           = proxy;
+    crawler.sanitise        = sanitise;
     var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
     crawler.run(url, type, data, evt, xPath);
 }

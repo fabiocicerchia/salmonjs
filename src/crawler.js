@@ -220,6 +220,15 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.politeInterval = 1000;
 
     /**
+     * TBD
+     *
+     * @property sanitise
+     * @type {Boolean}
+     * @default false
+     */
+    this.sanitise = false;
+
+    /**
      * Current instance.
      *
      * @property currentCrawler
@@ -265,21 +274,22 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.execPhantomjs = function () {
         var idRequest = utils.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
             phantom,
-            params  = [
-                this.idUri,
-                this.timeStart,
-                idRequest,
-                this.username,
-                this.password,
-                this.url,
-                this.type,
-                this.data,
-                this.evt,
-                this.xPath,
-                this.storeDetails,
-                this.followRedirects,
-                this.proxy
-            ],
+            params  = {
+                idCrawler:       this.idUri,
+                execId:          this.timeStart,
+                idRequest:       idRequest,
+                username:        this.username,
+                password:        this.password,
+                url:             this.url,
+                type:            this.type,
+                data:            this.data,
+                evt:             this.evt,
+                xPath:           this.xPath,
+                storeDetails:    this.storeDetails,
+                followRedirects: this.followRedirects,
+                proxy:           this.proxy,
+                sanitise:        this.sanitise
+            },
             auth,
             host,
             settings = [];

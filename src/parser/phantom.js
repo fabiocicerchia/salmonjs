@@ -33,19 +33,7 @@ var Parser          = require('../parser'),
     system          = require('system'),
     args            = system.args,
     testing         = args.join(' ').indexOf('casperjs --cli test') !== -1,
-    input           = !testing ? JSON.parse(args[1]) : [],
-    idCrawler       = input[0],
-    execId          = input[1],
-    idRequest       = input[2],
-    username        = input[3],
-    password        = input[4],
-    url             = input[5],
-    type            = input[6],
-    data            = input[7],
-    evt             = input[8],
-    xPath           = input[9],
-    storeDetails    = input[10] === 'true',
-    followRedirects = input[11] === 'true',
+    settings        = !testing ? JSON.parse(args[1]) : {},
     page            = require('webpage').create(),
     utils           = new (require('../utils'))();
 
@@ -64,6 +52,15 @@ var PhantomParser = function (utils, page) {
      * @default {Object}
      */
     this.page = page;
+
+    /**
+     * Sanitised HTML content.
+     *
+     * @property sanitisedHtml
+     * @type {String}
+     * @default ""
+     */
+    this.sanitisedHtml = '';
 
     /**
      * Current instance.
@@ -106,8 +103,8 @@ var PhantomParser = function (utils, page) {
         customHeaders['Accept-Encoding'] = 'identity'; // TODO: Replace with 'gzip,deflate'
         customHeaders.Connection = 'keep-alive';
 
-        if (username !== null && password !== null) {
-            customHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+        if (settings.username !== null && settings.password !== null) {
+            customHeaders.Authorization = 'Basic ' + btoa(settings.username + ':' + settings.password);
         }
 
         page.customHeaders = customHeaders;
@@ -258,7 +255,7 @@ var PhantomParser = function (utils, page) {
      */
     this.onNavigationRequested = function (url) {
         // TODO: What to do with reloads?
-        if (url !== 'about:blank' && !followRedirects && url.indexOf(currentParser.url) === -1) {
+        if (url !== 'about:blank' && !settings.followRedirects && url.indexOf(currentParser.url) === -1) {
             return currentParser.exit();
         }
 
@@ -305,7 +302,7 @@ var PhantomParser = function (utils, page) {
         var response;
 
         response = {
-            idCrawler: idCrawler,
+            idCrawler: settings.idCrawler,
             links:     currentParser.links,
             report:    currentParser.report
         };
@@ -418,8 +415,8 @@ var PhantomParser = function (utils, page) {
 
         // possible entrypoints: parseGet, putPageInStack.
         currentParser.report.confirms.push(msg);
-        if (data !== undefined && data.CONFIRM !== undefined && data.CONFIRM[msg] !== undefined) {
-            retVal = data.CONFIRM[msg];
+        if (settings.data !== undefined && settings.data.CONFIRM !== undefined && settings.data.CONFIRM[msg] !== undefined) {
+            retVal = settings.data.CONFIRM[msg];
         }
 
         // `true` === pressing the "OK" button, `false` === pressing the "Cancel" button
@@ -438,8 +435,8 @@ var PhantomParser = function (utils, page) {
         currentParser.report.prompts.push({msg: msg, defaultVal: defaultVal});
 
         // possible entrypoints: parseGet, putPageInStack.
-        if (data !== undefined && data.PROMPT !== undefined && data.PROMPT[msg] !== undefined) {
-            return data.PROMPT[msg];
+        if (settings.data !== undefined && settings.data.PROMPT !== undefined && settings.data.PROMPT[msg] !== undefined) {
+            return settings.data.PROMPT[msg];
         }
 
         return defaultVal;
@@ -466,6 +463,41 @@ var PhantomParser = function (utils, page) {
      * @return undefined
      */
     this.onLoadFinished = function () {
+        if (settings.sanitise) {
+            var fs      = require('fs'),
+                tmp_fn  = fs.workingDirectory + '/file_' + ((new Date).getTime()) + '.html',
+                spawn   = require('child_process').spawn,
+                args    = [ fs.workingDirectory + '/src/tidy.js', tmp_fn ],
+                process;
+
+            fs.write(tmp_fn, page.content, 0777);
+            process = spawn('node', args);
+
+            process.stdout.on('data', function(data) {
+                currentParser.sanitisedHtml += data.toString();
+            });
+
+            process.stderr.on('data', function(data) {
+                console.log(data.toString());
+                return currentParser.exit();
+            });
+
+            process.on('exit', function(code) {
+                if (page.content !== currentParser.sanitisedHtml) {
+                    console.log('HTML sanitised');
+                }
+                fs.remove(tmp_fn);
+
+                //TODO: What to do if it exits before receive data?
+                currentParser.page.setContent(currentParser.sanitisedHtml, currentParser.url);
+                currentParser.evaluateAndParse();
+            });
+        } else {
+            currentParser.evaluateAndParse();
+        }
+    };
+
+    this.evaluateAndParse = function () {
         var step;
 
         // ReExecuteJsEvents
@@ -519,9 +551,9 @@ var PhantomParser = function (utils, page) {
         });
 
         if (page.content.indexOf('<html') !== -1) {
-            if (storeDetails) {
-                fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
-                page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
+            if (settings.storeDetails) {
+                fs.makeDirectory(fs.workingDirectory + '/report/' + settings.execId + '/');
+                page.render(fs.workingDirectory + '/report/' + settings.execId + '/' + settings.idRequest + '.png');
             }
 
             links = page.evaluate(currentParser.onEvaluate, currentParser.tags);
@@ -678,7 +710,7 @@ var PhantomParser = function (utils, page) {
 
 PhantomParser.prototype = new Parser();
 if (args.join(' ').indexOf('casperjs --cli test') === -1) {
-    new PhantomParser(utils, page).parse(url, type, data, evt, xPath);
+    new PhantomParser(utils, page).parse(settings.url, settings.type, settings.data, settings.evt, settings.xPath);
 } else {
     module.exports = PhantomParser;
 }
