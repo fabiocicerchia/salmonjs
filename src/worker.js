@@ -46,7 +46,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         evt             = args[12],
         xPath           = args[13],
         poolSettings    = JSON.parse(args[14]),
-        config          = require('../src/config'),
+        config          = JSON.parse(args[15]),
         Crawler         = require('../src/crawler'),
         Pool            = require('../src/pool'),
         winston         = require('winston'),
@@ -73,8 +73,8 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
             timestamp: true
         }
     );
-    
-    var pool = new Pool(spawn, os);
+
+    var pool = new Pool(spawn, os, config);
     // TODO: add method to set this stuff
     pool.size            = poolSettings.size;
     pool.queue           = poolSettings.queue;

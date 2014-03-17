@@ -27,15 +27,14 @@
  * SOFTWARE.
  */
 
-var Parser          = require('../parser'),
-    config          = require('../config'),
-    fs              = require('fs'),
-    system          = require('system'),
-    args            = system.args,
-    testing         = args.join(' ').indexOf('casperjs --cli test') !== -1,
-    settings        = !testing ? JSON.parse(args[1]) : {},
-    page            = require('webpage').create(),
-    utils           = new (require('../utils'))();
+var Parser   = require('../parser'),
+    fs       = require('fs'),
+    system   = require('system'),
+    args     = system.args,
+    testing  = args.join(' ').indexOf('casperjs --cli test') !== -1,
+    settings = !testing ? JSON.parse(args[1]) : {},
+    page     = require('webpage').create(),
+    utils    = new (require('../utils'))();
 
 /**
  * PhantomParser Class.
@@ -43,7 +42,7 @@ var Parser          = require('../parser'),
  * @class PhantomParser
  * @extends Parser
  */
-var PhantomParser = function (utils, page) {
+var PhantomParser = function (utils, page, config) {
     /**
      * The WebPage element.
      *
@@ -710,7 +709,7 @@ var PhantomParser = function (utils, page) {
 
 PhantomParser.prototype = new Parser();
 if (args.join(' ').indexOf('casperjs --cli test') === -1) {
-    new PhantomParser(utils, page).parse(settings.url, settings.type, settings.data, settings.evt, settings.xPath);
+    new PhantomParser(utils, page, settings.config).parse(settings.url, settings.type, settings.data, settings.evt, settings.xPath);
 } else {
     module.exports = PhantomParser;
 }

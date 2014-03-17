@@ -31,18 +31,38 @@
 // In this way the people can embed it in their project and not just use it as a standalone tool.
 
 var SalmonJS = function (redis, argv) {
-    var IOC     = require('./ioc'),
-        ioc     = new IOC(),
-        config  = require('../src/config'),
-        winston = require('winston'),
-        fs      = require('fs'),
-        path    = require('path'),
-        crypto  = require('crypto'),
-        client  = redis.createClient(config.redis.port, config.redis.hostname),
-        os      = require('os'),
-        spawn   = require('child_process').spawn,
-        zlib    = require('zlib'),
-        pool    = new (require('./pool'))(spawn, os);
+    var IOC       = require('./ioc'),
+        ioc       = new IOC(),
+        logLevels = [ 'error', 'warn', 'info', 'debug' ],
+        logLevel  = argv.v === undefined ? 2 : (typeof argv.v === 'object' ? argv.v.length : argv.v.length + 1),
+        config    = {
+            redis: {
+                port: argv.redis.split(':')[1],
+                hostname: argv.redis.split(':')[0]
+            },
+            logging: {
+                level: logLevels[(logLevel > logLevels.length) ? logLevels.length - 1 : logLevel], // Possible values: debug, info, warn, error.
+                silent: argv.quiet
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: argv.timeout // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: argv.attempts, // Number of tries before stop to execute the request.
+                delay: argv.interval // Delay between an attempt and another one in milliseconds.
+            }
+        },
+        winston   = require('winston'),
+        fs        = require('fs'),
+        path      = require('path'),
+        crypto    = require('crypto'),
+        client    = redis.createClient(config.redis.port, config.redis.hostname),
+        os        = require('os'),
+        spawn     = require('child_process').spawn,
+        zlib      = require('zlib'),
+        pool      = new (require('./pool'))(spawn, os, config);
 
     ioc.add('client',    client);
     ioc.add('config',    config);

@@ -32,7 +32,7 @@
  *
  * @module Pool
  */
-var Pool = function (spawn, os) {
+var Pool = function (spawn, os, config) {
     /**
      * Settings queue.
      *
@@ -155,7 +155,7 @@ var Pool = function (spawn, os) {
             data.timeStart, data.username, data.password, data.details,
             data.follow, data.proxy, data.sanitise, data.url, data.type,
             JSON.stringify(data.container), data.evt, data.xPath,
-            JSON.stringify(currentPool)
+            JSON.stringify(currentPool), JSON.stringify(config)
         ];
 
         childProcess = spawn('node', args, { detached: true });

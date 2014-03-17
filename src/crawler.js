@@ -288,7 +288,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 storeDetails:    this.storeDetails,
                 followRedirects: this.followRedirects,
                 proxy:           this.proxy,
-                sanitise:        this.sanitise
+                sanitise:        this.sanitise,
+                config:          config
             },
             auth,
             host,

@@ -68,7 +68,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -105,7 +126,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -144,7 +186,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -183,7 +246,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -222,7 +306,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -261,7 +366,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -301,7 +427,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -340,7 +487,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -379,7 +547,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -418,7 +607,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -457,7 +667,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -496,7 +727,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 //            evt:             undefined,
 //            xPath:           undefined,
 //            storeDetails:    false,
-//            followRedirects: false
+//            followRedirects: false,
+//            proxy:           '',
+//            sanitise:        false,
+//            config:          {
+//                redis: {
+//                    port: 16379,
+//                    hostname: '127.0.0.1'
+//                },
+//                logging: {
+//                    level: 'debug', // Possible values: debug, info, warn, error.
+//                    silent: false
+//                },
+//                parser: {
+//                    interface: 'phantom', // PhantomJS: 'phantom'
+//                    cmd: 'phantomjs',
+//                    timeout: 5000 // Resource timeout in milliseconds.
+//                },
+//                crawler: {
+//                    attempts: 5, // Number of tries before stop to execute the request.
+//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+//                }
+//            }
 //        };
 //        phantom = require('child_process').spawn('phantomjs', [
 //            //'--debug=true',
@@ -533,7 +785,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 //            evt:             undefined,
 //            xPath:           undefined,
 //            storeDetails:    false,
-//            followRedirects: false
+//            followRedirects: false,
+//            proxy:           '',
+//            sanitise:        false,
+//            config:          {
+//                redis: {
+//                    port: 16379,
+//                    hostname: '127.0.0.1'
+//                },
+//                logging: {
+//                    level: 'debug', // Possible values: debug, info, warn, error.
+//                    silent: false
+//                },
+//                parser: {
+//                    interface: 'phantom', // PhantomJS: 'phantom'
+//                    cmd: 'phantomjs',
+//                    timeout: 5000 // Resource timeout in milliseconds.
+//                },
+//                crawler: {
+//                    attempts: 5, // Number of tries before stop to execute the request.
+//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+//                }
+//            }
 //        };
 //        phantom = require('child_process').spawn('phantomjs', [
 //            //'--debug=true',
@@ -570,7 +843,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -610,7 +904,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -651,7 +966,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -690,7 +1026,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -729,7 +1086,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -768,7 +1146,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -805,7 +1204,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -845,7 +1265,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -885,7 +1326,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -926,7 +1388,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -967,7 +1450,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1008,7 +1512,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1049,7 +1574,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1090,7 +1636,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1131,7 +1698,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1171,7 +1759,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1211,7 +1820,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1251,7 +1881,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1291,7 +1942,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1331,7 +2003,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1371,7 +2064,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1411,7 +2125,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1451,7 +2186,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1488,7 +2244,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: false
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1549,7 +2326,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
                 evt:             undefined,
                 xPath:           undefined,
                 storeDetails:    false,
-                followRedirects: true
+                followRedirects: true,
+                proxy:           '',
+                sanitise:        false,
+                config:          {
+                    redis: {
+                        port: 16379,
+                        hostname: '127.0.0.1'
+                    },
+                    logging: {
+                        level: 'debug', // Possible values: debug, info, warn, error.
+                        silent: false
+                    },
+                    parser: {
+                        interface: 'phantom', // PhantomJS: 'phantom'
+                        cmd: 'phantomjs',
+                        timeout: 5000 // Resource timeout in milliseconds.
+                    },
+                    crawler: {
+                        attempts: 5, // Number of tries before stop to execute the request.
+                        delay: 5000 // Delay between an attempt and another one in milliseconds.
+                    }
+                }
             };
             phantom = require('child_process').spawn('phantomjs', [
                 //'--debug=true',
@@ -1592,7 +2390,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
             evt:             undefined,
             xPath:           undefined,
             storeDetails:    false,
-            followRedirects: true
+            followRedirects: true,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
         };
         phantom = require('child_process').spawn('phantomjs', [
             //'--debug=true',
@@ -1639,7 +2458,28 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 //            evt:             undefined,
 //            xPath:           undefined,
 //            storeDetails:    false,
-//            followRedirects: true
+//            followRedirects: true,
+//            proxy:           '',
+//            sanitise:        false,
+//            config:          {
+//                redis: {
+//                    port: 16379,
+//                    hostname: '127.0.0.1'
+//                },
+//                logging: {
+//                    level: 'debug', // Possible values: debug, info, warn, error.
+//                    silent: false
+//                },
+//                parser: {
+//                    interface: 'phantom', // PhantomJS: 'phantom'
+//                    cmd: 'phantomjs',
+//                    timeout: 5000 // Resource timeout in milliseconds.
+//                },
+//                crawler: {
+//                    attempts: 5, // Number of tries before stop to execute the request.
+//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+//                }
+//            }
 //        };
 //        phantom = require('child_process').spawn('phantomjs', [
 //            //'--debug=true',

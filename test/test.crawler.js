@@ -42,7 +42,25 @@ casper.on('remote.message', function (msg) {
 
 casper.test.begin('run', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -64,7 +82,25 @@ casper.test.begin('run', function (test) {
 
 casper.test.begin('run #2', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -85,7 +121,25 @@ casper.test.begin('run #2', function (test) {
 
 casper.test.begin('analiseRedisResponse', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = function() {
             return {
                 stdout: { on:function(){}},
@@ -113,7 +167,25 @@ casper.test.begin('analiseRedisResponse', function (test) {
 
 casper.test.begin('analiseRedisResponse #2', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = function() {
             return {
                 stdout: { on:function(){}},
@@ -146,7 +218,25 @@ casper.test.begin('analiseRedisResponse #2', function (test) {
 
 casper.test.begin('checkAndRun', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -165,7 +255,25 @@ casper.test.begin('checkAndRun', function (test) {
 
 casper.test.begin('checkRunningCrawlers', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -186,7 +294,25 @@ casper.test.begin('checkRunningCrawlers', function (test) {
 
 casper.test.begin('checkRunningCrawlers #1', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -207,7 +333,25 @@ casper.test.begin('checkRunningCrawlers #1', function (test) {
 
 casper.test.begin('onStdOut', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -232,7 +376,25 @@ casper.test.begin('onStdOut', function (test) {
 
 casper.test.begin('onStdErr', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -256,7 +418,25 @@ casper.test.begin('onStdErr', function (test) {
 
 casper.test.begin('handleError', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -278,7 +458,25 @@ casper.test.begin('handleError', function (test) {
 
 casper.test.begin('onExit', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -300,7 +498,25 @@ casper.test.begin('onExit', function (test) {
 
 casper.test.begin('storeDetailsToFile', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -336,7 +552,25 @@ casper.test.begin('storeDetailsToFile', function (test) {
 
 casper.test.begin('processPage', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         client   = {},
@@ -389,7 +623,25 @@ casper.test.begin('processPage', function (test) {
 
 casper.test.begin('processPage #2', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         client   = {},
@@ -442,7 +694,25 @@ casper.test.begin('processPage #2', function (test) {
 
 casper.test.begin('processPage #3', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         client   = {},
@@ -495,7 +765,25 @@ casper.test.begin('processPage #3', function (test) {
 
 casper.test.begin('processPage #4', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         client   = {},
@@ -555,7 +843,25 @@ casper.test.begin('processPage #4', function (test) {
 
 casper.test.begin('processPage #5', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         client   = {},
@@ -616,7 +922,25 @@ casper.test.begin('processPage #5', function (test) {
 
 casper.test.begin('processPage #6', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         client   = {},
@@ -675,7 +999,25 @@ casper.test.begin('processPage #6', function (test) {
 
 casper.test.begin('processPage #7', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         client   = {},
@@ -737,7 +1079,25 @@ casper.test.begin('processPage #7', function (test) {
 /*
 casper.test.begin('processPage #9', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -767,7 +1127,25 @@ casper.test.begin('processPage #9', function (test) {
 
 casper.test.begin('processPage #10', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -795,7 +1173,25 @@ casper.test.begin('processPage #10', function (test) {
 
 casper.test.begin('execPhantomjs', function(test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = function() {
             return {
                 stdout: { on:function(){}},
@@ -826,7 +1222,25 @@ casper.test.begin('execPhantomjs', function(test) {
 
 casper.test.begin('execPhantomjs #2', function(test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = function() {
             return {
                 stdout: { on:function(){}},
@@ -858,31 +1272,69 @@ casper.test.begin('execPhantomjs #2', function(test) {
     crawler.execPhantomjs();
 });
 
-casper.test.begin('handleError #2', function (test) {
-    var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
-        spawn    = {},
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        testObj  = require(srcdir + '/test'),
-        client   = {},
-        winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
-        fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: []}},
-        utils    = {},
-        crawler;
+if (!casper.cli.has('coverage')) {
+    casper.test.begin('handleError #2', function (test) {
+        var Crawler  = require(srcdir + '/crawler'),
+            config   = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
+            spawn    = {},
+            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            testObj  = require(srcdir + '/test'),
+            client   = {},
+            winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
+            fs       = require(srcdir + '/fs'),
+            optimist = {argv: {$0: []}},
+            utils    = {},
+            crawler;
 
-    // tries to run another crawler if max attempts is not reached
-    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
-    crawler.run = function () {
-        test.done();
-    };
-    crawler.tries = 0;
-    test.assertEquals(crawler.handleError(), true);
-});
+        // tries to run another crawler if max attempts is not reached
+        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler.run = function () {
+            test.done();
+        };
+        crawler.tries = 0;
+        test.assertEquals(crawler.handleError(), true);
+    });
+}
 
 casper.test.begin('init', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = {},
         crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
         testObj  = require(srcdir + '/test'),
@@ -906,7 +1358,25 @@ casper.test.begin('init', function (test) {
 
 casper.test.begin('proxy settings', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = function(cmd, params) {
             return {
                 stdout: { on:function(act, cb){ cb(params); }},
@@ -939,7 +1409,25 @@ casper.test.begin('proxy settings', function (test) {
 
 casper.test.begin('proxy settings #2', function (test) {
     var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
+        config   = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         spawn    = function(cmd, params) {
             return {
                 stdout: { on:function(act, cb){ cb(params); }},
@@ -970,38 +1458,58 @@ casper.test.begin('proxy settings #2', function (test) {
     crawler.execPhantomjs();
 });
 
-casper.test.begin('politeness', function (test) {
-    var Crawler  = require(srcdir + '/crawler'),
-        config   = require(srcdir + '/config'),
-        spawn    = function(cmd, params) {
-            return {
-                stdout: { on:function(act, cb){ cb(params); }},
-                stderr: { on:function(){}},
-                on: function(param, callback){ if (param ==='exit') { callback(); }}
-            };
-        },
-        crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-        testObj  = require(srcdir + '/test'),
-        client   = {on: function (evt, cb) { cb({}); }},
-        winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
-        fs       = require(srcdir + '/fs'),
-        optimist = {argv: {$0: ['casperjs --cli test']}},
-        utils    = new (require(srcdir + '/utils'))(crypto),
-        crawler;
+if (!casper.cli.has('coverage')) {
+    casper.test.begin('politeness', function (test) {
+        var Crawler  = require(srcdir + '/crawler'),
+            config   = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
+            spawn    = function(cmd, params) {
+                return {
+                    stdout: { on:function(act, cb){ cb(params); }},
+                    stderr: { on:function(){}},
+                    on: function(param, callback){ if (param ==='exit') { callback(); }}
+                };
+            },
+            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            testObj  = require(srcdir + '/test'),
+            client   = {on: function (evt, cb) { cb({}); }},
+            winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
+            fs       = require(srcdir + '/fs'),
+            optimist = {argv: {$0: ['casperjs --cli test']}},
+            utils    = new (require(srcdir + '/utils'))(crypto),
+            crawler;
 
-    crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
-    crawler.execPhantomjs = function () { return 'OK'; };
+        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler.execPhantomjs = function () { return 'OK'; };
 
-    var start = Date.now();
-    crawler.run('', '', '', '', '');
-    var end = Date.now();
-    test.assertEquals((end-start)/1000 >= 1, true, 'It waits 1 second');
+        var start = Date.now();
+        crawler.run('', '', '', '', '');
+        var end = Date.now();
+        test.assertEquals((end-start)/1000 >= 1, true, 'It waits 1 second');
 
-    start = Date.now();
-    crawler.politeInterval = 2000;
-    crawler.run('', '', '', '', '');
-    end = Date.now();
-    test.assertEquals((end-start)/1000 >= 2, true, 'It waits 2 second');
+        start = Date.now();
+        crawler.politeInterval = 2000;
+        crawler.run('', '', '', '', '');
+        end = Date.now();
+        test.assertEquals((end-start)/1000 >= 2, true, 'It waits 2 second');
 
-    test.done();
-});
+        test.done();
+    });
+}

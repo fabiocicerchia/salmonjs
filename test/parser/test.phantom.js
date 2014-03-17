@@ -43,11 +43,29 @@ casper.on('remote.message', function (msg) {
 
 casper.test.begin('setUpPage', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        config        = require(srcdir + '/config'),
+        config        = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), config);
 
     phantom.setUpPage(phantom.page);
 
@@ -72,7 +90,7 @@ casper.test.begin('onOpen', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     phantom.onOpen('failure');
 
     test.assertType(phantom.report.time.start, 'number');
@@ -97,7 +115,7 @@ casper.test.begin('onResourceTimeout', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     test.assertEquals(phantom.onResourceTimeout(), true);
 
     test.done();
@@ -108,7 +126,7 @@ casper.test.begin('onError', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     phantom.onError('error1');
     test.assertEquals(phantom.report.errors, ['ERROR: error1']);
 
@@ -128,7 +146,7 @@ casper.test.begin('onResourceReceived', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     phantom.onResourceReceived({stage: 'end', url: 'about:blank', headers: []});
     test.assertEquals(phantom.report.resources, { 'about:blank': { headers: [] } });
 
@@ -140,7 +158,7 @@ casper.test.begin('onAlert', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     phantom.onAlert('message');
     test.assertType(phantom.report.alerts, 'array');
     test.assertEquals(phantom.report.alerts, ['message']);
@@ -153,7 +171,7 @@ casper.test.begin('onConfirm', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     test.assertEquals(phantom.onConfirm('message'), true);
     test.assertType(phantom.report.confirms, 'array');
     test.assertEquals(phantom.report.confirms, ['message']);
@@ -166,7 +184,7 @@ casper.test.begin('onPrompt', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     test.assertEquals(phantom.onPrompt('message', ''), '');
     test.assertType(phantom.report.prompts, 'array');
     test.assertEquals(phantom.report.prompts, [{msg: 'message', defaultVal: ''}]);
@@ -179,7 +197,7 @@ casper.test.begin('onConsoleMessage', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     phantom.onConsoleMessage('message', 1, '');
     test.assertType(phantom.report.console, 'array');
     test.assertEquals(phantom.report.console, [{msg: 'message', lineNum: 1, sourceId: ''}]);
@@ -192,7 +210,7 @@ casper.test.begin('onLoadFinished', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
 
     phantom.parsePage = function () { test.done(); };
     phantom.onLoadFinished();
@@ -203,7 +221,7 @@ casper.test.begin('onLoadFinished #2', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
 
     phantom.stepStack = [{event: 'click', xPath: 'window'}];
     phantom.parsePage = function () { };
@@ -216,7 +234,7 @@ casper.test.begin('onLoadFinished #3', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
 
     phantom.stepStack = [{event: 'click', xPath: '/html/body'}];
     phantom.parsePage = function () { };
@@ -241,7 +259,7 @@ casper.test.begin('onEvaluateNonHtml', function (test) {
         content,
         resp;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
 
     content = 'http://username:password@hostname/path?arg=value#anchor';
     resp = phantom.onEvaluateNonHtml(content);
@@ -385,9 +403,28 @@ casper.test.begin('onEvaluateNonHtml', function (test) {
 casper.test.begin('parseGet', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         utils         = new (require(srcdir + '/utils'))(),
+        config        = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), config);
     phantom.url = 'about:blank';
     phantom.data = '';
     phantom.onOpen = function () {};
@@ -402,7 +439,7 @@ casper.test.begin('parseGet #2', function (test) {
         utils         = new (require(srcdir + '/utils'))(),
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     phantom.url = 'http://www.example.com/?c=1&a=2';
     phantom.data = {GET:{ a: 1, b: 2}, COOKIE: {}};
     phantom.setUpPage = function () {};
@@ -416,9 +453,28 @@ casper.test.begin('parseGet #2', function (test) {
 casper.test.begin('parseGet #3', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         utils         = new (require(srcdir + '/utils'))(),
+        config        = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), config);
     phantom.url = 'about:blank';
     phantom.data = {HEADERS:{ 'X-Test': 1}};
     phantom.onOpen = function () {};
@@ -433,9 +489,28 @@ if (require('system').env.TRAVIS !== 'true') {
     casper.test.begin('parsePost', function (test) {
         var PhantomParser = require(srcdir + '/parser/phantom'),
             utils         = new (require(srcdir + '/utils'))(),
+            config        = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
             phantom;
 
-        phantom = new PhantomParser(utils, require('webpage').create());
+        phantom = new PhantomParser(utils, require('webpage').create(), config);
         phantom.url = 'about:blank';
         phantom.data = {};
         phantom.onOpen = function () {};
@@ -449,9 +524,28 @@ if (require('system').env.TRAVIS !== 'true') {
 casper.test.begin('parsePost #2', function (test) {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         utils         = new (require(srcdir + '/utils'))(),
+        config        = {
+            redis: {
+                port: 16379,
+                hostname: '127.0.0.1'
+            },
+            logging: {
+                level: 'debug', // Possible values: debug, info, warn, error.
+                silent: false
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: 5000 // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: 5, // Number of tries before stop to execute the request.
+                delay: 5000 // Delay between an attempt and another one in milliseconds.
+            }
+        },
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), config);
     phantom.url = 'http://www.example.com/?c=1&a=2';
     phantom.data = {GET:{ a: 1, b: 2}};
     phantom.onOpen = function () {};
@@ -465,9 +559,28 @@ if (require('system').env.TRAVIS !== 'true') {
     casper.test.begin('parsePost #3', function (test) {
         var PhantomParser = require(srcdir + '/parser/phantom'),
             utils         = new (require(srcdir + '/utils'))(),
+            config        = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
             phantom;
 
-        phantom = new PhantomParser(utils, require('webpage').create());
+        phantom = new PhantomParser(utils, require('webpage').create(), config);
         phantom.url = 'about:blank';
         phantom.data = {HEADERS:{ 'X-Test': 1}};
         phantom.onOpen = function () {};
@@ -481,11 +594,29 @@ if (require('system').env.TRAVIS !== 'true') {
 
 //casper.test.begin('onInitialized', function (test) {
 //    var PhantomParser = require(srcdir + '/parser/phantom'),
-//        config        = require(srcdir + '/config'),
+//        config        = {
+//            redis: {
+//                port: 16379,
+//                hostname: '127.0.0.1'
+//            },
+//            logging: {
+//                level: 'debug', // Possible values: debug, info, warn, error.
+//                silent: false
+//            },
+//            parser: {
+//                interface: 'phantom', // PhantomJS: 'phantom'
+//                cmd: 'phantomjs',
+//                timeout: 5000 // Resource timeout in milliseconds.
+//            },
+//            crawler: {
+//                attempts: 5, // Number of tries before stop to execute the request.
+//                delay: 5000 // Delay between an attempt and another one in milliseconds.
+//            }
+//        },
 //        utils         = {},
 //        phantom;
 //
-//    phantom = new PhantomParser(utils, require('webpage').create());
+//    phantom = new PhantomParser(utils, require('webpage').create(), {});
 //    phantom.page.injectJs = function() {
 //        test.done();
 //    };
@@ -498,7 +629,7 @@ casper.test.begin('onNavigationRequested', function (test) {
         phantom,
         resp;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
 
     followRedirects = false;
     phantom.url = 'about:blank';
@@ -530,7 +661,7 @@ casper.test.begin('putPageInStack', function (test) {
         phantom,
         page;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     page = {data:{}, evaluate: function (a, b) { this.data = b; }};
     phantom.cloneWebPage = function() {
         return {data:{}, evaluate: function (a, b) { this.data = b; }};
@@ -571,7 +702,7 @@ casper.test.begin('exit', function (test) {
         utils         = {},
         phantom;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
     test.done();
 });
 
@@ -581,7 +712,7 @@ casper.test.begin('cloneWebPage', function (test) {
         phantom,
         resp;
 
-    phantom = new PhantomParser(utils, require('webpage').create());
+    phantom = new PhantomParser(utils, require('webpage').create(), {});
 
     phantom.setUpPage = function(page) {
         page.onInitialized = function() {
