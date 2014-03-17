@@ -46,7 +46,7 @@ casper.test.begin('createNewCaseFile', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
         utils     = {},
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
 
     testObj.createNewCaseFile('', 'test', {a: 1}, function () {
         var content;
@@ -73,9 +73,9 @@ casper.test.begin('createNewCaseFile #2', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
         utils     = {},
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
     testObj.createNewCaseFile('http://www.example.com', 'test', {}, function () {
         var content;
         try {
@@ -92,9 +92,9 @@ casper.test.begin('createNewCaseFile #3', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
         utils     = {},
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
 
-    testObj = new Test(fsWrapper, glob, rootdir, utils);
+    testObj = new Test(fsWrapper, glob, rootdir, utils, fs.absolute('./'));
     testObj.createNewCaseFile('http://www.example.com', 'test', {POST:{a: 1, b: 2}}, function () {
         var content;
         try {
@@ -113,9 +113,9 @@ casper.test.begin('getCases', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
         utils     = {},
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
     testObj.parseCaseFile = function () { return {}; };
 
     test.assertEquals(testObj.getCases(''), [], 'doesn\'t return anything if there are no matches');
@@ -123,7 +123,7 @@ casper.test.begin('getCases', function (test) {
 
     fs.makeDirectory(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http---www-example-com');
     fs.write(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'http---www-example-com/test.tst', '[POST]\na=1\nb=2\n');
-    testObj = new Test(fsWrapper, glob, rootdir, utils);
+    testObj = new Test(fsWrapper, glob, rootdir, utils, fs.absolute('./'));
     testObj.parseCaseFile = function () { return {POST:{a: 1, b: 2}}; };
 
     test.assertEquals(testObj.getCases('http://www.example.com'), [{POST:{a: 1, b: 2}}], 'returns something if there are matches');
@@ -136,9 +136,9 @@ casper.test.begin('parseCaseFile', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
         utils     = {},
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
     test.assertEquals(testObj.parseCaseFile('non-existent'), {}, 'doesn\'t parse a non existent file');
 
     test.done();
@@ -148,9 +148,9 @@ casper.test.begin('parseCaseFile #2', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
         utils     = {},
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
 
-    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
     test.assertEquals(testObj.parseCaseFile('empty-file'), {}, 'parses an empty file');
 
     test.done();
@@ -160,10 +160,10 @@ casper.test.begin('parseCaseFile #3', function (test) {
     var Test      = require(srcdir + '/test'),
         fsWrapper = new (require(srcdir + '/fs'))(fs),
         utils     = {},
-        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils);
+        testObj   = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
 
     utils.parseINIString = function() { return {a: '1', b: '2'}; };
-    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils);
+    testObj = new Test(fsWrapper, glob, srcdir + '/..', utils, fs.absolute('./'));
     fs.write(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst', 'a=1\nb=2\n');
     test.assertEquals(testObj.parseCaseFile(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst'), {a: '1', b: '2'}, 'parses a not empty file');
     fs.remove(srcdir + '/..' + testObj.TEST_CASE_DIRECTORY + 'not-empty-file.tst');

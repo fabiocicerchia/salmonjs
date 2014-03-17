@@ -551,8 +551,8 @@ var PhantomParser = function (utils, page, config) {
 
         if (page.content.indexOf('<html') !== -1) {
             if (settings.storeDetails) {
-                fs.makeDirectory(fs.workingDirectory + '/report/' + settings.execId + '/');
-                page.render(fs.workingDirectory + '/report/' + settings.execId + '/' + settings.idRequest + '.png');
+                fs.makeDirectory(fs.absolute(settings.storeDetails) + '/' + settings.execId + '/');
+                page.render(fs.absolute(settings.storeDetails) + '/' + settings.execId + '/' + settings.idRequest + '.png');
             }
 
             links = page.evaluate(currentParser.onEvaluate, currentParser.tags);

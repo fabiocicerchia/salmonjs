@@ -34,15 +34,15 @@
  *
  * @module Test
  */
-var Test = function (fsWrapper, glob, mainDir, utils) {
+var Test = function (fsWrapper, glob, mainDir, utils, cases_dir) {
     /**
      * Test case directory.
      *
      * @property TEST_CASE_DIRECTORY
      * @type {String}
-     * @default "/../tests/cases/"
+     * @default ""
      */
-    this.TEST_CASE_DIRECTORY = '/tests/cases/';
+    this.TEST_CASE_DIRECTORY = cases_dir;
 
     /**
      * Current instance.

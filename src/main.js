@@ -66,6 +66,7 @@ var SalmonJS = function (redis, argv) {
 
     ioc.add('client',    client);
     ioc.add('config',    config);
+    ioc.add('cases_dir', argv.cases ? path.resolve(argv.cases) : undefined);
     ioc.add('crypto',    crypto);
     ioc.add('dirName',   __dirname);
     ioc.add('fs',        fs);
@@ -180,7 +181,7 @@ var SalmonJS = function (redis, argv) {
                 storeDetails:    argv.details,
                 followRedirects: argv.follow,
                 proxy:           argv.proxy,
-                sanitise:        argv.sanitise
+                sanitise:        argv.sanitise,
             },
             {
                 stdout: this.spawnStdout,
