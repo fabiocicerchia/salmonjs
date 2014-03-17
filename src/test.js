@@ -117,7 +117,6 @@ var Test = function (fsWrapper, glob, mainDir, utils) {
         for (i = 0; i < parts.length - 1; i++) {
             currDir += parts[i] + '/';
             if (!fsWrapper.existsSync(currDir)) {
-                console.log(currDir);
                 fsWrapper.mkdirSync(currDir);
             }
         }
