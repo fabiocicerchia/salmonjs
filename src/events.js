@@ -81,7 +81,7 @@ var EventContainer = function () {
             nodeList = [],
             id;
 
-        for (; element && parseInt(element.nodeType) === 1; element = element.parentNode) {
+        for (; element && parseInt(element.nodeType, 10) === 1; element = element.parentNode) {
             if (element.parentNode) {
                 nodeList = Array.prototype.slice.call(
                     element.parentNode.getElementsByTagName(element.tagName)

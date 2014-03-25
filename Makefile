@@ -35,10 +35,18 @@ NPM=npm
 JSHINT=./node_modules/jshint/bin/jshint
 CASPERJS=./casperjs/bin/casperjs
 JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
+YUIDOC=node ./node_modules/yuidocjs/lib/cli.js
+YUIDOC=yuidoc
 FILES=test/test.*.js test/*/test.*.js
+FILES_COV=test/parser/test.phantom.js test/test.crawler.js test/test.events.js test/test.main.js test/test.parser.js test/test.pool.js test/test.session.js test/test.test.js test/test.utils.js
+
+install: install-casper install-yuidoc-theme
 
 install-casper:
 	$(GIT) clone git://github.com/n1k0/casperjs.git
+
+install-yuidoc-theme:
+	$(GIT) clone https://github.com/Krxtopher/yuidoc-themes docs/theme
 
 versions:
 	$(CASPERJS) --version
@@ -53,8 +61,11 @@ test:
 coverage:
 	$(RM) src-cov 2> /dev/null
 	$(JSCOVERAGE) src src-cov
-	$(CASPERJS) test $(FILES) --post=src/reporter/coverage.js --coverage --concise
+	$(CASPERJS) test $(FILES_COV) --post=src/reporter/coverage.js --coverage --concise
 	$(RM) src-cov
+
+documentation:
+	$(YUIDOC) -o docs/api -t docs/theme/friendly-theme bin src test
 
 show-report:
 	cd /tmp && chmod 777 *.dmp && tar -pzcf phantomjs.tar.gz *.dmp

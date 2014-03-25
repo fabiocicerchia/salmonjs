@@ -66,7 +66,7 @@ for (file in jscov) {
         for (id in jscov[file].source) {
             if (jscov[file].source.hasOwnProperty(id)) {
                 line = jscov[file].source[id];
-                st = jscov[file][parseInt(id) + 1] === undefined ? '-' : jscov[file][parseInt(id) + 1];
+                st = jscov[file][parseInt(id, 10) + 1] === undefined ? '-' : jscov[file][parseInt(id, 10) + 1];
                 if (st > 0) {
                     cov.files[file].executed++;
                 }
@@ -84,7 +84,6 @@ for (file in jscov) {
 var lcov = '';
 for (file in cov.files) {
     if (cov.files.hasOwnProperty(file)) {
-        data = cov.files[file];
         lcov += 'SF:' + file + '\n';
 
         for (line in cov.files[file].source) {
@@ -131,7 +130,7 @@ html += '       <script>\n';
 html += '           function onLoad() {\n';
 html += '               var elements = document.getElementsByTagName(\'pre\');\n';
 html += '               for (var i = 0; i < elements.length; i++) {\n';
-html += '                   elements[i].style.width = (parseInt(document.getElementsByTagName(\'table\')[0].clientWidth) - 50) + \'px\';\n';
+html += '                   elements[i].style.width = (parseInt(document.getElementsByTagName(\'table\')[0].clientWidth, 10) - 50) + \'px\';\n';
 html += '               }\n';
 html += '           }\n';
 html += '           function toggle(id) {\n';

@@ -912,9 +912,7 @@ casper.test.begin('cloneWebPage', function (test) {
 
 casper.test.begin('sanitise', function (test) {
     var phantom,
-        resp;
-
-    var params  = {
+        params  = {
         idCrawler:       undefined,
         execId:          undefined,
         idRequest:       undefined,
@@ -952,7 +950,6 @@ casper.test.begin('sanitise', function (test) {
 
     var PhantomParser = require(srcdir + '/parser/phantom'),
         utils         = {},
-        phantom,
         spawn         = function(cmd, args) {
             var p = require('child_process').spawn(cmd, args);
             var sanitisedHtml = '';
@@ -963,7 +960,7 @@ casper.test.begin('sanitise', function (test) {
             p.stderr.on('data', function(d) {
                 console.log(d.toString());
             });
-            p.on('exit', function(d) {
+            p.on('exit', function() {
                 fs.remove(args[1]);
 
                 test.assertEquals(sanitisedHtml, '\n<!DOCTYPE html>\n<html>\n<head>\n<title></title>\n</head>\n<body>\n<table>\n<tbody>\n<tr>\n<td>badly formatted html</td>\n</tr>\n</tbody>\n</table>\n</body>\n</html>\n\n');
@@ -987,9 +984,7 @@ casper.test.begin('sanitise', function (test) {
 casper.test.begin('Test #24', function (test) {
     // TODO: Make sure the variable phantom is clean and doesn't contain any previous data
     var phantom,
-        resp;
-
-    var params  = {
+        params  = {
         idCrawler:       undefined,
         execId:          undefined,
         idRequest:       undefined,
@@ -1026,15 +1021,14 @@ casper.test.begin('Test #24', function (test) {
     };
 
     var PhantomParser = require(srcdir + '/parser/phantom'),
-        utils         = new (require(srcdir + '/utils'))({}),
-        phantom;
+        utils         = new (require(srcdir + '/utils'))({});
 
     phantom = new PhantomParser(utils, {}, require('webpage').create(), params);
     phantom.reset();
 
     phantom.page.setContent(fs.read(rootdir + '/test/assets/test_24.html'), 'file://' + rootdir + '/test/assets/test_24.html');
     phantom.exit = function () {
-        test.assertEquals(JSON.stringify(phantom.links), '{\"a\":[\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html#whatever1\",\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html#whatever2\"],\"link\":[],\"script\":[\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html\"],\"meta\":[],\"form\":[],\"events\":[],\"mixed\":[]}');
+        test.assertEquals(JSON.stringify(phantom.links), '{\"a\":[\"file://' + rootdir + '/test/assets/test_24.html#whatever1\",\"file://' + rootdir + '/test/assets/test_24.html#whatever2\"],\"link\":[],\"script\":[\"file://' + rootdir + '/test/assets/test_24.html\"],\"meta\":[],\"form\":[],\"events\":[],\"mixed\":[]}');
         test.done();
     };
     phantom.evaluateAndParse();

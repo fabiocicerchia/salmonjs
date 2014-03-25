@@ -318,17 +318,13 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * web page data back as JSON.
      *
      * @method run
-     * @param {String} url   The URL to crawl.
-     * @param {String} type  The request type: GET or POST.
-     * @param {Object} data  The data to send for the request.
-     * @param {String} evt   The event to fire (optional).
-     * @param {String} xPath The XPath expression to identify the element to fire (optional).
+     * @param {Object} settings The information about url, request type, data to send, event and XPath.
      * @return undefined
      */
-    this.run = function (url, type, data, evt, xPath) {
-        this.url   = url;
-        this.type  = type || 'GET';
-        this.data  = data || {
+    this.run = function (settings) {
+        this.url   = settings.url;
+        this.type  = settings.type || 'GET';
+        this.data  = settings.data || {
             GET:     {},
             POST:    {},
             COOKIE:  {},
@@ -336,8 +332,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             CONFIRM: {},
             PROMPT:  {}
         };
-        this.evt   = evt || '';
-        this.xPath = xPath || '';
+        this.evt   = settings.evt || '';
+        this.xPath = settings.xPath || '';
 
         this.idUri = utils.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath).substr(0, 8);
 
@@ -367,8 +363,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @method analiseRedisResponse
      * @param {} err
      * @param {} reply
-     * @param {} redisId
-     * @param {} container
+     * @param {String} redisId
+     * @param {Object} container
      * @return undefined
      */
     this.analiseRedisResponse = function (err, reply, redisId, container) {
@@ -434,22 +430,18 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * Check if already crawled, if not so launch a new crawler.
      *
      * @method checkAndRun
-     * @param {String} url   The URL to crawl.
-     * @param {String} type  The request type: GET or POST.
-     * @param {Object} data  The data to send for the request.
-     * @param {String} evt   The event to fire (optional).
-     * @param {String} xPath The XPath expression to identify the element to fire (optional).
+     * @param {Object} settings The information about url, request type, data to send, event and XPath.
      * @return undefined
      */
-    this.checkAndRun = function (url, type, data, evt, xPath) {
+    this.checkAndRun = function (settings) {
         var container   = {},
             redisId,
             id,
             winstonCrawlerId;
 
-        container.url   = url.action || url;
-        container.type  = type || 'GET';
-        container.data  = data || {
+        container.url   = settings.url.action || settings.url;
+        container.type  = settings.type || 'GET';
+        container.data  = settings.data || {
             GET:     {},
             POST:    {},
             COOKIE:  {},
@@ -457,8 +449,8 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             CONFIRM: {},
             PROMPT:  {}
         };
-        container.evt   = evt || '';
-        container.xPath = xPath || '';
+        container.evt   = settings.evt || '';
+        container.xPath = settings.xPath || '';
 
         redisId = utils.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath);
         id      = redisId.substr(0, 8);
@@ -566,11 +558,13 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 );
 
                 return currentCrawler.run(
-                    currentCrawler.url,
-                    currentCrawler.type,
-                    currentCrawler.data,
-                    currentCrawler.event,
-                    currentCrawler.xPath
+                    {
+                        url:   currentCrawler.url,
+                        type:  currentCrawler.type,
+                        data:  currentCrawler.data,
+                        evt:   currentCrawler.event,
+                        xPath: currentCrawler.xPath
+                    }
                 );
             }, config.crawler.delay);
         } else {
@@ -695,7 +689,15 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                                 elementValue.green,
                                 newId.cyan
                             );
-                            currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, elementValue);
+                            currentCrawler.checkAndRun(
+                                {
+                                    url:   currentCrawler.url,
+                                    type:  currentCrawler.type,
+                                    data:  currentCrawler.data,
+                                    evt:   event,
+                                    xPath: elementValue
+                                }
+                            );
                         }
                     });
                 });
@@ -703,22 +705,22 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
             currentCrawler.possibleCrawlers += links.a.length;
             links.a.forEach(function (element) {
-                currentCrawler.checkAndRun(element, 'GET');
+                currentCrawler.checkAndRun({ url: element, type: 'GET'});
             });
 
             currentCrawler.possibleCrawlers += links.link.length;
             links.link.forEach(function (element) {
-                currentCrawler.checkAndRun(element, 'GET');
+                currentCrawler.checkAndRun({ url: element, type: 'GET'});
             });
 
             currentCrawler.possibleCrawlers += links.script.length;
             links.script.forEach(function (element) {
-                currentCrawler.checkAndRun(element, 'GET');
+                currentCrawler.checkAndRun({ url: element, type: 'GET'});
             });
 
             currentCrawler.possibleCrawlers += links.meta.length;
             links.meta.forEach(function (element) {
-                currentCrawler.checkAndRun(element, 'GET');
+                currentCrawler.checkAndRun({ url: element, type: 'GET'});
             });
 
             links.form.forEach(function (element) {
@@ -747,10 +749,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 currentCrawler.possibleCrawlers += cases.length;
                 for (j in cases) {
                     if (cases.hasOwnProperty(j)) {
-                        currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
+                        currentCrawler.checkAndRun({ url: element.action, type: element.type.toUpperCase(), data: []});
 
                         cases[j].POST = utils.normaliseData(cases[j].POST);
-                        currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]);
+                        currentCrawler.checkAndRun({ url: element.action, type: element.type.toUpperCase(), data: cases[j]});
                     }
                 }
             });
@@ -774,7 +776,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     cases[j].GET    = utils.normaliseData(cases[j].GET);
                     cases[j].POST   = utils.normaliseData(cases[j].POST);
                     cases[j].COOKIE = utils.normaliseData(cases[j].COOKIE);
-                    currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, cases[j]);
+                    currentCrawler.checkAndRun({ url: currentCrawler.url, type: currentCrawler.type, data: cases[j]});
                 }
             }
         }
