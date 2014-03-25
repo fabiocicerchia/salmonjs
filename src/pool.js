@@ -28,9 +28,13 @@
  */
 
 /**
- * Pool Module
+ * Pool Class
  *
- * @module Pool
+ * It handle a queue of workers, it provides support for max number of
+ * concurrent workers (if all the slots are taken it'll wait until one will be
+ * freed).
+ *
+ * @class Pool
  */
 var Pool = function (spawn, os, config) {
     /**

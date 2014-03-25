@@ -28,11 +28,12 @@
  */
 
 /**
- * FS Wrapper Module
+ * FS Wrapper Class
+ *
  * It handles the differences between the Node.js module FS and the PhantomJS
  * module FS.
  *
- * @module FSWrapper
+ * @class FSWrapper
  */
 var FSWrapper = function (fs) {
     if (fs === undefined) {
@@ -105,11 +106,8 @@ var FSWrapper = function (fs) {
      * @return undefined
      */
     this.mkdirSync = function (path, mode) {
-        if (fs.mkdirSync !== undefined) {
-            return fs.mkdirSync(path, mode);
-        }
-
-        return fs.makeDirectory(path);
+        var method = (fs.mkdirSync !== undefined) ? 'mkdirSync' : 'makeDirectory';
+        return fs[method].call(path, mode);
     };
 
     /**
@@ -121,11 +119,8 @@ var FSWrapper = function (fs) {
      * @return {Array}
      */
     this.readdirSync = function (path) {
-        if (fs.readdirSync !== undefined) {
-            return fs.readdirSync.call(fs, path);
-        }
-
-        return fs.list.call(fs, path);
+        var method = (fs.readdirSync !== undefined) ? 'readdirSync' : 'list';
+        return fs[method].call(fs, path);
     };
 
     /**

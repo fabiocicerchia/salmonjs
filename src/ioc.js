@@ -31,6 +31,8 @@
  * IOC Class
  *
  * Example taken from http://www.yusufaytas.com/dependency-injection-in-javascript/
+ *
+ * @class IOC
  */
 var IOC = function () {
     /**

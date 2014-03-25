@@ -29,6 +29,11 @@
 
 /**
  * Event Container Class
+ *
+ * Override the Event handler to intercept and collect all the events that will
+ * be bound to the DOM elements.
+ *
+ * @class EventContainer
  */
 var EventContainer = function () {
     /**

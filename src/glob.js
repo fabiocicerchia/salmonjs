@@ -30,10 +30,11 @@
 var utils = utils || new (require('./utils'))();
 
 /**
- * Glob Emulation Module
+ * Glob Emulation Class
+ *
  * It emulates the behaviour of glob.
  *
- * @module glob
+ * @class glob
  */
 var glob = {
     /**

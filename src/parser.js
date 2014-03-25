@@ -28,12 +28,12 @@
  */
 
 /**
- * Parser Module
+ * Parser Class
  *
  * Base class for any kind of page parser. It provides a basic interface in
  * order to process the web page.
  *
- * @module Parser
+ * @class Parser
  */
 module.exports = function Parser() {
     /**

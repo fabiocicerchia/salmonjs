@@ -80,6 +80,25 @@ for (file in jscov) {
         cov.executed += cov.files[file].executed;
     }
 }
+
+var lcov = '';
+for (file in cov.files) {
+    if (cov.files.hasOwnProperty(file)) {
+        data = cov.files[file];
+        lcov += 'SF:' + file + '\n';
+
+        for (line in cov.files[file].source) {
+            if (cov.files[file].source.hasOwnProperty(line)) {
+                if (cov.files[file].source[line].status !== '-') {
+                    lcov += 'DA:' + line + ',' + cov.files[file].source[line].status + '\n';
+                }
+            }
+        }
+
+        lcov += 'end_of_record\n';
+    }
+}
+
 cov.percentage = 100 / cov.lines * cov.executed;
 
 var html = '<html>\n';
@@ -191,8 +210,10 @@ html += '   </body>\n';
 html += '</html>';
 
 fs.write('report/coverage.json', JSON.stringify(cov));
+fs.write('report/coverage.lcov', lcov);
 fs.write('report/coverage.html', html);
 console.log('JSON code coverage saved in: ' + fs.absolute('report/coverage.json'));
+console.log('LCOV code coverage saved in: ' + fs.absolute('report/coverage.lcov'));
 console.log('HTML code coverage saved in: ' + fs.absolute('report/coverage.html'));
 if (casper !== undefined) {
     casper.test.done();

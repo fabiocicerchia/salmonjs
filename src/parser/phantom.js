@@ -29,6 +29,7 @@
 
 var Parser   = require('../parser'),
     fs       = require('fs'),
+    spawn    = require('child_process').spawn,
     system   = require('system'),
     args     = system.args,
     testing  = args.join(' ').indexOf('casperjs --cli test') !== -1,
@@ -39,10 +40,13 @@ var Parser   = require('../parser'),
 /**
  * PhantomParser Class.
  *
+ * Use PhantomJS in order to process the page and get all the links and
+ * relevant information for the crawler.
+ *
  * @class PhantomParser
  * @extends Parser
  */
-var PhantomParser = function (utils, page, config) {
+var PhantomParser = function (utils, spawn, page, settings) {
     /**
      * The WebPage element.
      *
@@ -71,13 +75,26 @@ var PhantomParser = function (utils, page, config) {
     var currentParser = this;
 
     /**
+     * Reset all the containers.
+     *
+     * @method reset
+     * @return undefined
+     */
+    this.reset = function () {
+        this.resetHttpHeaders(this.page);
+        this.resetCookie(this.page);
+        this.resetStack();
+        this.resetReport();
+    };
+
+    /**
      * Configure all the callbacks for PhantomJS.
      *
      * @method setUpPage
      * @return undefined
      */
     this.setUpPage = function (page) {
-        page.settings.resourceTimeout = config.parser.timeout;
+        page.settings.resourceTimeout = settings.config.parser.timeout;
         page.onResourceTimeout        = this.onResourceTimeout;
         page.onError                  = this.onError;
         page.onInitialized            = this.onInitialized;
@@ -90,16 +107,20 @@ var PhantomParser = function (utils, page, config) {
         page.viewportSize             = { width: 1024, height: 800 };
         page.settings.userAgent       = 'salmonJS/0.4.0 (+http://fabiocicerchia.github.io/salmonjs)';
 
-        this.setHttpHeaders();
+        this.setHttpHeaders(page);
     };
 
     /**
-     * TBD
+     * Set some HTTP headers for the request.
+     *
+     * @method setHttpHeaders
+     * @param {Object} page The WebPage object.
+     * @return undefined
      */
-    this.setHttpHeaders = function () {
+    this.setHttpHeaders = function (page) {
         var customHeaders = {};
 
-        customHeaders['Accept-Encoding'] = 'identity'; // TODO: Replace with 'gzip,deflate'
+        customHeaders['Accept-Encoding'] = 'gzip,deflate';
         customHeaders.Connection = 'keep-alive';
 
         if (settings.username !== null && settings.password !== null) {
@@ -110,7 +131,21 @@ var PhantomParser = function (utils, page, config) {
     };
 
     /**
-     * TBD
+     * Reset the HTTP header container.
+     *
+     * @method resetHttpHeaders
+     * @param {Object} page The WebPage object.
+     * @return undefined
+     */
+    this.resetHttpHeaders = function (page) {
+        page.customHeaders = {};
+    };
+
+    /**
+     * Handle the querysting for the URL request.
+     *
+     * @method handleQueryString
+     * @return undefined
      */
     this.handleQueryString = function () {
         var currentQS = this.url.replace(/.*\?(.+)(#.*)?/, '$1');
@@ -125,7 +160,34 @@ var PhantomParser = function (utils, page, config) {
 
         var getParams = utils.arrayToQuery(utils.normaliseData(utils.arrayToQuery(currentQS)));
         this.url = this.url.replace(/\?(.+)(#.*)?/, '') + (getParams !== '' ? ('?' + getParams) : '');
+    };
 
+    /**
+     * Add a cookie for the current request.
+     *
+     * @method addCookie
+     * @param {Object} data The cookie settings.
+     * @return {Boolean}
+     */
+    this.addCookie = function(data) {
+        var res = this.page.addCookie(data);
+        if (!res) {
+            res = phantom.addCookie(data);
+        }
+
+        return res;
+    };
+
+    /**
+     * Reset the cookie container.
+     *
+     * @method resetCookie
+     * @param {Object} page The WebPage object.
+     * @return undefined
+     */
+    this.resetCookie = function (page) {
+        phantom.clearCookies();
+        page.clearCookies();
     };
 
     /**
@@ -147,7 +209,7 @@ var PhantomParser = function (utils, page, config) {
                     domain = this.url.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, '$2');
                 }
 
-                this.page.addCookie({
+                this.addCookie({
                     'name'   : cookie,
                     'value'  : this.data.COOKIE[cookie],
                     'domain' : domain
@@ -156,6 +218,7 @@ var PhantomParser = function (utils, page, config) {
         }
 
         var headers = {};
+        // TODO: Add a method
         for (var header in this.page.customHeaders) {
             if (this.page.customHeaders.hasOwnProperty(header)) {
                 headers[header] = this.page.customHeaders[header];
@@ -189,9 +252,15 @@ var PhantomParser = function (utils, page, config) {
 
         for (var cookie in this.data.COOKIE) {
             if (this.data.COOKIE.hasOwnProperty(cookie)) {
-                this.page.addCookie({
-                    'name'  : cookie,
-                    'value' : this.data.COOKIE[cookie]
+                var domain = '';
+                if (this.url.substr(0, 7) !== 'file://') {
+                    domain = this.url.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, '$2');
+                }
+
+                this.addCookie({
+                    'name'   : cookie,
+                    'value'  : this.data.COOKIE[cookie],
+                    'domain' : domain
                 });
             }
         }
@@ -227,11 +296,18 @@ var PhantomParser = function (utils, page, config) {
     };
 
     /**
-     * TBD
+     * In case an upload is required, open another process (upload.js) in order
+     * to upload the file(s) defined in the data object.
+     * Then set the output as page content for the current request and trigger
+     * the onLoadFinished to process it.
+     *
+     * @method spawnAndUseNodeJs
+     * @param {String} url  The URL where upload the data
+     * @param {Object} data The data to be uploaded
+     * @return undefined
      */
     this.spawnAndUseNodeJs = function (url, data) {
-        var spawn   = require('child_process').spawn,
-            args    = [ fs.workingDirectory + '/src/upload.js', url, JSON.stringify(data) ],
+        var args    = [ fs.workingDirectory + '/src/upload.js', url, JSON.stringify(data) ],
             process = spawn('node', args);
 
         process.stdout.on('data', function(data) {
@@ -289,6 +365,16 @@ var PhantomParser = function (utils, page, config) {
 
             currentParser.stackPages.push(pageFork);
         }
+    };
+
+    /**
+     * Reset the stackPages container.
+     *
+     * @method resetStack
+     * @return undefined
+     */
+    this.resetStack = function () {
+        currentParser.stackPages = [];
     };
 
     /**
@@ -456,6 +542,39 @@ var PhantomParser = function (utils, page, config) {
     };
 
     /**
+     * Reset the report and links containers.
+     *
+     * @method resetReport
+     * @return undefined
+     */
+    this.resetReport = function () {
+        this.report = {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            prompts:    [],
+            console:    [],
+            failure:    false,
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        };
+
+        this.links = {
+            a:      [],
+            link:   [],
+            script: [],
+            meta:   [],
+            form:   [],
+            events: []
+        };
+    };
+
+    /**
      * Callback fired when the page has been loaded properly.
      *
      * @method onLoadFinished
@@ -463,9 +582,7 @@ var PhantomParser = function (utils, page, config) {
      */
     this.onLoadFinished = function () {
         if (settings.sanitise) {
-            var fs      = require('fs'),
-                tmp_fn  = fs.workingDirectory + '/file_' + ((new Date).getTime()) + '.html',
-                spawn   = require('child_process').spawn,
+            var tmp_fn  = fs.workingDirectory + '/file_' + ((new Date()).getTime()) + '.html',
                 args    = [ fs.workingDirectory + '/src/tidy.js', tmp_fn ],
                 process;
 
@@ -473,19 +590,22 @@ var PhantomParser = function (utils, page, config) {
             process = spawn('node', args);
 
             process.stdout.on('data', function(data) {
+                try { fs.remove(tmp_fn); } catch (ignore) {}
                 currentParser.sanitisedHtml += data.toString();
             });
 
             process.stderr.on('data', function(data) {
+                try { fs.remove(tmp_fn); } catch (ignore) {}
                 console.log(data.toString());
                 return currentParser.exit();
             });
 
-            process.on('exit', function(code) {
+            process.on('exit', function() {
+                try { fs.remove(tmp_fn); } catch (ignore) {}
+
                 if (page.content !== currentParser.sanitisedHtml) {
                     console.log('HTML sanitised');
                 }
-                fs.remove(tmp_fn);
 
                 //TODO: What to do if it exits before receive data?
                 currentParser.page.setContent(currentParser.sanitisedHtml, currentParser.url);
@@ -496,6 +616,12 @@ var PhantomParser = function (utils, page, config) {
         }
     };
 
+    /**
+     * Evaluate and parse the current page request.
+     *
+     * @method evaluateAndParse
+     * @return undefined
+     */
     this.evaluateAndParse = function () {
         var step;
 
@@ -562,19 +688,13 @@ var PhantomParser = function (utils, page, config) {
                 return window.eventContainer !== undefined ? window.eventContainer.getEvents() : [];
             });
 
-            for (var type in events) {
-                if (events.hasOwnProperty(type)) {
-                    for (var act in events[type]) {
-                        if (events[type].hasOwnProperty(act)) {
-                            for (var evt in events[type][act]) {
-                                if (events[type][act].hasOwnProperty(evt)) {
-                                    currentParser.putPageInStack(page, type, events[type][act][evt]);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            utils.loopEach(events, function(type, type_value) {
+                utils.loopEach(type_value, function(act, act_value) {
+                    utils.loopEach(act_value, function(evt, evt_value) {
+                        currentParser.putPageInStack(page, type, evt_value);
+                    });
+                });
+            });
 
             currentParser.links.a = [].map.call(links.a, function (item) {
                 return utils.normaliseUrl(item, url);
@@ -610,9 +730,11 @@ var PhantomParser = function (utils, page, config) {
 
         links = page.evaluate(currentParser.onEvaluateNonHtml, page.content);
 
-        currentParser.links.mixed = [].map.call(links.mixed, function (item) {
-            return utils.normaliseUrl(item, url);
-        }).concat(currentParser.links.mixed).filter(utils.onlyUnique);
+        if (links.hasOwnProperty('mixed')) {
+            currentParser.links.mixed = [].map.call(links.mixed, function (item) {
+                return utils.normaliseUrl(item, url);
+            }).concat(currentParser.links.mixed).filter(utils.onlyUnique);
+        }
 
         currentParser.exit();
     };
@@ -680,7 +802,11 @@ var PhantomParser = function (utils, page, config) {
     };
 
     /**
-     * TBD
+     * Retrieve all the links in the page.
+     * Generally used when the page is not HTML.
+     *
+     * @method onEvaluateNonHtml
+     * @return {Object}
      */
     this.onEvaluateNonHtml = function () {
         var urls = {
@@ -709,7 +835,7 @@ var PhantomParser = function (utils, page, config) {
 
 PhantomParser.prototype = new Parser();
 if (args.join(' ').indexOf('casperjs --cli test') === -1) {
-    new PhantomParser(utils, page, settings.config).parse(settings.url, settings.type, settings.data, settings.evt, settings.xPath);
+    new PhantomParser(utils, spawn, page, settings).parse(settings.url, settings.type, settings.data, settings.evt, settings.xPath);
 } else {
     module.exports = PhantomParser;
 }

@@ -154,6 +154,24 @@ casper.test.begin('normaliseData', function (test) {
     test.done();
 });
 
+casper.test.begin('sleep', function (test) {
+    var Utils  = require(srcdir + '/utils'),
+        crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+        utils;
+
+    utils = new Utils(crypto);
+
+    var t = (new Date()).getTime();
+    utils.sleep(100);
+    test.assertTruthy((new Date()).getTime() - t >= 100, 'it waits for 100ms');
+    utils.sleep(500);
+    test.assertTruthy((new Date()).getTime() - t >= 500, 'it waits for 500ms');
+    utils.sleep(1000);
+    test.assertTruthy((new Date()).getTime() - t >= 1000, 'it waits for 1000ms');
+
+    test.done();
+});
+
 casper.test.begin('onlyUnique', function (test) {
     var Utils  = require(srcdir + '/utils'),
         crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
@@ -283,6 +301,8 @@ casper.test.begin('normaliseUrl', function (test) {
 
     test.assertEquals(utils.normaliseUrl('/?b=2&a=1', 'http://www.example.com/'), 'http://www.example.com/?a=1&b=2', 'convert properly other URLs');
     test.assertEquals(utils.normaliseUrl('http://www.example.com/directory/#whatever', 'http://www.example.com/directory/#something'), 'http://www.example.com/directory/#whatever', 'convert properly other URLs');
+
+    test.assertEquals(utils.normaliseUrl('http://www.example.com/directory2/#whatever', 'http://www.example.com/directory'), 'http://www.example.com/directory2/#whatever', 'convert properly other URLs');
 
     test.done();
 });

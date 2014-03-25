@@ -28,11 +28,11 @@
  */
 
 /**
- * Test Module
+ * Test Class
  *
  * It manage the test case files: creation, retrieving and parsing.
  *
- * @module Test
+ * @class Test
  */
 var Test = function (fsWrapper, glob, mainDir, utils, cases_dir) {
     /**
@@ -54,7 +54,11 @@ var Test = function (fsWrapper, glob, mainDir, utils, cases_dir) {
     var currentTest = this;
 
     /**
-     * TBD
+     * Generate a section (INI style) for the data provided.
+     *
+     * @method buildSection
+     * @param  {Object} data The data of the test case.
+     * @return {String]
      */
     this.buildSection = function (data) {
         var content = '';
@@ -79,8 +83,8 @@ var Test = function (fsWrapper, glob, mainDir, utils, cases_dir) {
     this.createNewCaseFile = function (url, name, data, callback) {
         var mainUrl      = url.replace(/^(.+):\/\/(\/?[^\/]+)\/?.*$/, '$1://$2'),
             content      = '',
-            dir          = mainDir + currentTest.TEST_CASE_DIRECTORY + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),
-            testCaseFile = dir + '/' + (url === mainUrl ? '' : url.replace(mainUrl, '') + '/') + name + '.tst';
+            dir          = currentTest.TEST_CASE_DIRECTORY + '/' + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),
+            testCaseFile = dir + (dir.substr(dir.length - 1, 1) === '/' ? '' : '/') + (url === mainUrl ? '' : url.replace(mainUrl, '') + '/') + name + '.tst';
 
         if (url === '' || name === '' || Object.keys(data).length === 0) {
             return (callback !== undefined) ? callback() : undefined;
@@ -137,8 +141,8 @@ var Test = function (fsWrapper, glob, mainDir, utils, cases_dir) {
      */
     this.getCases = function (url) {
         var mainUrl     = url.replace(/^(.+):\/\/(\/?[^\/]+)\/.+$/, '$1://$2'),
-            dir         = mainDir + currentTest.TEST_CASE_DIRECTORY + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),
-            testCaseDir = dir + '/' + (url === mainUrl ? '' : url.replace(mainUrl, '') + '/');
+            dir         = currentTest.TEST_CASE_DIRECTORY + '/' + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),
+            testCaseDir = dir + (url === mainUrl ? '' : url.replace(mainUrl, '') + '/');
 
         if (url === '' || !fsWrapper.existsSync(testCaseDir)) {
             return [];

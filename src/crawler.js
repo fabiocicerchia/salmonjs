@@ -52,9 +52,13 @@ function spawnStderr(data) {
 }
 
 /**
- * Crawler Module
+ * Crawler Class
  *
- * @module Crawler
+ * It call the parser (PhantomJS) to retrieve all the information from the URL,
+ * then process each URL found to check if it's already been processed, if not
+ * queue it in the pool.
+ *
+ * @class Crawler
  */
 var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist, utils, pool) {
     /**
@@ -155,15 +159,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.proxy = '';
 
     /**
-     * The report directory.
-     *
-     * @property REPORT_DIRECTORY
-     * @type {String}
-     * @default "/../report/"
-     */
-    this.REPORT_DIRECTORY = '/../report/';
-
-    /**
      * The output of the process.
      *
      * @property processOutput
@@ -220,7 +215,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.politeInterval = 1000;
 
     /**
-     * TBD
+     * Sanitisation flag (in order to fix broken/invalid HTML).
      *
      * @property sanitise
      * @type {Boolean}
@@ -495,7 +490,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
 
-            if (optimist.argv.$0.indexOf('casperjs cli --test') === -1) {
+            if (optimist.argv.$0.indexOf('casperjs --cli test') === -1) {
                 process.exit();
             }
 
@@ -642,9 +637,9 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         indexContent    += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
         indexContent    += ' XPath: ' + (currentCrawler.xPath === '' ? 'N/A' : currentCrawler.xPath) + '</a>\n';
 
-        reportFile = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/' + reportName + '.html';
-        indexFile  = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/index.html';
-        fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/', '0777', function () {
+        reportFile = __dirname + currentCrawler.storeDetails + currentCrawler.timeStart + '/' + reportName + '.html';
+        indexFile  = __dirname + currentCrawler.storeDetails + currentCrawler.timeStart + '/index.html';
+        fs.mkdir(__dirname + currentCrawler.storeDetails + currentCrawler.timeStart + '/', '0777', function () {
             fs.writeFileSync(reportFile, reportContent);
             fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
         });

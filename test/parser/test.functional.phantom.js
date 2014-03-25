@@ -711,121 +711,122 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
     });
 
-//    casper.test.begin('Test #12', function (test) {
-//        var phantom,
-//            resp;
-//
-//        var params  = {
-//            idCrawler:       undefined,
-//            execId:          undefined,
-//            idRequest:       undefined,
-//            username:        undefined,
-//            password:        undefined,
-//            url:             'file://' + rootdir + '/test/assets/test_12.html',
-//            type:            'GET',
-//            data:            { POST: {}, CONFIRM: {} },
-//            evt:             undefined,
-//            xPath:           undefined,
-//            storeDetails:    false,
-//            followRedirects: false,
-//            proxy:           '',
-//            sanitise:        false,
-//            config:          {
-//                redis: {
-//                    port: 16379,
-//                    hostname: '127.0.0.1'
-//                },
-//                logging: {
-//                    level: 'debug', // Possible values: debug, info, warn, error.
-//                    silent: false
-//                },
-//                parser: {
-//                    interface: 'phantom', // PhantomJS: 'phantom'
-//                    cmd: 'phantomjs',
-//                    timeout: 5000 // Resource timeout in milliseconds.
-//                },
-//                crawler: {
-//                    attempts: 5, // Number of tries before stop to execute the request.
-//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
-//                }
-//            }
-//        };
-//        phantom = require('child_process').spawn('phantomjs', [
-//            //'--debug=true',
-//            srcdir + '/parser/phantom.js',
-//            JSON.stringify(params)
-//        ]);
-//
-//        phantom.stdout.on('data', function(data) {
-//            if (data.toString().indexOf('###') > -1) {
-//                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
-//                test.assertEquals(resp.links.a, []);
-//                test.done();
-//            }
-//        });
-//        phantom.stderr.on('data', function() {
-//            test.assertEquals(true, false);
-//            test.done();
-//        });
-//    });
+    casper.test.begin('Test #12', function (test) {
+        var phantom,
+            resp;
 
-//    casper.test.begin('Test #13', function (test) {
-//        var phantom,
-//            resp;
-//
-//        var params  = {
-//            idCrawler:       undefined,
-//            execId:          undefined,
-//            idRequest:       undefined,
-//            username:        undefined,
-//            password:        undefined,
-//            url:             'file://' + rootdir + '/test/assets/test_13.html',
-//            type:            'GET',
-//            data:            { POST: {}, CONFIRM: {} },
-//            evt:             undefined,
-//            xPath:           undefined,
-//            storeDetails:    false,
-//            followRedirects: false,
-//            proxy:           '',
-//            sanitise:        false,
-//            config:          {
-//                redis: {
-//                    port: 16379,
-//                    hostname: '127.0.0.1'
-//                },
-//                logging: {
-//                    level: 'debug', // Possible values: debug, info, warn, error.
-//                    silent: false
-//                },
-//                parser: {
-//                    interface: 'phantom', // PhantomJS: 'phantom'
-//                    cmd: 'phantomjs',
-//                    timeout: 5000 // Resource timeout in milliseconds.
-//                },
-//                crawler: {
-//                    attempts: 5, // Number of tries before stop to execute the request.
-//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
-//                }
-//            }
-//        };
-//        phantom = require('child_process').spawn('phantomjs', [
-//            //'--debug=true',
-//            srcdir + '/parser/phantom.js',
-//            JSON.stringify(params)
-//        ]);
-//
-//        phantom.stdout.on('data', function(data) {
-//            if (data.toString().indexOf('###') > -1) {
-//                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
-//                test.assertEquals(resp.links.a, []);
-//                test.done();
-//            }
-//        });
-//        phantom.stderr.on('data', function() {
-//            test.assertEquals(true, false);
-//            test.done();
-//        });
-//    });
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_12.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
+        };
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
+                test.assertEquals(resp.links.a, []);
+                test.done();
+            }
+        });
+        phantom.stderr.on('data', function() {
+            test.assertEquals(true, false);
+            test.done();
+        });
+    });
+
+    // TODO: Coverage broken
+    casper.test.begin('Test #13', function (test) {
+        var phantom,
+            resp;
+
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_13.html',
+            type:            'GET',
+            data:            { POST: {}, CONFIRM: {} },
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: false,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
+        };
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
+                test.assertEquals(resp.links.a, []);
+                test.done();
+            }
+        });
+        phantom.stderr.on('data', function() {
+            test.assertEquals(true, false);
+            test.done();
+        });
+    });
 
     casper.test.begin('Test #14', function (test) {
         var phantom,
@@ -1434,6 +1435,7 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
     });
 
+    // TODO: Coverage broken
     casper.test.begin('Test #24', function (test) {
         var phantom,
             resp;
@@ -2289,12 +2291,14 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
 
     casper.test.begin('Test #31', function (test) {
         var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {onlyUnique: function() { return true; }, normaliseUrl: function(url) { return url; }},
+            utils         = new (require(srcdir + '/utils'))({}),
             phantom,
             resp,
             content = fs.read('test/assets/test_31.xml');
 
-        phantom = new PhantomParser(utils, require('webpage').create());
+        utils.onlyUnique = function() { return true; };
+        utils.normaliseUrl = function(url) { return url; };
+        phantom = new PhantomParser(utils, {}, require('webpage').create(), { storeDetails: undefined});
 
         phantom.setUpPage = function(page) {
             page.onInitialized = function() {
@@ -2303,7 +2307,7 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         resp = phantom.cloneWebPage({content: content, url: 'http://www.example.com'});
 
         phantom.parsePage(resp);
-        json = JSON.parse(lastMessage.substr(3));
+        var json = JSON.parse(lastMessage.substr(3));
         test.assertEquals(json.links.mixed, ['http://www.w3.org/2005/Atom','http://example.org/feed/','http://example.org/','http://example.org/2003/12/13/atom03','http://example.org/2003/12/13/atom03.html','http://example.org/2003/12/13/atom03/edit',null]);
         test.done();
     });
@@ -2441,72 +2445,133 @@ if (casper.cli.options.post !== 'src/reporter/coverage.js') {
         });
     });
 
-//    casper.test.begin('GZip', function (test) {
-//        var phantom,
-//            resp,
-//            nickname = Date.now();
-//
-//        var params  = {
-//            idCrawler:       undefined,
-//            execId:          undefined,
-//            idRequest:       undefined,
-//            username:        undefined,
-//            password:        undefined,
-//            url:             'http://www.fabiocicerchia.it',
-//            type:            'GET',
-//            data:            {},
-//            evt:             undefined,
-//            xPath:           undefined,
-//            storeDetails:    false,
-//            followRedirects: true,
-//            proxy:           '',
-//            sanitise:        false,
-//            config:          {
-//                redis: {
-//                    port: 16379,
-//                    hostname: '127.0.0.1'
-//                },
-//                logging: {
-//                    level: 'debug', // Possible values: debug, info, warn, error.
-//                    silent: false
-//                },
-//                parser: {
-//                    interface: 'phantom', // PhantomJS: 'phantom'
-//                    cmd: 'phantomjs',
-//                    timeout: 5000 // Resource timeout in milliseconds.
-//                },
-//                crawler: {
-//                    attempts: 5, // Number of tries before stop to execute the request.
-//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
-//                }
-//            }
-//        };
-//        phantom = require('child_process').spawn('phantomjs', [
-//            //'--debug=true',
-//            srcdir + '/parser/phantom.js',
-//            JSON.stringify(params)
-//        ]);
-//
-//        var output = '';
-//        phantom.stdout.on('data', function(data) {
-//            output += data.toString();
-//        });
-//        phantom.stderr.on('data', function() {
-//            test.assertEquals(true, false);
-//            test.done();
-//        });
-//        phantom.on('exit', function () {
-//            if (output.indexOf('###') > -1) {
-//                resp = JSON.parse(output.substr(output.indexOf('###') + 3));
-//                resp.report.resources['http://www.fabiocicerchia.it/'].headers.forEach(function (item) {
-//                    if (item.name.toLowerCase() === 'content-encoding') {
-//                        test.assertEquals(item.value.toLowerCase() === 'gzip', true, 'Content Encoding is set to gzip');
-//                    }
-//                });
-//                test.done();
-//            }
-//        });
-//    });
+    casper.test.begin('GZip', function (test) {
+        var phantom,
+            resp;
+
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'http://www.fabiocicerchia.it',
+            type:            'GET',
+            data:            {},
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: true,
+            proxy:           '',
+            sanitise:        false,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
+        };
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        var output = '';
+        phantom.stdout.on('data', function(data) {
+            output += data.toString();
+        });
+        phantom.stderr.on('data', function() {
+            test.assertEquals(true, false);
+            test.done();
+        });
+        phantom.on('exit', function () {
+            if (output.indexOf('###') > -1) {
+                resp = JSON.parse(output.substr(output.indexOf('###') + 3));
+                resp.report.resources['http://www.fabiocicerchia.it/'].headers.forEach(function (item) {
+                    if (item.name.toLowerCase() === 'content-encoding') {
+                        test.assertEquals(item.value.toLowerCase() === 'gzip', true, 'Content Encoding is set to gzip');
+                    }
+                });
+                test.done();
+            }
+        });
+    });
+
+    casper.test.begin('sanitise', function (test) {
+        var phantom,
+            resp;
+
+        var params  = {
+            idCrawler:       undefined,
+            execId:          undefined,
+            idRequest:       undefined,
+            username:        undefined,
+            password:        undefined,
+            url:             'file://' + rootdir + '/test/assets/test_32.html',
+            type:            'GET',
+            data:            {},
+            evt:             undefined,
+            xPath:           undefined,
+            storeDetails:    false,
+            followRedirects: true,
+            proxy:           '',
+            sanitise:        true,
+            config:          {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            }
+        };
+        phantom = require('child_process').spawn('phantomjs', [
+            //'--debug=true',
+            srcdir + '/parser/phantom.js',
+            JSON.stringify(params)
+        ]);
+
+        phantom.stdout.on('data', function(data) {
+            if (data.toString().indexOf('###') > -1) {
+                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
+                test.assertEquals(resp.report.content, '<!DOCTYPE html><html><head>\n<title></title>\n</head>\n<body>\n<table>\n<tbody>\n<tr>\n<td>badly formatted html</td>\n</tr>\n</tbody>\n</table>\n\n\n\n</body></html>');
+                test.done();
+            }
+        });
+        phantom.stderr.on('data', function() {
+            test.assertEquals(true, false);
+            test.done();
+        });
+
+        phantom.on('exit', function () {
+            test.done();
+        });
+    });
 } else if (typeof test !== 'undefined') {
     test.done();
 }

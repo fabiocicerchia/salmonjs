@@ -28,9 +28,12 @@
  */
 
 /**
- * Utils Module
+ * Utils Class
  *
- * @module Utils
+ * A set of utility methods
+ * (string, array, html, encryption, normalisation, dom).
+ *
+ * @class Utils
  */
 var Utils = function (crypto) {
     /**
@@ -259,9 +262,9 @@ var Utils = function (crypto) {
             normalised = baseUrl + url;
         } else if (url === baseUrl || url === '') {
             normalised = baseUrl;
-        } else if (url.indexOf('://') !== -1 && url.indexOf(baseDomain) === 0) {
-            normalised = url;
         } else if (url.indexOf('://') !== -1 && url.indexOf(baseUrl) === 0) {
+            normalised = url;
+        } else if (url.indexOf('://') !== -1 && url.indexOf(baseDomain) === 0) {
             normalised = url;
         }
 
@@ -274,7 +277,11 @@ var Utils = function (crypto) {
     };
 
     /**
-     * TBD
+     * Parse an INI file (from string to object).
+     *
+     * @method parseINIString
+     * @param {String} data The data to be parsed.
+     * @return {Object}
      */
     this.parseINIString = function (data) {
         var regex   = {

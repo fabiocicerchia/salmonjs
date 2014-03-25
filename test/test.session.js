@@ -43,7 +43,7 @@ casper.test.begin('dump', function (test) {
             keys: function (key, callback) { callback(undefined, ['key1', 'key2']); },
             hgetall: function (key, callback) { callback(undefined, {sk1: 'test', sk2: 'test'}); }
         },
-        zlib   = {gzip : function (data, callback) { callback(null, data); }},
+        zlib   = {gzip : function (data, callback) { callback(undefined, data); }},
         utils  = {},
         conf   = {},
         spawn  = function() {},
@@ -58,6 +58,68 @@ casper.test.begin('dump', function (test) {
     });
 });
 
+casper.test.begin('dump #2', function (test) {
+    var fs     = new (require(srcdir + '/fs'))(require('fs')),
+        client = {
+            keys: function (key, callback) { callback('error', undefined); },
+            hgetall: function (key, callback) { callback(undefined, {sk1: 'test', sk2: 'test'}); }
+        },
+        zlib   = {gzip : function (data, callback) { callback(undefined, data); }},
+        utils  = {},
+        conf   = {},
+        spawn  = function() {},
+        os     = {},
+        pool   = new (require(srcdir + '/pool'))(spawn, os),
+        Session = require(srcdir + '/session'),
+        session = new Session(client, fs, zlib, utils, conf, pool);
+
+    session.dump(function (err) {
+        test.assertEquals(err, 'error', 'check if redis is failing properly');
+        test.done();
+    });
+});
+
+casper.test.begin('dump #3', function (test) {
+    var fs     = new (require(srcdir + '/fs'))(require('fs')),
+        client = {
+            keys: function (key, callback) { callback(undefined, ['key1', 'key2']); },
+            hgetall: function (key, callback) { callback('error2', undefined); }
+        },
+        zlib   = {gzip : function (data, callback) { callback(undefined, data); }},
+        utils  = {},
+        conf   = {},
+        spawn  = function() {},
+        os     = {},
+        pool   = new (require(srcdir + '/pool'))(spawn, os),
+        Session = require(srcdir + '/session'),
+        session = new Session(client, fs, zlib, utils, conf, pool);
+
+    session.dump(function (err) {
+        test.assertEquals(err, 'error2', 'check if redis is failing properly');
+        test.done();
+    });
+});
+
+casper.test.begin('dump #4', function (test) {
+    var fs     = new (require(srcdir + '/fs'))(require('fs')),
+        client = {
+            keys: function (key, callback) { callback(undefined, ['key1', 'key2']); },
+            hgetall: function (key, callback) { callback(undefined, {sk1: 'test', sk2: 'test'}); }
+        },
+        zlib   = {gzip : function (data, callback) { callback('error3', undefined); }},
+        utils  = {},
+        conf   = {},
+        spawn  = function() {},
+        os     = {},
+        pool   = new (require(srcdir + '/pool'))(spawn, os),
+        Session = require(srcdir + '/session'),
+        session = new Session(client, fs, zlib, utils, conf, pool);
+
+    session.dump(function (err) {
+        test.assertEquals(err, 'error3', 'check if gzip is failing properly');
+        test.done();
+    });
+});
 
 casper.test.begin('restore', function (test) {
     var fs     = new (require(srcdir + '/fs'))(require('fs')),
@@ -72,15 +134,38 @@ casper.test.begin('restore', function (test) {
         pool   = new (require(srcdir + '/pool'))(spawn, os),
         Session = require(srcdir + '/session'),
         session = new Session(client, fs, zlib, utils, conf, pool);
-    
+
     fs.writeFileSync(srcdir + '/../session.dmp', '{"conf":{"w":20,"workers":20},"redis":{"key1":[{"sk1":"test","sk2":"test"}],"key2":[{"sk1":"test","sk2":"test"}]},"pool":{"size":20,"queue":[],"memoryThreshold":10,"delay":1000}}');
 
-    session.restore(function (conf) {
+    session.restore(function (err, conf) {
         test.assertEquals(pool.size, 20);
         test.assertEquals(pool.queue, []);
         test.assertEquals(pool.memoryThreshold, 10);
         test.assertEquals(pool.delay, 1000);
         test.assertEquals(conf.workers, 20);
+
+        test.done();
+    });
+});
+
+casper.test.begin('restore #2', function (test) {
+    var fs     = new (require(srcdir + '/fs'))(require('fs')),
+        client = {
+            hset: function() {}
+        },
+        zlib   = {gunzip : function (data, callback) { callback('error', undefined); }},
+        utils  = new (require(srcdir + '/utils'))({}),
+        conf   = {},
+        spawn  = function() {},
+        os     = {},
+        pool   = new (require(srcdir + '/pool'))(spawn, os),
+        Session = require(srcdir + '/session'),
+        session = new Session(client, fs, zlib, utils, conf, pool);
+
+    fs.writeFileSync(srcdir + '/../session.dmp', '{"conf":{"w":20,"workers":20},"redis":{"key1":[{"sk1":"test","sk2":"test"}],"key2":[{"sk1":"test","sk2":"test"}]},"pool":{"size":20,"queue":[],"memoryThreshold":10,"delay":1000}}');
+
+    session.restore(function (err) {
+        test.assertEquals(err, 'error', 'check if gzip is failing properly');
 
         test.done();
     });

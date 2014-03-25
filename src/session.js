@@ -28,9 +28,12 @@
  */
 
 /**
- * Session Module
+ * Session Class
  *
- * @module Session
+ * Session management, it dumps and restores the Redis DB and the SalmonJS
+ * configuration.
+ *
+ * @class Session
  */
 var Session = function (client, fs, zlib, utils, conf, pool) {
     /**
@@ -48,18 +51,34 @@ var Session = function (client, fs, zlib, utils, conf, pool) {
         dump.pool.delay           = pool.delay;
 
         client.keys('*', function (err, replies) {
-            replies.forEach(function (key) {
-                dump.redis[key] = [];
-                client.hgetall(key, function (err, obj) {
-                    dump.redis[key].push(obj);
+            if (err) {
+                return callback(err);
+            }
+
+            try {
+                replies.forEach(function (key) {
+                    dump.redis[key] = [];
+                    client.hgetall(key, function (err, obj) {
+                        if (err) {
+                            throw err;
+                        }
+
+                        dump.redis[key].push(obj);
+                    });
                 });
-            });
+            } catch (err) {
+                return callback(err);
+            }
 
             dump = JSON.stringify(dump);
             zlib.gzip(dump, function(err, result) {
+                if (err) {
+                    return callback(err);
+                }
+
                 var filename = __dirname + '/../session.dmp';
                 fs.writeFile(filename, result, function() {
-                    callback();
+                    callback(undefined);
                 });
             });
         });
@@ -77,7 +96,7 @@ var Session = function (client, fs, zlib, utils, conf, pool) {
 
         zlib.gunzip(data, function (err, result) {
             if (err) {
-                throw err;
+                return callback(err);
             }
 
             var dump = JSON.parse(result.toString());
@@ -93,7 +112,7 @@ var Session = function (client, fs, zlib, utils, conf, pool) {
                 });
             });
 
-            callback(dump.conf);
+            callback(undefined, dump.conf);
         });
     };
 };

@@ -27,10 +27,16 @@
  * SOFTWARE.
  */
 
-// TODO: Convert this to be an interface, so ut'll be possible to call is with some params and launch the crawler.
-// In this way the people can embed it in their project and not just use it as a standalone tool.
-
+/**
+ * SalmonJS Class
+ *
+ * Main interface to be used in NodeJS as well.
+ * It provides all the functionalities available via the CLI.
+ *
+ * @class SalmonJS
+ */
 var SalmonJS = function (redis, argv) {
+    // TODO: convert to this.*
     var IOC       = require('./ioc'),
         ioc       = new IOC(),
         logLevels = [ 'error', 'warn', 'info', 'debug' ],
@@ -89,6 +95,12 @@ var SalmonJS = function (redis, argv) {
         process.exit(1);
     });
 
+    /**
+     * Handle the signals in order to stop gracefully the execution.
+     *
+     * @method handleSignals
+     * @return undefined
+     */
     this.handleSignals = function () {
         winston.info('Gracefully shutting down');
 
@@ -96,12 +108,23 @@ var SalmonJS = function (redis, argv) {
             session = new Session(client, fs, zlib, utils, argv, pool);
 
         winston.debug('Dumping the session...');
-        session.dump(function () {
+        session.dump(function (err) {
+            if (err) {
+                winston.error(err);
+            }
+
             winston.debug('Exiting...');
             process.exit();
         });
     };
 
+    /**
+     * Restore the previous interrupted session.
+     *
+     * @method restoreSession
+     * @param {Function} callback A callback to be invoked once restore the session.
+     * @return undefined
+     */
     this.restoreSession = function (callback) {
         var Session = require('./session'),
             session = new Session(client, fs, zlib, utils, argv, pool);
@@ -139,6 +162,13 @@ var SalmonJS = function (redis, argv) {
         console.log(data.substr(0, data.length - 1).red);
     };
 
+    /**
+     * Resolve the URI and add the protocol.
+     *
+     * @method resolveURI
+     * @param {String} uri The URI to be resolved.
+     * @return {String}
+     */
     this.resolveURI = function (uri) {
         uri = path.resolve(uri);
         if (fs.existsSync(uri)) {
@@ -154,6 +184,12 @@ var SalmonJS = function (redis, argv) {
         return uri;
     };
 
+    /**
+     * Start the execution.
+     *
+     * @method start
+     * @return undefined
+     */
     this.start = function() {
         var uri = this.resolveURI(argv.uri);
 

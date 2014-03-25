@@ -32,7 +32,10 @@ var args = process.argv,
     tidy = require('htmltidy').tidy;
 
 tidy(html, function(err, html) {
-    console.log(err);
-    console.log(html);
+    if (err) {
+        console.log('ERROR: ' + err);
+    } else {
+        console.log(html);
+    }
     process.exit();
 });

@@ -155,7 +155,7 @@ var reporter = function (utils) {
         html += '\n';
         html += '            <h2>Resources</h2>\n';
         html += '            <ul>\n';
-        if (report.resources.length > 0) {
+        if (Object.keys(report.resources).length > 0) {
             for (i in report.resources) {
                 if (report.resources.hasOwnProperty(i)) {
                     html += '                <li>\n';
