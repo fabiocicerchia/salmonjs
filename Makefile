@@ -52,7 +52,7 @@ versions:
 	$(NODE) --version
 	$(NPM) version
 	$(PHANTOMJS) --version
-	$(YUIDOC) --version
+	$(YUIDOC) --version || true
 
 test:
 	$(JASMINE) $(FILES)
