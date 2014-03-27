@@ -14,7 +14,6 @@ before_install:
   - sudo apt-get update -qq
 
 script:
-  - make install-casper
   - make versions
   - npm --registry http://registry.npmjs.eu/ install
   - npm test
