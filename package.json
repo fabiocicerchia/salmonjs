@@ -37,15 +37,18 @@
     "colors": "0.6.2",
     "redis": "0.10.1",
     "glob": "3.2.9",
-    "winston": "0.7.2",
+    "winston": "0.7.3",
     "insight": "0.3.1",
     "request": "2.34.0",
     "htmltidy": "0.0.6"
   },
   "devDependencies": {
-    "visionmedia-jscoverage": "1.0.0",
     "jshint": "2.4.4",
-    "yuidocjs": "0.3.49"
+    "yuidocjs": "0.3.49",
+    "jasmine-node": "1.14.2",
+    "phapper": "0.1.9",
+    "grunt-cli": "0.4.4",
+    "grunt-jasmine-node-coverage": "0.1.8",
   },
   "jshintConfig": {
     "globals": {

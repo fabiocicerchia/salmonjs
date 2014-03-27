@@ -27,19 +27,24 @@
  * SOFTWARE.
  */
 
-var casper   = casper || {},
-    fs       = require('fs'),
-    srcdir   = fs.absolute('.') + (casper.cli.has('coverage') ? '/src-cov' : '/src');
+var system  = require('system'),
+    args    = system.args,
+    page    = require('webpage').create(),
+    rootdir = require('fs').workingDirectory;
 
-casper.options.onPageInitialized = function () {
-    casper.page.injectJs(srcdir + '/sha1.js');
-    casper.page.injectJs(srcdir + '/events.js');
+page.onInitialized = function () {
+    page.injectJs(rootdir + '/src/sha1.js');
+    page.injectJs(rootdir + '/src/events.js');
 };
 
-casper.on('remote.message', function (msg) {
-    console.log('CONSOLE.LOG: ' + msg);
+page.open(args[1], function(status) {
 });
 
-casper.test.begin('Main', function (test) {
-    test.done();
-});
+page.onLoadFinished = function () {
+    var eventContainer = page.evaluate(function () {
+        return window.eventContainer.getEvents();
+    });
+
+    console.log(JSON.stringify(eventContainer));
+    phantom.exit();
+};

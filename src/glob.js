@@ -75,7 +75,7 @@ var glob = {
 
         dirToProcess = dirToProcess.substr(0, (lastOccurrence === -1) ? dirToProcess.length : lastOccurrence);
 
-        regEx = '^' + dir.replace(/\//g, '\\/').replace(/\./g, '\\.').replace(/\*\*/g, '.+?').replace(/\*/g, '[^\/]+');
+        regEx = '^' + dir.replace(/\//g, '\\/').replace(/\./g, '\\.').replace(/\*\*/g, '.+?').replace(/\*/g, '[^\/]+') + '$';
 
         glob.list(dirToProcess, function (err, results) {
             filtered = [];
@@ -102,7 +102,7 @@ var glob = {
             fsWrapper = new FSWrapper(),
             results   = [],
             list      = fsWrapper.readdirSync(dir),
-            pending   = list.length - 2;
+            pending   = list.length;
 
         if (!pending) {
             return done(null, results);

@@ -33,36 +33,33 @@ PHANTOMJS=phantomjs
 NODE=node
 NPM=npm
 JSHINT=./node_modules/jshint/bin/jshint
-CASPERJS=./casperjs/bin/casperjs
+JASMINE=./node_modules/jasmine-node/bin/jasmine-node
+GRUNT=grunt
 JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
 YUIDOC=node ./node_modules/yuidocjs/lib/cli.js
 YUIDOC=yuidoc
-FILES=test/test.*.js test/*/test.*.js
+FILES=test
 FILES_COV=test/parser/test.phantom.js test/test.crawler.js test/test.events.js test/test.main.js test/test.parser.js test/test.pool.js test/test.session.js test/test.test.js test/test.utils.js
 
-install: install-casper install-yuidoc-theme
-
-install-casper:
-	$(GIT) clone git://github.com/n1k0/casperjs.git
+install: install-yuidoc-theme
 
 install-yuidoc-theme:
 	$(GIT) clone https://github.com/Krxtopher/yuidoc-themes docs/theme
 
 versions:
-	$(CASPERJS) --version
+	$(GRUNT) --version
+	$(JASMINE) --version
 	$(JSCOVERAGE) --version
-	$(PHANTOMJS) --version
 	$(NODE) --version
 	$(NPM) version
+	$(PHANTOMJS) --version
+	$(YUIDOC) --version
 
 test:
-	$(CASPERJS) test $(FILES)
+	$(JASMINE) $(FILES)
 
 coverage:
-	$(RM) src-cov 2> /dev/null
-	$(JSCOVERAGE) src src-cov
-	$(CASPERJS) test $(FILES_COV) --post=src/reporter/coverage.js --coverage --concise
-	$(RM) src-cov
+	$(GRUNT) jasmine_node
 
 documentation:
 	$(YUIDOC) -o docs/api -t docs/theme/friendly-theme bin src test

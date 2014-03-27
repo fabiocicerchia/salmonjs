@@ -138,6 +138,29 @@ var FSWrapper = function (fs) {
 
         return fs.isDirectory.call(fs, path);
     };
+
+    /**
+     * Remove recursively all the files inside a folder.
+     *
+     * @method deleteTree
+     * @param {String} path The folder to be removed.
+     * @return undefined
+     */
+    this.deleteTree = function(path) {
+        var files = [];
+        if (this.existsSync(path)) {
+            files = this.readdirSync(path);
+            files.forEach(function(file, index) {
+                var curPath = path + '/' + file;
+                if (this.isDirectory(curPath)) {
+                    this.removeTree(curPath);
+                } else {
+                    this.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(path);
+        }
+    };
 };
 
 module.exports = FSWrapper;

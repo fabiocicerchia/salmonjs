@@ -121,7 +121,8 @@ var Test = function (fsWrapper, glob, mainDir, utils, cases_dir) {
         for (i = 0; i < parts.length - 1; i++) {
             currDir += parts[i] + '/';
             if (!fsWrapper.existsSync(currDir)) {
-                fsWrapper.mkdirSync(currDir);
+                // TODO: FIX THIS BUG
+                require('fs').mkdirSync(currDir.substr(0, currDir.length - 1));
             }
         }
 

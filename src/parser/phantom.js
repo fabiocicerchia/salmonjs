@@ -27,15 +27,16 @@
  * SOFTWARE.
  */
 
-var Parser   = require('../parser'),
-    fs       = require('fs'),
-    spawn    = require('child_process').spawn,
-    system   = require('system'),
-    args     = system.args,
-    testing  = args.join(' ').indexOf('casperjs --cli test') !== -1,
-    settings = !testing ? JSON.parse(args[1]) : {},
-    page     = require('webpage').create(),
-    utils    = new (require('../utils'))();
+var Parser     = require('../parser'),
+    fs         = require('fs'),
+    spawn      = require('child_process').spawn,
+    utils      = new (require('../utils'))(),
+    system     = typeof GLOBAL !== 'undefined' && typeof GLOBAL.system !== 'undefined' ? GLOBAL.system : require('system'),
+    args       = system.args || system.argv,
+    testing    = args.join(' ').indexOf('jasmine-node') !== -1 || args.join(' ').indexOf('grunt') !== -1,
+    settings   = !testing ? JSON.parse(args[1]) : {},
+    webpageObj = typeof webpage !== 'undefined' ? webpage : require('webpage');
+    page       = webpageObj.create();
 
 /**
  * PhantomParser Class.
@@ -393,7 +394,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
         };
 
         console.log('###' + JSON.stringify(response));
-        if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+        if (args.join(' ').indexOf('jasmine-node') === -1) {
             phantom.exit(); // TODO: This will crash PhantomJS
         }
     };
@@ -650,7 +651,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
      * @return {Object}
      */
     this.cloneWebPage = function (page) {
-        var newPage = require('webpage').create();
+        var newPage = webpageObj.create();
 
         currentParser.setUpPage(newPage);
         newPage.setContent(page.content, page.url);
@@ -834,7 +835,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
 };
 
 PhantomParser.prototype = new Parser();
-if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+if (args.join(' ').indexOf('jasmine-node') === -1) {
     new PhantomParser(utils, spawn, page, settings).parse(settings.url, settings.type, settings.data, settings.evt, settings.xPath);
 } else {
     module.exports = PhantomParser;
