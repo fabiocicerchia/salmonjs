@@ -49,7 +49,6 @@ install-yuidoc-theme:
 versions:
 	$(GRUNT) --version
 	$(JASMINE) --version
-	$(JSCOVERAGE) --version
 	$(NODE) --version
 	$(NPM) version
 	$(PHANTOMJS) --version
