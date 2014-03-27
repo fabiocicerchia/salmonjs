@@ -47,7 +47,7 @@
     "yuidocjs": "0.3.49",
     "jasmine-node": "1.14.2",
     "phapper": "0.1.9",
-    "grunt-cli": "0.4.4",
+    "grunt-cli": "0.1.13",
     "grunt-jasmine-node-coverage": "0.1.8"
   },
   "jshintConfig": {
