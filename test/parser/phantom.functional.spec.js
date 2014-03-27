@@ -50,6 +50,8 @@ var rootdir = require('path').resolve('.'),
     oldLog = console.log,
     lastMessage;
 
+GLOBAL.webpage = webpage;
+GLOBAL.system  = process;
 console.log = function (message) {
     lastMessage = message;
     oldLog.apply(console, arguments);
@@ -2520,6 +2522,7 @@ describe('gZip', function () {
         });
     });
 });
+if (process.env.TRAVIS !== 'true') {
 describe('sanitise', function () {
     it('sanitise', function (done) {
         var phantom,
@@ -2582,3 +2585,4 @@ describe('sanitise', function () {
         });
     });
 });
+}
