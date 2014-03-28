@@ -47,7 +47,7 @@ install-yuidoc-theme:
 	$(GIT) clone https://github.com/Krxtopher/yuidoc-themes docs/theme
 
 npm:
-	$(NPM) install grunt-cli
+	$(NPM) install grunt-cli -g
 	$(NPM) install coveralls -g
 
 versions:
@@ -73,6 +73,17 @@ show-report:
 	cat /tmp/phantomjs.tar.gz | base64
 
 lint:
-	$(FIND) bin src test -type f -name "*.js" | xargs $(JSHINT)
+	$(GRUNT) jshint
+
+todo:
+	$(GRUNT) todo
+
+ci:
+	make install
+	make npm
+	make version
+	make lint
+	make test
+	make coverage
 
 .PHONY: test

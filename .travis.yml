@@ -14,8 +14,5 @@ before_install:
   - sudo apt-get update -qq
 
 script:
-  - make versions
   - npm --registry http://registry.npmjs.eu/ install
-  - make install
-  - npm test
-  - make coverage
+  - make ci
