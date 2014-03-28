@@ -18,3 +18,4 @@ script:
   - npm --registry http://registry.npmjs.eu/ install
   - make install
   - npm test
+  - npm coverage
