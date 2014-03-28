@@ -16,4 +16,5 @@ before_install:
 script:
   - make versions
   - npm --registry http://registry.npmjs.eu/ install
+  - make install
   - npm test

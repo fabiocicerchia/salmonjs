@@ -41,10 +41,14 @@ YUIDOC=yuidoc
 FILES=test
 FILES_COV=test/parser/test.phantom.js test/test.crawler.js test/test.events.js test/test.main.js test/test.parser.js test/test.pool.js test/test.session.js test/test.test.js test/test.utils.js
 
-install: install-yuidoc-theme
+install: install-yuidoc-theme npm
 
 install-yuidoc-theme:
 	$(GIT) clone https://github.com/Krxtopher/yuidoc-themes docs/theme
+
+npm:
+	$(npm) install grunt-cli -g
+	$(npm) install coveralls -g
 
 versions:
 	$(GRUNT) --version
@@ -59,6 +63,7 @@ test:
 
 coverage:
 	$(GRUNT) jasmine_node
+	cat build/reports/coverage/lcov.info | sed -r "s/SF:.+\/(src|test)/SF:\1/" | coveralls
 
 documentation:
 	$(YUIDOC) -o docs/api -t docs/theme/friendly-theme bin src test
