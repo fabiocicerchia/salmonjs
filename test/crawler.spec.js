@@ -288,46 +288,46 @@ describe('checkRunningCrawlers', function() {
         done();
     });
 });
-//describe('checkRunningCrawlers1', function() {
-//    it('checkRunningCrawlers1', function (done) {
-//        var Crawler  = require(srcdir + '/crawler'),
-//            config   = {
-//                redis: {
-//                    port: 16379,
-//                    hostname: '127.0.0.1'
-//                },
-//                logging: {
-//                    level: 'debug', // Possible values: debug, info, warn, error.
-//                    silent: false
-//                },
-//                parser: {
-//                    interface: 'phantom', // PhantomJS: 'phantom'
-//                    cmd: 'phantomjs',
-//                    timeout: 5000 // Resource timeout in milliseconds.
-//                },
-//                crawler: {
-//                    attempts: 5, // Number of tries before stop to execute the request.
-//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
-//                }
-//            },
-//            spawn    = {},
-//            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-//            testObj  = require(srcdir + '/test'),
-//            client   = {},
-//            winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
-//            fs       = require(srcdir + '/fs'),
-//            optimist = {argv: {$0: ['jasmine-node']}},
-//            utils    = {},
-//            crawler;
-//
-//        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
-//
-//        crawler.possibleCrawlers = 0;
-//        expect(crawler.checkRunningCrawlers()).toEqual(false); // 'exits when there are no running crawlers'
-//
-//        done();
-//    });
-//});
+describe('checkRunningCrawlers1', function() {
+    it('checkRunningCrawlers1', function (done) {
+        var Crawler  = require(srcdir + '/crawler'),
+            config   = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
+            spawn    = {},
+            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            testObj  = require(srcdir + '/test'),
+            client   = {},
+            winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
+            fs       = require(srcdir + '/fs'),
+            optimist = {argv: {$0: ['jasmine-node']}},
+            utils    = {},
+            crawler;
+
+        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+
+        crawler.possibleCrawlers = 0;
+        expect(crawler.checkRunningCrawlers()).toEqual(false); // 'exits when there are no running crawlers'
+
+        done();
+    });
+});
 describe('onStdOut', function() {
     it('onStdOut', function (done) {
         var Crawler  = require(srcdir + '/crawler'),
@@ -1378,49 +1378,47 @@ describe('handleError2', function() {
         expect(crawler.handleError()).toEqual(true);
     });
 });
-//describe('init', function() {
-//it('init', function (done) {
-//        var Crawler  = require(srcdir + '/crawler'),
-//            config   = {
-//                redis: {
-//                    port: 16379,
-//                    hostname: '127.0.0.1'
-//                },
-//                logging: {
-//                    level: 'debug', // Possible values: debug, info, warn, error.
-//                    silent: false
-//                },
-//                parser: {
-//                    interface: 'phantom', // PhantomJS: 'phantom'
-//                    cmd: 'phantomjs',
-//                    timeout: 5000 // Resource timeout in milliseconds.
-//                },
-//                crawler: {
-//                    attempts: 5, // Number of tries before stop to execute the request.
-//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
-//                }
-//            },
-//            spawn    = {},
-//            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
-//            testObj  = require(srcdir + '/test'),
-//            client   = {on: function (evt, cb) { cb({}); }},
-//            winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
-//            fs       = require(srcdir + '/fs'),
-//            optimist = {argv: {$0: ['jasmine-node']}},
-//            utils    = {},
-//            crawler;
-//
-//        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
-//
-//        process = {pid: 123};
-//
-//        crawler.init();
-//        expect(typeof crawler.idCrawler).toEqual('string');
-//        expect(crawler.idCrawler).toEqual('123');
-//
-//        done();
-//    });
-//});
+describe('init', function() {
+    it('init', function (done) {
+        var Crawler  = require(srcdir + '/crawler'),
+            config   = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
+            spawn    = {},
+            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            testObj  = require(srcdir + '/test'),
+            client   = {on: function (evt, cb) { cb({}); }},
+            winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
+            fs       = require(srcdir + '/fs'),
+            optimist = {argv: {$0: ['jasmine-node']}},
+            utils    = {},
+            crawler;
+
+        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+
+        crawler.init();
+        expect(typeof crawler.idCrawler).toEqual('string');
+        expect(crawler.idCrawler).toBeGreaterThan(0);
+
+        done();
+    });
+});
 describe('proxySettings', function() {
     it('proxySettings', function (done) {
         var Crawler  = require(srcdir + '/crawler'),
@@ -1525,7 +1523,6 @@ describe('proxySettings2', function() {
         crawler.execPhantomjs();
     });
 });
-//if (!casper.cli.has('coverage')) {
 describe('politeness', function() {
     it('politeness', function (done) {
         var Crawler  = require(srcdir + '/crawler'),
@@ -1581,4 +1578,3 @@ describe('politeness', function() {
         done();
     });
 });
-//}

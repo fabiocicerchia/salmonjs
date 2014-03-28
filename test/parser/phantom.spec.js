@@ -651,47 +651,6 @@ describe('parseGet3', function () {
         });
 });
 }
-// TODO: FUNCTIONAL TEST
-//describe('parseGet4', function () {
-//it('parseGet4', function (done) {
-//        var PhantomParser = require(srcdir + '/parser/phantom'),
-//            utils         = new (require(srcdir + '/utils'))(),
-//            config        = {
-//                redis: {
-//                    port: 16379,
-//                    hostname: '127.0.0.1'
-//                },
-//                logging: {
-//                    level: 'debug', // Possible values: debug, info, warn, error.
-//                    silent: false
-//                },
-//                parser: {
-//                    interface: 'phantom', // PhantomJS: 'phantom'
-//                    cmd: 'phantomjs',
-//                    timeout: 5000 // Resource timeout in milliseconds.
-//                },
-//                crawler: {
-//                    attempts: 5, // Number of tries before stop to execute the request.
-//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
-//                }
-//            },
-//            phantomParser;
-//
-//        phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
-//        phantomParser.reset();
-//
-//        phantomParser.url = 'http://www.html-kit.com/tools/cookietester/';
-//        phantomParser.type = 'GET';
-//        phantomParser.setUpPage = function() { };
-//        phantomParser.data = {COOKIE:{ 'test': 1}};
-//        phantomParser.onLoadFinished = function () {
-//            expect(phantomParser.page.content.indexOf('This page did not receive any cookies')).toEqual(-1);
-//            expect(phantomParser.page.content.indexOf('Number of cookies received: 0')).toEqual(-1);
-//            test.notEqual(phantomParser.page.content.indexOf('Number of cookies received: 1'), -1);
-//            done();
-//        };
-//        expect(phantomParser.parseGet()).toEqual(undefined);
-//    },
 if (process.argv.join(' ').indexOf('grunt') === -1) {
 describe('parsePost', function () {
     var PhantomParser = require(srcdir + '/parser/phantom'),
@@ -847,48 +806,7 @@ describe('parsePost3', function () {
         expect(customHeader).toEqual(1);
         });
 });
-// TODO: FUNCTIONAL TEST
-//describe('parsePost4', function () {
-//it('parsePost4', function (done) {
-//        var PhantomParser = require(srcdir + '/parser/phantom'),
-//            utils         = new (require(srcdir + '/utils'))(),
-//            config        = {
-//                redis: {
-//                    port: 16379,
-//                    hostname: '127.0.0.1'
-//                },
-//                logging: {
-//                    level: 'debug', // Possible values: debug, info, warn, error.
-//                    silent: false
-//                },
-//                parser: {
-//                    interface: 'phantom', // PhantomJS: 'phantom'
-//                    cmd: 'phantomjs',
-//                    timeout: 5000 // Resource timeout in milliseconds.
-//                },
-//                crawler: {
-//                    attempts: 5, // Number of tries before stop to execute the request.
-//                    delay: 5000 // Delay between an attempt and another one in milliseconds.
-//                }
-//            },
-//            phantomParser;
-//
-//        phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
-//        phantomParser.reset();
-//
-//        phantomParser.url = 'http://www.html-kit.com/tools/cookietester/';
-//        phantomParser.type = 'POST';
-//        phantomParser.setUpPage = function() { };
-//        phantomParser.data = {COOKIE:{ 'test': 1}};
-//        phantomParser.onLoadFinished = function () {
-//            expect(phantomParser.page.content.indexOf('This page did not receive any cookies')).toEqual(-1);
-//            expect(phantomParser.page.content.indexOf('Number of cookies received: 0')).toEqual(-1);
-//            test.notEqual(phantomParser.page.content.indexOf('Number of cookies received: 1'), -1);
-//            done();
-//        };
-//        expect(phantomParser.parsePost()).toEqual(undefined);
-//    },
-describe('parsePost5', function () {
+describe('parsePost4', function () {
     var PhantomParser = require(srcdir + '/parser/phantom'),
         utils         = new (require(srcdir + '/utils'))(),
         config        = {
@@ -940,10 +858,10 @@ describe('parsePost5', function () {
         });
     });
 
-    it('parsePost5', function () {
+    it('parsePost4', function () {
         expect(done).toEqual(true);
         expect(res).toBeUndefined();
-        });
+    });
 });
 describe('onInitialized', function () {
     it('onInitialized', function (done) {
