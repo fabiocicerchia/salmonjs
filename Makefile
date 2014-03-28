@@ -39,7 +39,7 @@ JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
 YUIDOC=node ./node_modules/yuidocjs/lib/cli.js
 YUIDOC=yuidoc
 FILES=test
-FILES_COV=test/parser/test.phantom.js test/test.crawler.js test/test.events.js test/test.main.js test/test.parser.js test/test.pool.js test/test.session.js test/test.test.js test/test.utils.js
+FILES_COV=test/parser/test.phantom.js test/test.crawler.js test/test.events.js test/test.main.js test/test.parser.js test/test.pool.js test/test.session.js test/test.test.js test/test..utils.js
 
 install: install-yuidoc-theme npm
 
@@ -81,7 +81,7 @@ todo:
 ci:
 	make install
 	make npm
-	make version
+	make versions
 	make lint
 	make test
 	make coverage
