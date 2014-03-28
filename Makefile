@@ -47,7 +47,7 @@ install-yuidoc-theme:
 	$(GIT) clone https://github.com/Krxtopher/yuidoc-themes docs/theme
 
 npm:
-	$(NPM) install grunt-cli -g
+	$(NPM) install grunt-cli
 	$(NPM) install coveralls -g
 
 versions:
