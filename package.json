@@ -54,7 +54,6 @@
     "grunt-release": "0.7.0",
     "grunt-contrib-yuidoc": "0.5.2",
     "grunt-todo": "0.2.0",
-    "grunt-sloc": "0.5.2",
     "chai": "1.9.1",
     "grunt-verb": "0.0.5"
   },
