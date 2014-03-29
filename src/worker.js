@@ -91,5 +91,5 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
     crawler.proxy           = proxy;
     crawler.sanitise        = sanitise;
     var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
-    crawler.run(url, type, data, evt, xPath);
+    crawler.run({url: url, type: type, data: data, evt: evt, xPath: xPath});
 }
