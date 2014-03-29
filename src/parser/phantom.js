@@ -121,7 +121,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
     this.setHttpHeaders = function (page) {
         var customHeaders = {};
 
-        customHeaders['Accept-Encoding'] = 'gzip,deflate';
+        //customHeaders['Accept-Encoding'] = 'gzip,deflate';
         customHeaders.Connection = 'keep-alive';
 
         if (settings.username !== null && settings.password !== null) {
