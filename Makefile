@@ -80,9 +80,8 @@ readme:
 
 ci:
 	make install
-	make version
+	make versions
 	make lint
 	make test
-	make coverage
 
 .PHONY: test
