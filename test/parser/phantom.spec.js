@@ -56,7 +56,10 @@ var rootdir = require('path').resolve('.'),
             return callback(args);
         };
         this.navigationLocked = false;
-    };
+    },
+    webpage = new WebPage(),
+    chai    = require('chai'),
+    expect  = chai.expect;
 
 GLOBAL.btoa    = function () {};
 GLOBAL.webpage = new WebPage();
@@ -68,288 +71,288 @@ GLOBAL.phantom = {
 };
 
 if (process.argv.join(' ').indexOf('grunt') === -1) {
-describe('setUpPage', function () {
-    it('setUpPage', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            config        = {
-                redis: {
-                    port: 16379,
-                    hostname: '127.0.0.1'
-                },
-                logging: {
-                    level: 'debug', // Possible values: debug, info, warn, error.
-                    silent: false
-                },
-                parser: {
-                    interface: 'phantom', // PhantomJS: 'phantom'
-                    cmd: 'phantomjs',
-                    timeout: 5000 // Resource timeout in milliseconds.
-                },
-                crawler: {
-                    attempts: 5, // Number of tries before stop to execute the request.
-                    delay: 5000 // Delay between an attempt and another one in milliseconds.
-                }
-            },
-            utils         = {},
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
-        phantomParser.reset();
-
-        phantomParser.setUpPage(phantomParser.page);
-
-        expect(phantomParser.page.settings.resourceTimeout).toEqual(config.parser.timeout); // 'it has been set up properly'
-        expect(phantomParser.page.onResourceTimeout).toEqual(phantomParser.onResourceTimeout); // 'it has been set up properly'
-        expect(phantomParser.page.onError).toEqual(phantomParser.onError); // 'it has been set up properly'
-        expect(phantomParser.page.onInitialized).toEqual(phantomParser.onInitialized); // 'it has been set up properly'
-        expect(phantomParser.page.onResourceReceived).toEqual(phantomParser.onResourceReceived); // 'it has been set up properly'
-        expect(phantomParser.page.onAlert).toEqual(phantomParser.onAlert); // 'it has been set up properly'
-        expect(phantomParser.page.onConfirm).toEqual(phantomParser.onConfirm); // 'it has been set up properly'
-        expect(phantomParser.page.onPrompt).toEqual(phantomParser.onPrompt); // 'it has been set up properly'
-        expect(phantomParser.page.onConsoleMessage).toEqual(phantomParser.onConsoleMessage); // 'it has been set up properly'
-        expect(phantomParser.page.onNavigationRequested).toEqual(phantomParser.onNavigationRequested); // 'it has been set up properly'
-        expect(phantomParser.page.viewportSize).toEqual({ width: 1024, height: 800 }); // 'it has been set up properly'
-        expect(phantomParser.page.settings.userAgent).toEqual('salmonJS/0.4.0 (+http://fabiocicerchia.github.io/salmonjs)'); // 'it has been set up properly'
-
-        done();
-    });
-});
-describe('onOpen', function () {
-    it('onOpen', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        phantomParser.onOpen('failure');
-
-        expect(typeof phantomParser.report.time.start).toEqual('number');
-        expect(typeof phantomParser.report.time.end).toEqual('number');
-        expect(typeof phantomParser.report.time.total).toEqual('number');
-        expect(typeof phantomParser.page.navigationLocked).toEqual('boolean');
-        expect(phantomParser.page.navigationLocked).toEqual(false);
-
-        phantomParser.onOpen('success');
-
-        expect(typeof phantomParser.report.time.start).toEqual('number');
-        expect(typeof phantomParser.report.time.end).toEqual('number');
-        expect(typeof phantomParser.report.time.total).toEqual('number');
-        expect(typeof phantomParser.page.navigationLocked).toEqual('boolean');
-        expect(phantomParser.page.navigationLocked).toEqual(false);
-
-        done();
-    });
-});
-describe('onResourceTimeout', function () {
-    it('onResourceTimeout', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        expect(phantomParser.onResourceTimeout()).toEqual(true);
-
-        done();
-    });
-});
-describe('onError', function () {
-    it('onError', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        phantomParser.onError('error1');
-        expect(phantomParser.report.errors).toEqual(['ERROR: error1']);
-
-        phantomParser.report.errors = [];
-        phantomParser.onError('error2', [{file: 'file', line: 1}]);
-        expect(phantomParser.report.errors).toEqual(['ERROR: error2\nTRACE:\n -> file: 1']);
-
-        phantomParser.report.errors = [];
-        phantomParser.onError('error3', [{file: 'file', line: 1, function: 'test'}]);
-        expect(phantomParser.report.errors).toEqual(['ERROR: error3\nTRACE:\n -> file: 1 (in function "test")']);
-
-        done();
-    });
-});
-describe('onResourceReceived', function () {
-    it('onResourceReceived', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        phantomParser.onResourceReceived({stage: 'end', url: 'about:blank', headers: []});
-        expect(phantomParser.report.resources).toEqual({ 'about:blank': { headers: [] } });
-
-        done();
-    });
-});
-describe('onAlert', function () {
-    it('onAlert', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        phantomParser.onAlert('message');
-        expect(Object.prototype.toString.call(phantomParser.report.alerts)).toEqual('[object Array]');
-        expect(phantomParser.report.alerts).toEqual(['message']);
-
-        done();
-    });
-});
-describe('onConfirm', function () {
-    it('onConfirm', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        expect(phantomParser.onConfirm('message')).toEqual(true);
-        expect(Object.prototype.toString.call(phantomParser.report.confirms)).toEqual('[object Array]');
-        expect(phantomParser.report.confirms).toEqual(['message']);
-
-        done();
-    });
-});
-describe('onConfirm2', function () {
-    it('onConfirm2', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            settings      = {
-                data: {
-                    CONFIRM: {
-                        message: false
+    describe('setUpPage', function () {
+        it('setUpPage', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                config        = {
+                    redis: {
+                        port: 16379,
+                        hostname: '127.0.0.1'
+                    },
+                    logging: {
+                        level: 'debug', // Possible values: debug, info, warn, error.
+                        silent: false
+                    },
+                    parser: {
+                        interface: 'phantom', // PhantomJS: 'phantom'
+                        cmd: 'phantomjs',
+                        timeout: 5000 // Resource timeout in milliseconds.
+                    },
+                    crawler: {
+                        attempts: 5, // Number of tries before stop to execute the request.
+                        delay: 5000 // Delay between an attempt and another one in milliseconds.
                     }
-                }
-            },
-            phantomParser;
+                },
+                utils         = {},
+                phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, settings);
-        phantomParser.reset();
+            phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
+            phantomParser.reset();
 
-        phantomParser.report.confirms = []; // TODO: WHY?
-        expect(phantomParser.onConfirm('message')).toEqual(false);
-        expect(Object.prototype.toString.call(phantomParser.report.confirms)).toEqual('[object Array]');
-        expect(phantomParser.report.confirms).toEqual(['message']);
+            phantomParser.setUpPage(phantomParser.page);
 
-        done();
+            expect(phantomParser.page.settings.resourceTimeout).to.equal(config.parser.timeout); // it has been set up properly
+            expect(phantomParser.page.onResourceTimeout).to.equal(phantomParser.onResourceTimeout); // it has been set up properly
+            expect(phantomParser.page.onError).to.equal(phantomParser.onError); // it has been set up properly
+            expect(phantomParser.page.onInitialized).to.equal(phantomParser.onInitialized); // it has been set up properly
+            expect(phantomParser.page.onResourceReceived).to.equal(phantomParser.onResourceReceived); // it has been set up properly
+            expect(phantomParser.page.onAlert).to.equal(phantomParser.onAlert); // it has been set up properly
+            expect(phantomParser.page.onConfirm).to.equal(phantomParser.onConfirm); // it has been set up properly
+            expect(phantomParser.page.onPrompt).to.equal(phantomParser.onPrompt); // it has been set up properly
+            expect(phantomParser.page.onConsoleMessage).to.equal(phantomParser.onConsoleMessage); // it has been set up properly
+            expect(phantomParser.page.onNavigationRequested).to.equal(phantomParser.onNavigationRequested); // it has been set up properly
+            expect(phantomParser.page.viewportSize).to.deep.equal({ width: 1024, height: 800 }); // it has been set up properly
+            expect(phantomParser.page.settings.userAgent).to.equal('salmonJS/0.4.0 (+http://fabiocicerchia.github.io/salmonjs)'); // it has been set up properly
+
+            done();
+        });
     });
-});
-describe('onPrompt', function () {
-    it('onPrompt', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
+    describe('onOpen', function () {
+        it('onOpen', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
 
-        expect(phantomParser.onPrompt('message', '')).toEqual('');
-        expect(Object.prototype.toString.call(phantomParser.report.prompts)).toEqual('[object Array]');
-        expect(phantomParser.report.prompts).toEqual([{msg: 'message', defaultVal: ''}]);
+            phantomParser.onOpen('failure');
 
-        done();
+            expect(typeof phantomParser.report.time.start).to.equal('number');
+            expect(typeof phantomParser.report.time.end).to.equal('number');
+            expect(typeof phantomParser.report.time.total).to.equal('number');
+            expect(typeof phantomParser.page.navigationLocked).to.equal('boolean');
+            expect(phantomParser.page.navigationLocked).to.equal(false);
+
+            phantomParser.onOpen('success');
+
+            expect(typeof phantomParser.report.time.start).to.equal('number');
+            expect(typeof phantomParser.report.time.end).to.equal('number');
+            expect(typeof phantomParser.report.time.total).to.equal('number');
+            expect(typeof phantomParser.page.navigationLocked).to.equal('boolean');
+            expect(phantomParser.page.navigationLocked).to.equal(false);
+
+            done();
+        });
     });
-});
-describe('onPrompt2', function () {
-    it('onPrompt2', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            settings      = {
-                data: {
-                    PROMPT: {
-                        message: 'value'
+    describe('onResourceTimeout', function () {
+        it('onResourceTimeout', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            expect(phantomParser.onResourceTimeout()).to.equal(true);
+
+            done();
+        });
+    });
+    describe('onError', function () {
+        it('onError', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            phantomParser.onError('error1');
+            expect(phantomParser.report.errors).to.deep.equal(['ERROR: error1']);
+
+            phantomParser.report.errors = [];
+            phantomParser.onError('error2', [{file: 'file', line: 1}]);
+            expect(phantomParser.report.errors).to.deep.equal(['ERROR: error2\nTRACE:\n -> file: 1']);
+
+            phantomParser.report.errors = [];
+            phantomParser.onError('error3', [{file: 'file', line: 1, function: 'test'}]);
+            expect(phantomParser.report.errors).to.deep.equal(['ERROR: error3\nTRACE:\n -> file: 1 (in function "test")']);
+
+            done();
+        });
+    });
+    describe('onResourceReceived', function () {
+        it('onResourceReceived', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            phantomParser.onResourceReceived({stage: 'end', url: 'about:blank', headers: []});
+            expect(phantomParser.report.resources).to.deep.equal({ 'about:blank': { headers: [] } });
+
+            done();
+        });
+    });
+    describe('onAlert', function () {
+        it('onAlert', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            phantomParser.onAlert('message');
+            expect(Object.prototype.toString.call(phantomParser.report.alerts)).to.equal('[object Array]');
+            expect(phantomParser.report.alerts).to.deep.equal(['message']);
+
+            done();
+        });
+    });
+    describe('onConfirm', function () {
+        it('onConfirm', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            expect(phantomParser.onConfirm('message')).to.equal(true);
+            expect(Object.prototype.toString.call(phantomParser.report.confirms)).to.equal('[object Array]');
+            expect(phantomParser.report.confirms).to.deep.equal(['message']);
+
+            done();
+        });
+    });
+    describe('onConfirm2', function () {
+        it('onConfirm2', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                settings      = {
+                    data: {
+                        CONFIRM: {
+                            message: false
+                        }
                     }
-                }
-            },
-            phantomParser;
+                },
+                phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, settings);
-        phantomParser.reset();
+            phantomParser = new PhantomParser(utils, {}, webpage, settings);
+            phantomParser.reset();
 
-        phantomParser.report.prompts = []; // TODO: WHY?
-        expect(phantomParser.onPrompt('message', '')).toEqual('value');
-        expect(Object.prototype.toString.call(phantomParser.report.prompts)).toEqual('[object Array]');
-        expect(phantomParser.report.prompts).toEqual([{msg: 'message', defaultVal: ''}]);
+            phantomParser.report.confirms = []; // TODO: WHY?
+            expect(phantomParser.onConfirm('message')).to.equal(false);
+            expect(Object.prototype.toString.call(phantomParser.report.confirms)).to.equal('[object Array]');
+            expect(phantomParser.report.confirms).to.deep.equal(['message']);
 
-        done();
+            done();
+        });
     });
-});
-describe('onConsoleMessage', function () {
-    it('onConsoleMessage', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
+    describe('onPrompt', function () {
+        it('onPrompt', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
 
-        phantomParser.onConsoleMessage('message', 1, '');
-        console.log(JSON.stringify(phantomParser.report.console));
-        expect(Object.prototype.toString.call(phantomParser.report.console)).toEqual('[object Array]');
-        expect(phantomParser.report.console).toEqual([{msg: 'message', lineNum: 1, sourceId: ''}]);
+            expect(phantomParser.onPrompt('message', '')).to.equal('');
+            expect(Object.prototype.toString.call(phantomParser.report.prompts)).to.equal('[object Array]');
+            expect(phantomParser.report.prompts).to.deep.equal([{msg: 'message', defaultVal: ''}]);
 
-        done();
+            done();
+        });
     });
-});
-describe('onLoadFinished', function () {
-    it('onLoadFinished', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
+    describe('onPrompt2', function () {
+        it('onPrompt2', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                settings      = {
+                    data: {
+                        PROMPT: {
+                            message: 'value'
+                        }
+                    }
+                },
+                phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
+            phantomParser = new PhantomParser(utils, {}, webpage, settings);
+            phantomParser.reset();
 
-        phantomParser.parsePage = function () { done(); };
-        phantomParser.onLoadFinished();
+            phantomParser.report.prompts = []; // TODO: WHY?
+            expect(phantomParser.onPrompt('message', '')).to.equal('value');
+            expect(Object.prototype.toString.call(phantomParser.report.prompts)).to.equal('[object Array]');
+            expect(phantomParser.report.prompts).to.deep.equal([{msg: 'message', defaultVal: ''}]);
+
+            done();
+        });
     });
-});
-describe('onLoadFinished2', function () {
-    it('onLoadFinished2', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
+    describe('onConsoleMessage', function () {
+        it('onConsoleMessage', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
 
-        phantomParser.stepStack = [{event: 'click', xPath: 'window'}];
-        phantomParser.parsePage = function () { };
-        phantomParser.page.evaluate = function () { done(); };
-        phantomParser.onLoadFinished();
+            phantomParser.onConsoleMessage('message', 1, '');
+            console.log(JSON.stringify(phantomParser.report.console));
+            expect(Object.prototype.toString.call(phantomParser.report.console)).to.equal('[object Array]');
+            expect(phantomParser.report.console).to.deep.equal([{msg: 'message', lineNum: 1, sourceId: ''}]);
+
+            done();
+        });
     });
-});
-describe('onLoadFinished3', function () {
-    it('onLoadFinished3', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
+    describe('onLoadFinished', function () {
+        it('onLoadFinished', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
 
-        phantomParser.stepStack = [{event: 'click', xPath: '/html/body'}];
-        phantomParser.parsePage = function () { };
-        phantomParser.page.evaluate = function () { done(); };
-        phantomParser.onLoadFinished();
+            phantomParser.parsePage = function () { done(); };
+            phantomParser.onLoadFinished();
+        });
     });
-});
+    describe('onLoadFinished2', function () {
+        it('onLoadFinished2', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            phantomParser.stepStack = [{event: 'click', xPath: 'window'}];
+            phantomParser.parsePage = function () { };
+            phantomParser.page.evaluate = function () { done(); };
+            phantomParser.onLoadFinished();
+        });
+    });
+    describe('onLoadFinished3', function () {
+        it('onLoadFinished3', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            phantomParser.stepStack = [{event: 'click', xPath: '/html/body'}];
+            phantomParser.parsePage = function () { };
+            phantomParser.page.evaluate = function () { done(); };
+            phantomParser.onLoadFinished();
+        });
+    });
 }
 describe('parsePage', function () {
     it('parsePage', function (done) {
@@ -364,353 +367,157 @@ describe('onEvaluate', function () {
     });
 });
 if (process.argv.join(' ').indexOf('grunt') === -1) {
-describe('onEvaluateNonHtml', function () {
-    it('onEvaluateNonHtml', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser,
-            content,
-            resp;
+    describe('onEvaluateNonHtml', function () {
+        it('onEvaluateNonHtml', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser,
+                content,
+                resp;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        content = 'http://username:password@hostname/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'http://hostname/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'http://username:password@127.0.0.1/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'http://127.0.0.1/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'https://username:password@hostname/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'https://hostname/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'https://username:password@127.0.0.1/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'https://127.0.0.1/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'ftp://username:password@hostname/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'ftp://hostname/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'ftp://username:password@127.0.0.1/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'ftp://127.0.0.1/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = '//username:password@hostname/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = '//hostname/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = '//username:password@127.0.0.1/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = '//127.0.0.1/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        //content = '/path?arg=value#anchor';
-        //resp = phantomParser.onEvaluateNonHtml(content);
-        //expect(resp).toEqual({mixed:[content]});
-
-        content = 'http://username:password@hostname:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'http://hostname:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'http://username:password@127.0.0.1:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'http://127.0.0.1:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'https://username:password@hostname:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'https://hostname:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'https://username:password@127.0.0.1:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'https://127.0.0.1:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'ftp://username:password@hostname:21/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'ftp://hostname:21/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'ftp://username:password@127.0.0.1:21/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = 'ftp://127.0.0.1:21/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = '//username:password@hostname:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = '//hostname:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = '//username:password@127.0.0.1:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        content = '//127.0.0.1:80/path?arg=value#anchor';
-        resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).toEqual({mixed:[content]});
-
-        //content = '/path?arg=value#anchor';
-        //resp = phantomParser.onEvaluateNonHtml(content);
-        //expect(resp).toEqual({mixed:[content]});
-
-        done();
-    });
-});
-describe('parseGet', function () {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        utils         = new (require(srcdir + '/utils'))(),
-        config        = {
-            redis: {
-                port: 16379,
-                hostname: '127.0.0.1'
-            },
-            logging: {
-                level: 'debug', // Possible values: debug, info, warn, error.
-                silent: false
-            },
-            parser: {
-                interface: 'phantom', // PhantomJS: 'phantom'
-                cmd: 'phantomjs',
-                timeout: 5000 // Resource timeout in milliseconds.
-            },
-            crawler: {
-                attempts: 5, // Number of tries before stop to execute the request.
-                delay: 5000 // Delay between an attempt and another one in milliseconds.
-            }
-        },
-        phantomParser;
-
-    var done = false;
-    var res;
-
-    beforeEach(function(){
-        done = false;
-
-        function doStuff(){
-            phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
             phantomParser.reset();
 
-            phantomParser.url = 'about:blank';
-            phantomParser.data = '';
-            phantomParser.onOpen = function () {
-                setTimeout(phantomParser.onLoadFinished, 100);
-            };
-            phantomParser.onLoadFinished = function () {
-                done = true;
-            };
-            res = phantomParser.parseGet();
-        }
+            content = 'http://username:password@hostname/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
 
-        runs(doStuff);
+            content = 'http://hostname/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
 
-        waitsFor(function(){
-            return done;
+            content = 'http://username:password@127.0.0.1/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'http://127.0.0.1/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'https://username:password@hostname/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'https://hostname/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'https://username:password@127.0.0.1/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'https://127.0.0.1/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'ftp://username:password@hostname/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'ftp://hostname/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'ftp://username:password@127.0.0.1/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'ftp://127.0.0.1/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = '//username:password@hostname/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = '//hostname/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = '//username:password@127.0.0.1/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = '//127.0.0.1/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            //content = '/path?arg=value#anchor';
+            //resp = phantomParser.onEvaluateNonHtml(content);
+            //expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'http://username:password@hostname:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'http://hostname:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'http://username:password@127.0.0.1:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'http://127.0.0.1:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'https://username:password@hostname:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'https://hostname:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'https://username:password@127.0.0.1:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'https://127.0.0.1:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'ftp://username:password@hostname:21/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'ftp://hostname:21/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'ftp://username:password@127.0.0.1:21/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = 'ftp://127.0.0.1:21/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = '//username:password@hostname:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = '//hostname:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = '//username:password@127.0.0.1:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            content = '//127.0.0.1:80/path?arg=value#anchor';
+            resp = phantomParser.onEvaluateNonHtml(content);
+            expect(resp).to.deep.equal({mixed:[content]});
+
+            //content = '/path?arg=value#anchor';
+            //resp = phantomParser.onEvaluateNonHtml(content);
+            //expect(resp).to.deep.equal({mixed:[content]});
+
+            done();
         });
     });
-
-    it('parseGet', function () {
-        expect(done).toEqual(true);
-        expect(res).toBeUndefined();
-        });
-});
-describe('parseGet2', function () {
-    it('parseGet2', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = new (require(srcdir + '/utils'))(),
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        phantomParser.url = 'http://www.example.com/?c=1&a=2';
-        phantomParser.data = {GET:{ a: 1, b: 2}, COOKIE: {}};
-        phantomParser.setUpPage = function () {};
-        phantomParser.onOpen = function () {};
-        phantomParser.onLoadFinished = function () {};
-        expect(phantomParser.parseGet()).toBeUndefined();
-        expect(phantomParser.url).toEqual('http://www.example.com/?a=1&b=2&c=1');
-        done();
-    });
-});
-describe('parseGet3', function () {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        utils         = new (require(srcdir + '/utils'))(),
-        config        = {
-            redis: {
-                port: 16379,
-                hostname: '127.0.0.1'
-            },
-            logging: {
-                level: 'debug', // Possible values: debug, info, warn, error.
-                silent: false
-            },
-            parser: {
-                interface: 'phantom', // PhantomJS: 'phantom'
-                cmd: 'phantomjs',
-                timeout: 5000 // Resource timeout in milliseconds.
-            },
-            crawler: {
-                attempts: 5, // Number of tries before stop to execute the request.
-                delay: 5000 // Delay between an attempt and another one in milliseconds.
-            }
-        },
-        phantomParser;
-
-    var done = false,
-        res,
-        customHeader;
-
-    beforeEach(function(){
-        done = false;
-
-        function doStuff(){
-            phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
-            phantomParser.reset();
-
-            phantomParser.url = 'about:blank';
-            phantomParser.data = {HEADERS:{ 'X-Test': 1}};
-            phantomParser.onOpen = function () {
-                setTimeout(phantomParser.onLoadFinished, 100);
-            };
-            phantomParser.onLoadFinished = function () {
-                done = true;
-            };
-            res = phantomParser.parseGet();
-            customHeader = phantomParser.page.customHeaders['X-Test'];
-        }
-
-        runs(doStuff);
-
-        waitsFor(function(){
-            return done;
-        });
-    });
-
-    it('parseGet3', function () {
-        expect(done).toEqual(true);
-        expect(res).toBeUndefined();
-        expect(customHeader).toEqual(1);
-        });
-});
-}
-if (process.argv.join(' ').indexOf('grunt') === -1) {
-describe('parsePost', function () {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        utils         = new (require(srcdir + '/utils'))(),
-        config        = {
-            redis: {
-                port: 16379,
-                hostname: '127.0.0.1'
-            },
-            logging: {
-                level: 'debug', // Possible values: debug, info, warn, error.
-                silent: false
-            },
-            parser: {
-                interface: 'phantom', // PhantomJS: 'phantom'
-                cmd: 'phantomjs',
-                timeout: 5000 // Resource timeout in milliseconds.
-            },
-            crawler: {
-                attempts: 5, // Number of tries before stop to execute the request.
-                delay: 5000 // Delay between an attempt and another one in milliseconds.
-            }
-        },
-        phantomParser;
-
-    var done = false;
-    var res;
-
-    beforeEach(function(){
-        done = false;
-
-        function doStuff(){
-            phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
-            phantomParser.reset();
-
-            phantomParser.url = 'about:blank';
-            phantomParser.data = '';
-            phantomParser.onOpen = function () {
-                setTimeout(phantomParser.onLoadFinished, 100);
-            };
-            phantomParser.onLoadFinished = function () {
-                done = true;
-            };
-            res = phantomParser.parsePost();
-        }
-
-        runs(doStuff);
-
-        waitsFor(function(){
-            return done;
-        });
-    });
-
-    it('parsePost', function () {
-        expect(done).toEqual(true);
-        expect(res).toBeUndefined();
-    });
-});
-describe('parsePost2', function () {
-    it('parsePost2', function (done) {
+    describe('parseGet', function () {
         var PhantomParser = require(srcdir + '/parser/phantom'),
             utils         = new (require(srcdir + '/utils'))(),
             config        = {
@@ -734,274 +541,470 @@ describe('parsePost2', function () {
             },
             phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
-        phantomParser.reset();
+        var done = false;
+        var res;
 
-        phantomParser.url = 'http://www.example.com/?c=1&a=2';
-        phantomParser.data = {GET:{ a: 1, b: 2}};
-        phantomParser.onOpen = function () {};
-        phantomParser.onLoadFinished = function () {};
-        expect(phantomParser.parsePost()).toBeUndefined();
-        expect(phantomParser.url).toEqual('http://www.example.com/?a=1&b=2&c=1');
-        done();
-    });
-});
-describe('parsePost3', function () {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        utils         = new (require(srcdir + '/utils'))(),
-        config        = {
-            redis: {
-                port: 16379,
-                hostname: '127.0.0.1'
-            },
-            logging: {
-                level: 'debug', // Possible values: debug, info, warn, error.
-                silent: false
-            },
-            parser: {
-                interface: 'phantom', // PhantomJS: 'phantom'
-                cmd: 'phantomjs',
-                timeout: 5000 // Resource timeout in milliseconds.
-            },
-            crawler: {
-                attempts: 5, // Number of tries before stop to execute the request.
-                delay: 5000 // Delay between an attempt and another one in milliseconds.
+        beforeEach(function(){
+            done = false;
+
+            function doStuff(){
+                phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
+                phantomParser.reset();
+
+                phantomParser.url = 'about:blank';
+                phantomParser.data = '';
+                phantomParser.onOpen = function () {
+                    setTimeout(phantomParser.onLoadFinished, 100);
+                };
+                phantomParser.onLoadFinished = function () {
+                    done = true;
+                };
+                res = phantomParser.parseGet();
             }
-        },
-        phantomParser;
 
-    var done = false,
-        res,
-        customHeader;
+            runs(doStuff);
 
-    beforeEach(function(){
-        done = false;
+            waitsFor(function(){
+                return done;
+            });
+        });
 
-        function doStuff(){
-            phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
+        it('parseGet', function () {
+            expect(done).to.equal(true);
+            expect(res).to.be.undefined;
+        });
+    });
+    describe('parseGet2', function () {
+        it('parseGet2', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = new (require(srcdir + '/utils'))(),
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
             phantomParser.reset();
 
-            phantomParser.url = 'about:blank';
-            phantomParser.data = {HEADERS:{ 'X-Test': 1}};
-            phantomParser.onOpen = function () {
-                setTimeout(phantomParser.onLoadFinished, 100);
-            };
-            phantomParser.onLoadFinished = function () {
-                done = true;
-            };
-            res = phantomParser.parsePost();
-            customHeader = phantomParser.page.customHeaders['X-Test'];
-        }
-
-        runs(doStuff);
-
-        waitsFor(function(){
-            return done;
+            phantomParser.url = 'http://www.example.com/?c=1&a=2';
+            phantomParser.data = {GET:{ a: 1, b: 2}, COOKIE: {}};
+            phantomParser.setUpPage = function () {};
+            phantomParser.onOpen = function () {};
+            phantomParser.onLoadFinished = function () {};
+            expect(phantomParser.parseGet()).to.be.undefined;
+            expect(phantomParser.url).to.equal('http://www.example.com/?a=1&b=2&c=1');
+            done();
         });
     });
+    describe('parseGet3', function () {
+        var PhantomParser = require(srcdir + '/parser/phantom'),
+            utils         = new (require(srcdir + '/utils'))(),
+            config        = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
+            phantomParser;
 
-    it('parsePost3', function () {
-        expect(done).toEqual(true);
-        expect(res).toBeUndefined();
-        expect(customHeader).toEqual(1);
-        });
-});
-describe('parsePost4', function () {
-    var PhantomParser = require(srcdir + '/parser/phantom'),
-        utils         = new (require(srcdir + '/utils'))(),
-        config        = {
-            redis: {
-                port: 16379,
-                hostname: '127.0.0.1'
-            },
-            logging: {
-                level: 'debug', // Possible values: debug, info, warn, error.
-                silent: false
-            },
-            parser: {
-                interface: 'phantom', // PhantomJS: 'phantom'
-                cmd: 'phantomjs',
-                timeout: 5000 // Resource timeout in milliseconds.
-            },
-            crawler: {
-                attempts: 5, // Number of tries before stop to execute the request.
-                delay: 5000 // Delay between an attempt and another one in milliseconds.
+        var done = false,
+            res,
+            customHeader;
+
+        beforeEach(function(){
+            done = false;
+
+            function doStuff(){
+                phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
+                phantomParser.reset();
+
+                phantomParser.url = 'about:blank';
+                phantomParser.data = {HEADERS:{ 'X-Test': 1}};
+                phantomParser.onOpen = function () {
+                    setTimeout(phantomParser.onLoadFinished, 100);
+                };
+                phantomParser.onLoadFinished = function () {
+                    done = true;
+                };
+                res = phantomParser.parseGet();
+                customHeader = phantomParser.page.customHeaders['X-Test'];
             }
-        },
-        phantomParser;
 
-    var done = false;
-    var res;
+            runs(doStuff);
 
-    beforeEach(function(){
-        done = false;
+            waitsFor(function(){
+                return done;
+            });
+        });
 
-        function doStuff(){
+        it('parseGet3', function () {
+            expect(done).to.equal(true);
+            expect(res).to.be.undefined;
+            expect(customHeader).to.equal(1);
+        });
+    });
+}
+if (process.argv.join(' ').indexOf('grunt') === -1) {
+    describe('parsePost', function () {
+        var PhantomParser = require(srcdir + '/parser/phantom'),
+            utils         = new (require(srcdir + '/utils'))(),
+            config        = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
+            phantomParser;
+
+        var done = false;
+        var res;
+
+        beforeEach(function(){
+            done = false;
+
+            function doStuff(){
+                phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
+                phantomParser.reset();
+
+                phantomParser.url = 'about:blank';
+                phantomParser.data = '';
+                phantomParser.onOpen = function () {
+                    setTimeout(phantomParser.onLoadFinished, 100);
+                };
+                phantomParser.onLoadFinished = function () {
+                    done = true;
+                };
+                res = phantomParser.parsePost();
+            }
+
+            runs(doStuff);
+
+            waitsFor(function(){
+                return done;
+            });
+        });
+
+        it('parsePost', function () {
+            expect(done).to.equal(true);
+            expect(res).to.be.undefined;
+        });
+    });
+    describe('parsePost2', function () {
+        it('parsePost2', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = new (require(srcdir + '/utils'))(),
+                config        = {
+                    redis: {
+                        port: 16379,
+                        hostname: '127.0.0.1'
+                    },
+                    logging: {
+                        level: 'debug', // Possible values: debug, info, warn, error.
+                        silent: false
+                    },
+                    parser: {
+                        interface: 'phantom', // PhantomJS: 'phantom'
+                        cmd: 'phantomjs',
+                        timeout: 5000 // Resource timeout in milliseconds.
+                    },
+                    crawler: {
+                        attempts: 5, // Number of tries before stop to execute the request.
+                        delay: 5000 // Delay between an attempt and another one in milliseconds.
+                    }
+                },
+                phantomParser;
+
             phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
             phantomParser.reset();
 
             phantomParser.url = 'http://www.example.com/?c=1&a=2';
-            phantomParser.data = {POST:{ a: 1, b: 2, c: '@' + srcdir + '/../test/assets/test_01.html'}};
-            phantomParser.onOpen = function () {
-                setTimeout(phantomParser.onLoadFinished, 100);
-            };
-            phantomParser.onLoadFinished = function () {
-                done = true;
-            };
-            res = phantomParser.parsePost();
-        }
-
-        runs(doStuff);
-
-        waitsFor(function(){
-            return done;
+            phantomParser.data = {GET:{ a: 1, b: 2}};
+            phantomParser.onOpen = function () {};
+            phantomParser.onLoadFinished = function () {};
+            expect(phantomParser.parsePost()).to.be.undefined;
+            expect(phantomParser.url).to.equal('http://www.example.com/?a=1&b=2&c=1');
+            done();
         });
     });
-
-    it('parsePost4', function () {
-        expect(done).toEqual(true);
-        expect(res).toBeUndefined();
-    });
-});
-describe('onInitialized', function () {
-    it('onInitialized', function (done) {
+    describe('parsePost3', function () {
         var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        var page = new WebPage();
-        page.injectJs = function() {
-            done();
-        };
-        expect(phantomParser.onInitialized(page)).toEqual(undefined);
-    });
-});
-describe('onNavigationRequested', function () {
-    it('onNavigationRequested', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            settings      = {},
-            phantomParser,
-            resp;
-
-        settings.followRedirects = false;
-        phantomParser = new PhantomParser(utils, {}, webpage, settings);
-        phantomParser.reset();
-
-        phantomParser.url = 'about:blank';
-        phantomParser.exit = function () { return true; };
-        resp = phantomParser.onNavigationRequested('', '', '', '');
-        expect(resp).toEqual(true);
-
-        phantomParser.url = 'http://www.example.com';
-        phantomParser.exit = function () { return true; };
-        resp = phantomParser.onNavigationRequested('about:blank', '', '', '');
-        expect(resp).toEqual(undefined);
-
-        phantomParser.url = 'http://www.example.com';
-        phantomParser.exit = function () { return true; };
-        resp = phantomParser.onNavigationRequested('http://www.example2.com', '', '', '');
-        expect(resp).toEqual(true);
-
-        phantomParser.url = 'http://www.example.com';
-        phantomParser.exit = function () { return true; };
-        resp = phantomParser.onNavigationRequested('http://www.example.com', '', '', '');
-        expect(resp).toEqual(undefined);
-
-        done();
-    });
-});
-describe('putPageInStack', function () {
-    it('putPageInStack', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser,
-            page;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
-
-        page = {data:{}, evaluate: function (a, b) { this.data = b; }};
-        phantomParser.cloneWebPage = function() {
-            return {data:{}, evaluate: function (a, b) { this.data = b; }};
-        };
-
-        page.data.event = '';
-        page.data.xPath = '';
-        phantomParser.putPageInStack('', '', '');
-        expect(phantomParser.stackPages.length).toEqual(1);
-        expect(phantomParser.stackPages[0].data).toEqual(page.data);
-
-        page = {data:{}, evaluate: function (a, b) { this.data = b; }};
-        page.data.event = 'evt';
-        page.data.xPath = 'xPath';
-        phantomParser.stackPages = [];
-        phantomParser.putPageInStack('', 'evt', 'xPath');
-        expect(phantomParser.stackPages.length).toEqual(1);
-        expect(phantomParser.stackPages[0].data).toEqual(page.data);
-
-        page = {data:{}, evaluate: function (a, b) { this.data = b; }};
-        page.data.event = 'click';
-        page.data.xPath = 'window';
-        phantomParser.stackPages = [];
-        phantomParser.putPageInStack('', 'click', 'window');
-        expect(phantomParser.stackPages.length).toEqual(1);
-        expect(phantomParser.stackPages[0].data).toEqual(page.data);
-
-        page = {data:{}, evaluate: function (a, b) { this.data = b; }};
-        page.data.event = 'click';
-        page.data.xPath = '/html/body';
-        phantomParser.stackPages = [];
-        phantomParser.putPageInStack('', 'click', '/html/body');
-        expect(phantomParser.stackPages.length).toEqual(1);
-        expect(phantomParser.stackPages[0].data).toEqual(page.data);
-
-        done();
-    });
-});
-describe('cloneWebPage', function () {
-    it('cloneWebPage', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
-            phantomParser,
-            settings      = {
-                config: {
-                    parser: {
-                        timeout: 0
-                    }
+            utils         = new (require(srcdir + '/utils'))(),
+            config        = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
                 }
             },
-            resp;
-
-        phantomParser = new PhantomParser(utils, {}, webpage, settings);
-        phantomParser.reset();
-
-        phantomParser.setUpPage = function(page) {
-            page.onInitialized = function() {
-            };
-        };
-        resp = phantomParser.cloneWebPage({content: '<html><head></head><body>content</body></html>', url: 'url'});
-        expect(resp.content).toEqual('<html><head></head><body>content</body></html>');
-        expect(resp.url).toEqual('url');
-        done();
-    });
-});
-// TODO: do it
-describe('exit', function () {
-    it('exit', function (done) {
-        var PhantomParser = require(srcdir + '/parser/phantom'),
-            utils         = {},
             phantomParser;
 
-        phantomParser = new PhantomParser(utils, {}, webpage, {});
-        phantomParser.reset();
+        var done = false,
+            res,
+            customHeader;
 
-        done();
+        beforeEach(function(){
+            done = false;
+
+            function doStuff(){
+                phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
+                phantomParser.reset();
+
+                phantomParser.url = 'about:blank';
+                phantomParser.data = {HEADERS:{ 'X-Test': 1}};
+                phantomParser.onOpen = function () {
+                    setTimeout(phantomParser.onLoadFinished, 100);
+                };
+                phantomParser.onLoadFinished = function () {
+                    done = true;
+                };
+                res = phantomParser.parsePost();
+                customHeader = phantomParser.page.customHeaders['X-Test'];
+            }
+
+            runs(doStuff);
+
+            waitsFor(function(){
+                return done;
+            });
+        });
+
+        it('parsePost3', function () {
+            expect(done).to.equal(true);
+            expect(res).to.be.undefined;
+            expect(customHeader).to.equal(1);
+        });
     });
-});
+    describe('parsePost4', function () {
+        var PhantomParser = require(srcdir + '/parser/phantom'),
+            utils         = new (require(srcdir + '/utils'))(),
+            config        = {
+                redis: {
+                    port: 16379,
+                    hostname: '127.0.0.1'
+                },
+                logging: {
+                    level: 'debug', // Possible values: debug, info, warn, error.
+                    silent: false
+                },
+                parser: {
+                    interface: 'phantom', // PhantomJS: 'phantom'
+                    cmd: 'phantomjs',
+                    timeout: 5000 // Resource timeout in milliseconds.
+                },
+                crawler: {
+                    attempts: 5, // Number of tries before stop to execute the request.
+                    delay: 5000 // Delay between an attempt and another one in milliseconds.
+                }
+            },
+            phantomParser;
+
+        var done = false;
+        var res;
+
+        beforeEach(function(){
+            done = false;
+
+            function doStuff(){
+                phantomParser = new PhantomParser(utils, {}, webpage, {config: config});
+                phantomParser.reset();
+
+                phantomParser.url = 'http://www.example.com/?c=1&a=2';
+                phantomParser.data = {POST:{ a: 1, b: 2, c: '@' + srcdir + '/../test/assets/test_01.html'}};
+                phantomParser.onOpen = function () {
+                    setTimeout(phantomParser.onLoadFinished, 100);
+                };
+                phantomParser.onLoadFinished = function () {
+                    done = true;
+                };
+                res = phantomParser.parsePost();
+            }
+
+            runs(doStuff);
+
+            waitsFor(function(){
+                return done;
+            });
+        });
+
+        it('parsePost4', function () {
+            expect(done).to.equal(true);
+            expect(res).to.be.undefined;
+        });
+    });
+    describe('onInitialized', function () {
+        it('onInitialized', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            var page = new WebPage();
+            page.injectJs = function() {
+                done();
+            };
+            expect(phantomParser.onInitialized(page)).to.be.undefined;
+        });
+    });
+    describe('onNavigationRequested', function () {
+        it('onNavigationRequested', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                settings      = {},
+                phantomParser,
+                resp;
+
+            settings.followRedirects = false;
+            phantomParser = new PhantomParser(utils, {}, webpage, settings);
+            phantomParser.reset();
+
+            phantomParser.url = 'about:blank';
+            phantomParser.exit = function () { return true; };
+            resp = phantomParser.onNavigationRequested('', '', '', '');
+            expect(resp).to.equal(true);
+
+            phantomParser.url = 'http://www.example.com';
+            phantomParser.exit = function () { return true; };
+            resp = phantomParser.onNavigationRequested('about:blank', '', '', '');
+            expect(resp).to.be.undefined;
+
+            phantomParser.url = 'http://www.example.com';
+            phantomParser.exit = function () { return true; };
+            resp = phantomParser.onNavigationRequested('http://www.example2.com', '', '', '');
+            expect(resp).to.equal(true);
+
+            phantomParser.url = 'http://www.example.com';
+            phantomParser.exit = function () { return true; };
+            resp = phantomParser.onNavigationRequested('http://www.example.com', '', '', '');
+            expect(resp).to.be.undefined;
+
+            done();
+        });
+    });
+    describe('putPageInStack', function () {
+        it('putPageInStack', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser,
+                page;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            page = {data:{}, evaluate: function (a, b) { this.data = b; }};
+            phantomParser.cloneWebPage = function() {
+                return {data:{}, evaluate: function (a, b) { this.data = b; }};
+            };
+
+            page.data.event = '';
+            page.data.xPath = '';
+            phantomParser.putPageInStack('', '', '');
+            expect(phantomParser.stackPages.length).to.equal(1);
+            expect(phantomParser.stackPages[0].data).to.deep.equal(page.data);
+
+            page = {data:{}, evaluate: function (a, b) { this.data = b; }};
+            page.data.event = 'evt';
+            page.data.xPath = 'xPath';
+            phantomParser.stackPages = [];
+            phantomParser.putPageInStack('', 'evt', 'xPath');
+            expect(phantomParser.stackPages.length).to.equal(1);
+            expect(phantomParser.stackPages[0].data).to.deep.equal(page.data);
+
+            page = {data:{}, evaluate: function (a, b) { this.data = b; }};
+            page.data.event = 'click';
+            page.data.xPath = 'window';
+            phantomParser.stackPages = [];
+            phantomParser.putPageInStack('', 'click', 'window');
+            expect(phantomParser.stackPages.length).to.equal(1);
+            expect(phantomParser.stackPages[0].data).to.deep.equal(page.data);
+
+            page = {data:{}, evaluate: function (a, b) { this.data = b; }};
+            page.data.event = 'click';
+            page.data.xPath = '/html/body';
+            phantomParser.stackPages = [];
+            phantomParser.putPageInStack('', 'click', '/html/body');
+            expect(phantomParser.stackPages.length).to.equal(1);
+            expect(phantomParser.stackPages[0].data).to.deep.equal(page.data);
+
+            done();
+        });
+    });
+    describe('cloneWebPage', function () {
+        it('cloneWebPage', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser,
+                settings      = {
+                    config: {
+                        parser: {
+                            timeout: 0
+                        }
+                    }
+                },
+                resp;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, settings);
+            phantomParser.reset();
+
+            phantomParser.setUpPage = function(page) {
+                page.onInitialized = function() {
+                };
+            };
+            resp = phantomParser.cloneWebPage({content: '<html><head></head><body>content</body></html>', url: 'url'});
+            expect(resp.content).to.equal('<html><head></head><body>content</body></html>');
+            expect(resp.url).to.equal('url');
+            done();
+        });
+    });
+    // TODO: do it
+    describe('exit', function () {
+        it('exit', function (done) {
+            var PhantomParser = require(srcdir + '/parser/phantom'),
+                utils         = {},
+                phantomParser;
+
+            phantomParser = new PhantomParser(utils, {}, webpage, {});
+            phantomParser.reset();
+
+            done();
+        });
+    });
 }
 describe('sanitise', function () {
     it('sanitise', function (done) {
@@ -1062,7 +1065,7 @@ describe('sanitise', function () {
 //            p.on('exit', function(d) {
 //                try { fs.remove(args[1]); } catch (ignore) {}
 //
-//                expect(sanitisedHtml).toEqual('\n<!DOCTYPE html>\n<html>\n<head>\n<title></title>\n</head>\n<body>\n<table>\n<tbody>\n<tr>\n<td>badly formatted html</td>\n</tr>\n</tbody>\n</table>\n</body>\n</html>\n\n');
+//                expect(sanitisedHtml).to.equal('\n<!DOCTYPE html>\n<html>\n<head>\n<title></title>\n</head>\n<body>\n<table>\n<tbody>\n<tr>\n<td>badly formatted html</td>\n</tr>\n</tbody>\n</table>\n</body>\n</html>\n\n');
 //                done();
 //            });
 //
@@ -1132,7 +1135,7 @@ describe('test24', function () {
 //
 //    phantomParser.page.setContent(fs.read(rootdir + '/test/assets/test_24.html'), 'file://' + rootdir + '/test/assets/test_24.html');
 //    phantomParser.exit = function () {
-//        expect(JSON.stringify(phantomParser.links)).toEqual('{\"a\":[\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html#whatever1\",\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html#whatever2\"],\"link\":[],\"script\":[\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html\"],\"meta\":[],\"form\":[],\"events\":[],\"mixed\":[]}');
+//        expect(JSON.stringify(phantomParser.links)).to.equal('{\"a\":[\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html#whatever1\",\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html#whatever2\"],\"link\":[],\"script\":[\"file:///home/fabio/c9/salmonjs/test/assets/test_24.html\"],\"meta\":[],\"form\":[],\"events\":[],\"mixed\":[]}');
 //        done();
 //    };
 //    phantomParser.evaluateAndParse();

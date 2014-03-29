@@ -150,7 +150,7 @@ var FSWrapper = function (fs) {
         var files = [];
         if (this.existsSync(path)) {
             files = this.readdirSync(path);
-            files.forEach(function(file, index) {
+            files.forEach(function(file) {
                 var curPath = path + '/' + file;
                 if (this.isDirectory(curPath)) {
                     this.removeTree(curPath);

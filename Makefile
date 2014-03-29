@@ -25,28 +25,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-ECHO=echo
-RM=rm -rf
 GIT=git
 FIND=find
 PHANTOMJS=phantomjs
 NODE=node
 NPM=npm
-JSHINT=./node_modules/jshint/bin/jshint
 JASMINE=./node_modules/jasmine-node/bin/jasmine-node
 GRUNT=grunt
 JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
 YUIDOC=node ./node_modules/yuidocjs/lib/cli.js
 YUIDOC=yuidoc
 FILES=test
-FILES_COV=test/parser/test.phantom.js test/test.crawler.js test/test.events.js test/test.main.js test/test.parser.js test/test.pool.js test/test.session.js test/test.test.js test/test.utils.js
 
-install: install-yuidoc-theme npm
+install: install-yuidoc-theme install-npm
 
 install-yuidoc-theme:
 	$(GIT) clone https://github.com/Krxtopher/yuidoc-themes docs/theme
 
-npm:
+install-npm:
 	$(NPM) install grunt-cli -g
 	$(NPM) install coveralls -g
 
@@ -73,14 +69,14 @@ show-report:
 	cat /tmp/phantomjs.tar.gz | base64
 
 lint:
-	$(GRUNT) jshint
+	$(GRUNT) jshint:uses_defaults
+	$(GRUNT) jshint:with_overrides
 
 todo:
 	$(GRUNT) todo
 
 ci:
 	make install
-	make npm
 	make version
 	make lint
 	make test

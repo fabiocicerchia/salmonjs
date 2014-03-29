@@ -28,7 +28,9 @@
  */
 
 var rootdir = require('path').resolve('.'),
-    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src');
+    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src'),
+    chai    = require('chai'),
+    expect  = chai.expect;
 
 describe('run', function() {
     it('run', function (done) {
@@ -66,7 +68,7 @@ describe('run', function() {
         crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
         config.parser.interface = 'phantom';
         crawler.execPhantomjs = function () { return 'OK'; };
-        expect(crawler.run('', '', '', '', '')).toEqual('OK'); // 'runs'
+        expect(crawler.run('', '', '', '', '')).to.equal('OK'); // runs
 
         done();
     });
@@ -106,7 +108,7 @@ describe('run2', function() {
         utils.sha1 = function () { return ''; };
         crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
         config.parser.interface = 'fake';
-        expect(crawler.run('', '', '', '', '')).toEqual(undefined); // 'doesn\'t run'
+        expect(crawler.run('', '', '', '', '')).to.equal(undefined); // doesn\'t run
 
         done();
     });
@@ -200,14 +202,14 @@ describe('analiseRedisResponse2', function() {
         try {
             crawler.analiseRedisResponse('err', null, '', {url: '', type: '', data: {}, evt: '', xPath: ''}, spawn);
         } catch (err) {
-            expect(err).toEqual('err');
+            expect(err).to.equal('err');
         }
 
         crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
         crawler.checkRunningCrawlers = function () { done(); };
 
         crawler.analiseRedisResponse(undefined, 'whatever', '', {url: '', type: '', data: {}, evt: '', xPath: ''}, spawn);
-        expect(crawler.possibleCrawlers).toEqual(-1);
+        expect(crawler.possibleCrawlers).to.equal(-1);
     });
 });
 describe('checkAndRun', function() {
@@ -242,7 +244,7 @@ describe('checkAndRun', function() {
             utils    = {},
             crawler;
 
-        utils.sha1 = function (str) { expect(str).toEqual('GET{"GET":{},"POST":{},"COOKIE":{},"HEADERS":{},"CONFIRM":{},"PROMPT":{}}'); return ''; };
+        utils.sha1 = function (str) { expect(str).to.equal('GET{"GET":{},"POST":{},"COOKIE":{},"HEADERS":{},"CONFIRM":{},"PROMPT":{}}'); return ''; };
         crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
         crawler.checkAndRun({url: '', type: '', data: '', evt: '', xPath: ''});
@@ -283,7 +285,7 @@ describe('checkRunningCrawlers', function() {
         crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
         crawler.possibleCrawlers = 1;
-        expect(crawler.checkRunningCrawlers()).toEqual(true); // 'doesn\'t exit when there are running crawlers'
+        expect(crawler.checkRunningCrawlers()).to.equal(true); // doesn\'t exit when there are running crawlers
 
         done();
     });
@@ -323,7 +325,7 @@ describe('checkRunningCrawlers1', function() {
         crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
         crawler.possibleCrawlers = 0;
-        expect(crawler.checkRunningCrawlers()).toEqual(false); // 'exits when there are no running crawlers'
+        expect(crawler.checkRunningCrawlers()).to.equal(false); // exits when there are no running crawlers
 
         done();
     });
@@ -364,10 +366,10 @@ describe('onStdOut', function() {
 
         crawler.processOutput = '';
         crawler.onStdOut('test\n');
-        expect(crawler.processOutput).toEqual('test\n'); // 'collect the data from response'
+        expect(crawler.processOutput).to.equal('test\n'); // collect the data from response
 
         crawler.onStdOut('test2\n');
-        expect(crawler.processOutput).toEqual('test\ntest2\n'); // 'collect the data from response'
+        expect(crawler.processOutput).to.equal('test\ntest2\n'); // collect the data from response
 
         done();
     });
@@ -410,7 +412,7 @@ describe('onStdErr', function() {
         crawler.handleError = function () {};
 
         resp = crawler.onStdErr('');
-        expect(undefined).toEqual(resp); // 'runs'
+        expect(undefined).to.equal(resp); // runs
 
         done();
     });
@@ -451,7 +453,7 @@ describe('handleError', function() {
         crawler.tries = 10;
         crawler.storeDetails = true;
         crawler.storeDetailsToFile = function () {};
-        expect(crawler.handleError()).toEqual(false); // 'doesn\'t try to run another crawler if max attempts is reached'
+        expect(crawler.handleError()).to.equal(false); // doesn\'t try to run another crawler if max attempts is reached
 
         done();
     });
@@ -492,7 +494,7 @@ describe('onExit', function() {
 
         crawler.processPage = function () { return true; };
 
-        expect(crawler.onExit()).toEqual(true); // 'runs'
+        expect(crawler.onExit()).to.equal(true); // runs
 
         done();
     });
@@ -673,8 +675,8 @@ describe('processPage', function() {
         crawler.checkRunningCrawlers = function () { return 'OK'; };
         crawler.checkAndRun          = function () {};
 
-        expect(crawler.processPage(content)).toEqual('OK'); // 'process an empty page'
-        expect(crawler.possibleCrawlers).toEqual(0); // 'process an empty page'
+        expect(crawler.processPage(content)).to.equal('OK'); // process an empty page
+        expect(crawler.possibleCrawlers).to.equal(0); // process an empty page
 
         done();
     });
@@ -745,8 +747,8 @@ describe('processPage2', function() {
         crawler.checkRunningCrawlers = function () { return 'OK'; };
         crawler.checkAndRun          = function () {};
 
-        expect(crawler.processPage(content)).toEqual('OK'); // 'process a page with 1 link'
-        expect(crawler.possibleCrawlers).toEqual(1); // 'process a page with 1 link'
+        expect(crawler.processPage(content)).to.equal('OK'); // process a page with 1 link
+        expect(crawler.possibleCrawlers).to.equal(1); // process a page with 1 link
 
         done();
     });
@@ -817,8 +819,8 @@ describe('processPage3', function() {
         crawler.checkRunningCrawlers = function () { return 'OK'; };
         crawler.checkAndRun          = function () {};
 
-        expect(crawler.processPage(content)).toEqual('OK'); // 'process a page with 2 links'
-        expect(crawler.possibleCrawlers).toEqual(2); // 'process a page with 2 links'
+        expect(crawler.processPage(content)).to.equal('OK'); // process a page with 2 links
+        expect(crawler.possibleCrawlers).to.equal(2); // process a page with 2 links
 
         done();
     });
@@ -896,8 +898,8 @@ describe('processPage4', function() {
         crawler.checkRunningCrawlers = function () { return 'OK'; };
         crawler.checkAndRun          = function () {};
 
-        expect(crawler.processPage(content)).toEqual('OK'); // 'process a page with 1 event'
-        expect(crawler.possibleCrawlers).toEqual(1); // 'process a page with 1 event'
+        expect(crawler.processPage(content)).to.equal('OK'); // process a page with 1 event
+        expect(crawler.possibleCrawlers).to.equal(1); // process a page with 1 event
 
         done();
     });
@@ -976,8 +978,8 @@ describe('processPage5', function() {
         crawler.checkRunningCrawlers = function () { return 'OK'; };
         crawler.checkAndRun          = function () {};
 
-        expect(crawler.processPage(content)).toEqual('OK'); // 'process a page with 2 events'
-        expect(crawler.possibleCrawlers).toEqual(2); // 'process a page with 2 events'
+        expect(crawler.processPage(content)).to.equal('OK'); // process a page with 2 events
+        expect(crawler.possibleCrawlers).to.equal(2); // process a page with 2 events
 
         done();
     });
@@ -1054,8 +1056,8 @@ describe('processPage6', function() {
         crawler.checkRunningCrawlers = function () { return 'OK'; };
         crawler.checkAndRun          = function () {};
 
-        expect(crawler.processPage(content)).toEqual('OK'); // 'process a page with 1 link and 1 event'
-        expect(crawler.possibleCrawlers).toEqual(2); // 'process a page with 1 link and 1 event'
+        expect(crawler.processPage(content)).to.equal('OK'); // process a page with 1 link and 1 event
+        expect(crawler.possibleCrawlers).to.equal(2); // process a page with 1 link and 1 event
 
         done();
     });
@@ -1134,8 +1136,8 @@ describe('processPage7', function() {
         crawler.checkRunningCrawlers = function () { return 'OK'; };
         crawler.checkAndRun          = function () {};
 
-        expect(crawler.processPage(content)).toEqual('OK'); // 'process a page with 2 links and 2 events'
-        expect(crawler.possibleCrawlers).toEqual(4); // 'process a page with 2 links and 2 events'
+        expect(crawler.processPage(content)).to.equal('OK'); // process a page with 2 links and 2 events
+        expect(crawler.possibleCrawlers).to.equal(4); // process a page with 2 links and 2 events
 
         done();
     });
@@ -1183,8 +1185,8 @@ describe('processPage9', function() {
 
         content = '###AB"C';
 
-        expect(crawler.processPage(content)).toEqual(undefined); // 'process an empty page'
-        expect(crawler.possibleCrawlers).toEqual(0); // 'process an empty page'
+        expect(crawler.processPage(content)).to.equal(undefined); // process an empty page
+        expect(crawler.possibleCrawlers).to.equal(0); // process an empty page
     });
 });
 describe('processPage10', function() {
@@ -1228,8 +1230,8 @@ describe('processPage10', function() {
         content = '###{"links":{}}';
         crawler.checkRunningCrawlers = function () { return 'OK'; };
 
-        expect(crawler.processPage(content)).toEqual('OK'); // 'process an empty page'
-        expect(crawler.possibleCrawlers).toEqual(0); // 'process an empty page'
+        expect(crawler.processPage(content)).to.equal('OK'); // process an empty page
+        expect(crawler.possibleCrawlers).to.equal(0); // process an empty page
 
         done();
     });
@@ -1375,7 +1377,7 @@ describe('handleError2', function() {
             done();
         };
         crawler.tries = 0;
-        expect(crawler.handleError()).toEqual(true);
+        expect(crawler.handleError()).to.equal(true);
     });
 });
 describe('init', function() {
@@ -1413,8 +1415,8 @@ describe('init', function() {
         crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
 
         crawler.init();
-        expect(typeof crawler.idCrawler).toEqual('string');
-        expect(crawler.idCrawler).toBeGreaterThan(0);
+        expect(typeof crawler.idCrawler).to.equal('string');
+        expect(crawler.idCrawler).to.be.above(0);
 
         done();
     });
@@ -1461,8 +1463,8 @@ describe('proxySettings', function() {
         crawler.proxy = 'username:password@ip:port';
 
         crawler.onStdOut = function(data) {
-            expect(data.toString().indexOf('--proxy-auth=username:password,--proxy=ip:port,') > -1).toEqual(true);
-            expect(data.toString().indexOf('"username:password@ip:port"') > -1).toEqual(true);
+            expect(data.toString().indexOf('--proxy-auth=username:password,--proxy=ip:port,') > -1).to.equal(true);
+            expect(data.toString().indexOf('"username:password@ip:port"') > -1).to.equal(true);
             done();
         };
         crawler.onStdErr = function() {};
@@ -1513,8 +1515,8 @@ describe('proxySettings2', function() {
         crawler.proxy = 'ip:port';
 
         crawler.onStdOut = function(data) {
-            expect(data.toString().indexOf('--proxy=ip:port,') > -1).toEqual(true);
-            expect(data.toString().indexOf('"ip:port"') > -1).toEqual(true);
+            expect(data.toString().indexOf('--proxy=ip:port,') > -1).to.equal(true);
+            expect(data.toString().indexOf('"ip:port"') > -1).to.equal(true);
             done();
         };
         crawler.onStdErr = function() {};
@@ -1567,13 +1569,13 @@ describe('politeness', function() {
         var start = Date.now();
         crawler.run('', '', '', '', '');
         var end = Date.now();
-        expect((end-start)/1000 >= 1).toEqual(true); // 'It waits 1 second'
+        expect((end-start)/1000 >= 1).to.equal(true); // It waits 1 second
 
         start = Date.now();
         crawler.politeInterval = 2000;
         crawler.run('', '', '', '', '');
         end = Date.now();
-        expect((end-start)/1000 >= 2).toEqual(true); // 'It waits 2 second'
+        expect((end-start)/1000 >= 2).to.equal(true); // It waits 2 second
 
         done();
     });

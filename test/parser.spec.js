@@ -28,7 +28,9 @@
  */
 
 var rootdir = require('path').resolve('.'),
-    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src');
+    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src'),
+    chai    = require('chai'),
+    expect  = chai.expect;
 
 describe('parse', function() {
     it('parse', function (done) {
@@ -40,19 +42,19 @@ describe('parse', function() {
         parser.parseGet   = function () { return 'GET'; };
         parser.initReport = function () {};
 
-        expect(parser.parse('', 'GET', '', '', '')).toEqual('GET'); // 'parses a GET request'
-        expect(parser.url).toEqual(''); // 'parses a GET request'
-        expect(parser.type).toEqual('GET'); // 'parses a GET request'
-        expect(parser.data).toEqual(''); // 'parses a GET request'
-        expect(parser.event).toEqual(''); // 'parses a GET request'
-        expect(parser.xPath).toEqual(''); // 'parses a GET request'
+        expect(parser.parse('', 'GET', '', '', '')).to.equal('GET'); // parses a GET request
+        expect(parser.url).to.equal(''); // parses a GET request
+        expect(parser.type).to.equal('GET'); // parses a GET request
+        expect(parser.data).to.equal(''); // parses a GET request
+        expect(parser.event).to.equal(''); // parses a GET request
+        expect(parser.xPath).to.equal(''); // parses a GET request
 
-        expect(parser.parse('', 'GET', '', 'click', '/html/body')).toEqual('GET'); // 'parses a GET request'
-        expect(parser.url).toEqual(''); // 'parses a GET request'
-        expect(parser.type).toEqual('GET'); // 'parses a GET request'
-        expect(parser.data).toEqual(''); // 'parses a GET request'
-        expect(parser.event).toEqual('click'); // 'parses a GET request'
-        expect(parser.xPath).toEqual('/html/body'); // 'parses a GET request'
+        expect(parser.parse('', 'GET', '', 'click', '/html/body')).to.equal('GET'); // parses a GET request
+        expect(parser.url).to.equal(''); // parses a GET request
+        expect(parser.type).to.equal('GET'); // parses a GET request
+        expect(parser.data).to.equal(''); // parses a GET request
+        expect(parser.event).to.equal('click'); // parses a GET request
+        expect(parser.xPath).to.equal('/html/body'); // parses a GET request
 
         done();
     });
@@ -67,12 +69,12 @@ describe('parse2', function() {
         parser.parsePost  = function () { return 'POST'; };
         parser.initReport = function () {};
 
-        expect(parser.parse('', 'POST', '', '', '')).toEqual('POST'); // 'parses a POST request'
-        expect(parser.url).toEqual(''); // 'parses a POST request'
-        expect(parser.type).toEqual('POST'); // 'parses a POST request'
-        expect(parser.data).toEqual(''); // 'parses a POST request'
-        expect(parser.event).toEqual(''); // 'parses a POST request'
-        expect(parser.xPath).toEqual(''); // 'parses a POST request'
+        expect(parser.parse('', 'POST', '', '', '')).to.equal('POST'); // parses a POST request
+        expect(parser.url).to.equal(''); // parses a POST request
+        expect(parser.type).to.equal('POST'); // parses a POST request
+        expect(parser.data).to.equal(''); // parses a POST request
+        expect(parser.event).to.equal(''); // parses a POST request
+        expect(parser.xPath).to.equal(''); // parses a POST request
 
         done();
     });
@@ -86,7 +88,7 @@ describe('parse3', function() {
 
         parser.initReport = function () {};
 
-        expect(parser.parse('', 'HEAD', '', '', '')).toEqual(undefined); // 'doesn\'t parse anything else'
+        expect(parser.parse('', 'HEAD', '', '', '')).to.equal(undefined); // doesn\'t parse anything else
 
         done();
     });
@@ -104,11 +106,11 @@ describe('initReport', function() {
         parser.data  = 'data';
         parser.initReport();
 
-        expect(typeof parser.report.time.start).toEqual('number'); // 'sets up the report container'
-        expect(parser.report.httpMethod).toEqual('type'); // 'sets up the report container'
-        expect(parser.report.event).toEqual('event'); // 'sets up the report container'
-        expect(parser.report.xPath).toEqual('xPath'); // 'sets up the report container'
-        expect(parser.report.data).toEqual('data'); // 'sets up the report container'
+        expect(typeof parser.report.time.start).to.equal('number'); // sets up the report container
+        expect(parser.report.httpMethod).to.equal('type'); // sets up the report container
+        expect(parser.report.event).to.equal('event'); // sets up the report container
+        expect(parser.report.xPath).to.equal('xPath'); // sets up the report container
+        expect(parser.report.data).to.equal('data'); // sets up the report container
 
         done();
     });
@@ -122,7 +124,7 @@ describe('parseGet', function() {
         parser = new Parser();
         resp   = parser.parseGet();
 
-        expect(resp).toEqual(undefined); // 'doesn\'t do anything'
+        expect(resp).to.equal(undefined); // doesn\'t do anything
 
         done();
     });
@@ -136,7 +138,7 @@ describe('parsePost', function() {
         parser = new Parser();
         resp   = parser.parsePost();
 
-        expect(resp).toEqual(undefined); // 'doesn\'t do anything'
+        expect(resp).to.equal(undefined); // doesn\'t do anything
 
         done();
     });

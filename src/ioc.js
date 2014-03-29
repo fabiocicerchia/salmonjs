@@ -60,14 +60,14 @@ var IOC = function () {
      * Return an object satisfying its dedependencies.
      *
      * @method get
-     * @param {Function} func The function to instantiate
+     * @param {Function} Func The function to instantiate
      * @return {Object}
      */
-    this.get = function (func) {
-        var obj          = new func(),
-            dependencies = this.resolveDependencies(func);
+    this.get = function (Func) {
+        var obj          = new Func(),
+            dependencies = this.resolveDependencies(Func);
 
-        func.apply(obj, dependencies);
+        Func.apply(obj, dependencies);
 
         return obj;
     };

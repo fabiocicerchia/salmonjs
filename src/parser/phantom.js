@@ -35,7 +35,7 @@ var Parser     = require('../parser'),
     args       = system.args || system.argv,
     testing    = args.join(' ').indexOf('jasmine-node') !== -1 || args.join(' ').indexOf('grunt') !== -1,
     settings   = !testing ? JSON.parse(args[1]) : {},
-    webpageObj = typeof webpage !== 'undefined' ? webpage : require('webpage');
+    webpageObj = typeof webpage !== 'undefined' ? webpage : require('webpage'),
     page       = webpageObj.create();
 
 /**

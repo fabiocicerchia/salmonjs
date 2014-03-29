@@ -28,7 +28,9 @@
  */
 
 var rootdir = require('path').resolve('.'),
-    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src');
+    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src'),
+    chai    = require('chai'),
+    expect  = chai.expect;
 
 describe('addToQueue', function() {
     it('addToQueue', function (done) {
@@ -41,14 +43,14 @@ describe('addToQueue', function() {
         pool = new Pool(spawn, os);
         pool.processQueue = function () {};
 
-        expect(pool.addToQueue()).toEqual(undefined);
-        expect(pool.queue).toEqual([]);
+        expect(pool.addToQueue()).to.equal(undefined);
+        expect(pool.queue).to.deep.equal([]);
 
         pool.addToQueue({}, {});
-        expect(pool.queue).toEqual([]);
+        expect(pool.queue).to.deep.equal([]);
 
         pool.addToQueue({k1: 'v1'}, {});
-        expect(pool.queue).toEqual([{data: {k1: 'v1'},options: {}}]);
+        expect(pool.queue).to.deep.equal([{data: {k1: 'v1'},options: {}}]);
 
         done();
     });
@@ -69,25 +71,25 @@ describe('processQueue', function() {
         __dirname = '';
         pool = new Pool(spawn, os);
 
-        expect(pool.processQueue()).toEqual(undefined);
-        expect(pool.queue).toEqual([]);
+        expect(pool.processQueue()).to.equal(undefined);
+        expect(pool.queue).to.deep.equal([]);
 
         pool.queue = [{data: {}, options: {}}];
         pool.size = 0;
         pool.processQueue();
-        expect(pool.queue).toEqual([{data: {}, options: {}}]); // 'check the queue is the same when the size is lower than the elements in queue'
+        expect(pool.queue).to.deep.equal([{data: {}, options: {}}]); // check the queue is the same when the size is lower than the elements in queue
 
         pool.queue = [{data: {}, options: {}}];
         pool.size = 1;
         pool.memoryThreshold = 10;
         pool.processQueue();
-        expect(pool.queue).toEqual([]); // 'check the memory threshold is not reached'
+        expect(pool.queue).to.deep.equal([]); // check the memory threshold is not reached
 
         pool.queue = [{options: {}}];
         pool.size = 10;
         pool.memoryThreshold = 10;
         pool.processQueue();
-        expect(pool.queue).toEqual([]); // 'check the queue item is invalid'
+        expect(pool.queue).to.deep.equal([]); // check the queue item is invalid
 
         spawn = function() {
             return {
@@ -101,6 +103,6 @@ describe('processQueue', function() {
         pool.size = 10;
         pool.memoryThreshold = 10;
         pool.processQueue();
-        expect(pool.queue).toEqual([]); // 'check the queue item is process properly'
+        expect(pool.queue).to.deep.equal([]); // check the queue item is process properly
     });
 });

@@ -15,25 +15,24 @@ module.exports = function(grunt) {
                 captureExceptions: true,
                 junitreport: {
                     report: false,
-                    savePath : "./build/reports/jasmine/",
+                    savePath : './build/reports/jasmine/',
                     useDotNotation: true,
                     consolidate: true
                 }
             }
         },
         jshint: {
-            all: [
-                'Gruntfile.js',
-                'bin/**/*.js',
-                'src/**/*.js',
-                'test/**/*.js'
-            ],
             options :{
+                ignores: [
+                    'src/sha1.js'
+                ],
                 globals: {
-                    __dirname: true,
+                    __dirname: false,
                     json: false,
                     settings: true,
-                    test: true
+                    SHA1: false,
+                    // PHANTOMJS
+                    webpage: false
                 },
                 asi: false,
                 bitwise: true,
@@ -65,12 +64,12 @@ module.exports = function(grunt) {
                 laxbreak: false,
                 laxcomma: false,
                 loopfunc: true,
-                maxcomplexity: 5,
+                maxcomplexity: 22, // TODO: Set to 5
                 maxdepth: 5,
                 maxerr: 100,
                 maxlen: 300,
-                maxparams: 5,
-                maxstatements: 35,
+                maxparams: 10, // TODO: Set to 5
+                maxstatements: 126, // TODO: Set to 35
                 mootools: false,
                 moz: false,
                 multistr: false,
@@ -85,7 +84,7 @@ module.exports = function(grunt) {
                 plusplus: false,
                 proto: false,
                 prototypejs: false,
-                quotmark: "single",
+                quotmark: 'single',
                 rhino: false,
                 scripturl: false,
                 shadow: false,
@@ -100,6 +99,39 @@ module.exports = function(grunt) {
                 worker: false,
                 wsh: false,
                 yui: false
+            },
+            uses_defaults: [
+                'Gruntfile.js',
+                'bin/**/*.js',
+                'src/**/*.js'
+            ],
+            with_overrides: {
+                options: {
+                    globals: {
+                        __dirname: true,
+                        json: false,
+                        settings: true,
+                        test: true,
+                        // BROWSER
+                        document: true,
+                        window: true,
+                        // JASMINE
+                        jasmine: false,
+                        describe: false,
+                        it: false,
+                        beforeEach: false,
+                        waitsFor: false,
+                        runs: false
+                    },
+                    expr: true,
+                    maxlen: 1000,
+                    maxstatements: 1000
+                },
+                files: {
+                    src: [
+                        'test/**/*.js'
+                    ]
+                },
             }
         },
         release: {
@@ -137,19 +169,19 @@ module.exports = function(grunt) {
             options: {
                 marks: [
                     {
-                        name: "FIX",
+                        name: 'FIX',
                         pattern: /FIXME/,
-                        color: "red"
+                        color: 'red'
                     },
                     {
-                        name: "TODO",
+                        name: 'TODO',
                         pattern: /TODO/,
-                        color: "yellow"
+                        color: 'yellow'
                     },
                     {
-                        name: "NOTE",
+                        name: 'NOTE',
                         pattern: /NOTE/,
-                        color: "blue"
+                        color: 'blue'
                     }
                 ],
                 file: 'TODO.md'

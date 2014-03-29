@@ -31,7 +31,7 @@ var system  = require('system'),
     args    = system.args,
     page    = require('webpage').create();
 
-page.open(args[1], function(status) {
+page.open(args[1], function () {
 });
 
 page.onLoadFinished = function () {

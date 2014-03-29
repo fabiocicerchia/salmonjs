@@ -27,11 +27,11 @@
  * SOFTWARE.
  */
 
-var fs       = require('fs'),
-    rootdir  = require('path').resolve('.'),
+var rootdir  = require('path').resolve('.'),
     basePath = rootdir + '/test/assets/',
-    srcdir   = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src'),
-    Phapper = require('phapper');
+    Phapper  = require('phapper'),
+    chai     = require('chai'),
+    expect   = chai.expect;
 
 // TEST #01 --------------------------------------------------------------------
 describe('test01', function() {
@@ -40,7 +40,7 @@ describe('test01', function() {
             results = phap.runSync(),
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
-        expect(JSON.parse(output)).toEqual(JSON.parse('{}')); // 'it should returns 0 events'
+        expect(JSON.parse(output)).to.deep.equal(JSON.parse('{}')); // it should returns 0 events
         done();
     });
 });
@@ -52,7 +52,7 @@ describe('test02', function() {
             results = phap.runSync(),
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
-        expect(JSON.parse(output)).toEqual(JSON.parse('{}')); // 'it should returns 0 events'
+        expect(JSON.parse(output)).to.deep.equal(JSON.parse('{}')); // it should returns 0 events
         done();
     });
 });
@@ -64,7 +64,7 @@ describe('test03', function() {
             results = phap.runSync(),
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
-        expect(JSON.parse(output)).toEqual(JSON.parse('{}')); // 'it should returns 0 events'
+        expect(JSON.parse(output)).to.deep.equal(JSON.parse('{}')); // it should returns 0 events
         done();
     });
 });
@@ -93,8 +93,8 @@ describe('test05', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
-            // 'it should returns 1 event'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
+            // it should returns 1 event
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -108,8 +108,8 @@ describe('test06', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
-            // 'it should returns 1 event'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
+            // it should returns 1 event
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -123,8 +123,8 @@ describe('test07', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
-            // 'it should returns 1 event'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
+            // it should returns 1 event
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -138,8 +138,8 @@ describe('test08', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"25f2d6df4f2a30f29f6f80da1e95011044b0b8f7\":[\"/html/body/a\"]}}'));
-            // 'it should returns 2 events'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"25f2d6df4f2a30f29f6f80da1e95011044b0b8f7\":[\"/html/body/a\"]}}'));
+            // it should returns 2 events
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -153,8 +153,8 @@ describe('test09', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/a\"],\"25f2d6df4f2a30f29f6f80da1e95011044b0b8f7\":[\"/html/body/a\"]}}'));
-            // 'it should returns 3 events'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/a\"],\"25f2d6df4f2a30f29f6f80da1e95011044b0b8f7\":[\"/html/body/a\"]}}'));
+            // it should returns 3 events
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -168,8 +168,8 @@ describe('test10', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/div\"]}}'));
-            // 'it should returns 2 events'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/div\"]}}'));
+            // it should returns 2 events
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -183,8 +183,8 @@ describe('test11', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/div\"]}}'));
-            // 'it should returns 2 events'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"0fcab3502642850390405ad8bea30977d5bf5a5d\":[\"/html/body/div\"]}}'));
+            // it should returns 2 events
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -198,8 +198,8 @@ describe('test12', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
-            // 'it should returns 1 event'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
+            // it should returns 1 event
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -213,8 +213,8 @@ describe('test13', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
-            // 'it should returns 1 event'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]}}'));
+            // it should returns 1 event
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -228,8 +228,8 @@ describe('test14', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"load\":{\"4c36f76234482bdc076deeaa345fb56943c2462e\":[\"/html/body\"]}}'));
-            // 'it should returns 1 event'
+            .to.deep.equal(JSON.parse('{\"load\":{\"4c36f76234482bdc076deeaa345fb56943c2462e\":[\"/html/body\"]}}'));
+            // it should returns 1 event
         done();
     });
 });
@@ -242,8 +242,8 @@ describe('test15', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"],\"f328793b597cd5eb24778cf51365c6865b2805cd\":[\"/html/body\"]}}'));
-            // 'it should returns 2 events'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"],\"f328793b597cd5eb24778cf51365c6865b2805cd\":[\"/html/body\"]}}'));
+            // it should returns 2 events
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -256,7 +256,7 @@ describe('test16', function() {
             results = phap.runSync(),
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
-        expect(JSON.parse(output)).toEqual(JSON.parse('{}')); // 'it should returns 0 events'
+        expect(JSON.parse(output)).to.deep.equal(JSON.parse('{}')); // it should returns 0 events
         done();
     });
 });
@@ -269,8 +269,8 @@ describe('test17', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"click\":{\"8e3eb8cb110fe7b5d828aa2efe911ba0e83491dd\":[\"/html/body/a\"]}}'));
-            // 'it should returns 1 event'
+            .to.deep.equal(JSON.parse('{\"click\":{\"8e3eb8cb110fe7b5d828aa2efe911ba0e83491dd\":[\"/html/body/a\"]}}'));
+            // it should returns 1 event
         done();
     });
 });
@@ -283,8 +283,8 @@ describe('test18', function() {
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
         expect(JSON.parse(output))
-            .toEqual(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"46263e884ea4628bd628a94c115f92d57ea23d5c\":[\"/html/body/a\"]}}'));
-            // 'it should returns 2 events'
+            .to.deep.equal(JSON.parse('{\"DOMContentLoaded\":{},\"load\":{\"01522c0ac7a8ba1b2b35c63d93a1e0da8cff4262\":[\"window\"]},\"click\":{\"46263e884ea4628bd628a94c115f92d57ea23d5c\":[\"/html/body/a\"]}}'));
+            // it should returns 2 events
             // DOMContentLoaded is an extra, empty, one (added by jQuery).
         done();
     });
@@ -297,7 +297,7 @@ describe('test19', function() {
             results = phap.runSync(),
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
-        expect(JSON.parse(output)).toEqual(JSON.parse('{}')); // 'it should returns 0 events'
+        expect(JSON.parse(output)).to.deep.equal(JSON.parse('{}')); // it should returns 0 events
         done();
     });
 });
@@ -309,7 +309,7 @@ describe('test20', function() {
             results = phap.runSync(),
             output  = results.stdout.substr(0, results.stdout.length - 1);
 
-        expect(JSON.parse(output)).toEqual(JSON.parse('{}')); // 'it should returns 0 events'
+        expect(JSON.parse(output)).to.deep.equal(JSON.parse('{}')); // it should returns 0 events
         done();
     });
 });

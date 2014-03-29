@@ -37,7 +37,7 @@ page.onInitialized = function () {
     page.injectJs(rootdir + '/src/events.js');
 };
 
-page.open(args[1], function(status) {
+page.open(args[1], function () {
 });
 
 page.onLoadFinished = function () {

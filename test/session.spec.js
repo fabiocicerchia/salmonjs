@@ -28,7 +28,9 @@
  */
 
 var rootdir = require('path').resolve('.'),
-    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src');
+    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src'),
+    chai    = require('chai'),
+    expect  = chai.expect;
 
 describe('dump', function() {
     it('dump', function (done) {
@@ -47,7 +49,7 @@ describe('dump', function() {
             session = new Session(client, fs, zlib, utils, conf, pool);
 
         session.dump(function () {
-            expect(fs.readFileSync(srcdir + '/../session.dmp').toString()).toEqual('{"conf":{},"redis":{"key1":[{"sk1":"test","sk2":"test"}],"key2":[{"sk1":"test","sk2":"test"}]},"pool":{"size":10,"queue":[],"memoryThreshold":-1,"delay":1000}}');
+            expect(fs.readFileSync(srcdir + '/../session.dmp').toString()).to.equal('{"conf":{},"redis":{"key1":[{"sk1":"test","sk2":"test"}],"key2":[{"sk1":"test","sk2":"test"}]},"pool":{"size":10,"queue":[],"memoryThreshold":-1,"delay":1000}}');
             done();
         });
     });
@@ -69,7 +71,7 @@ describe('dump2', function() {
             session = new Session(client, fs, zlib, utils, conf, pool);
 
         session.dump(function (err) {
-            expect(err).toEqual('error'); // 'check if redis is failing properly'
+            expect(err).to.equal('error'); // check if redis is failing properly
             done();
         });
     });
@@ -91,7 +93,7 @@ describe('dump3', function() {
             session = new Session(client, fs, zlib, utils, conf, pool);
 
         session.dump(function (err) {
-            expect(err).toEqual('error2'); // 'check if redis is failing properly'
+            expect(err).to.equal('error2'); // check if redis is failing properly
             done();
         });
     });
@@ -113,7 +115,7 @@ describe('dump4', function() {
             session = new Session(client, fs, zlib, utils, conf, pool);
 
         session.dump(function (err) {
-            expect(err).toEqual('error3'); // 'check if gzip is failing properly'
+            expect(err).to.equal('error3'); // check if gzip is failing properly
             done();
         });
     });
@@ -136,11 +138,11 @@ describe('restore', function() {
         fs.writeFileSync(srcdir + '/../session.dmp', '{"conf":{"w":20,"workers":20},"redis":{"key1":[{"sk1":"test","sk2":"test"}],"key2":[{"sk1":"test","sk2":"test"}]},"pool":{"size":20,"queue":[],"memoryThreshold":10,"delay":1000}}');
 
         session.restore(function (err, conf) {
-            expect(pool.size).toEqual(20);
-            expect(pool.queue).toEqual([]);
-            expect(pool.memoryThreshold).toEqual(10);
-            expect(pool.delay).toEqual(1000);
-            expect(conf.workers).toEqual(20);
+            expect(pool.size).to.equal(20);
+            expect(pool.queue).to.deep.equal([]);
+            expect(pool.memoryThreshold).to.equal(10);
+            expect(pool.delay).to.equal(1000);
+            expect(conf.workers).to.equal(20);
 
             done();
         });
@@ -164,7 +166,7 @@ describe('restore2', function() {
         fs.writeFileSync(srcdir + '/../session.dmp', '{"conf":{"w":20,"workers":20},"redis":{"key1":[{"sk1":"test","sk2":"test"}],"key2":[{"sk1":"test","sk2":"test"}]},"pool":{"size":20,"queue":[],"memoryThreshold":10,"delay":1000}}');
 
         session.restore(function (err) {
-            expect(err).toEqual('error'); // 'check if gzip is failing properly'
+            expect(err).to.equal('error'); // check if gzip is failing properly
 
             done();
         });

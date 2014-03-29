@@ -27,9 +27,6 @@
  * SOFTWARE.
  */
 
-var rootdir = require('path').resolve('.'),
-    srcdir  = rootdir + (process.env.SALMONJS_COV ? '/src-cov' : '/src');
-
 describe('main', function() {
     it('main', function (done) {
         done();
