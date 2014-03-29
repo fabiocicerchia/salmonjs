@@ -9,6 +9,7 @@
   },
   "homepage": "http://fabiocicerchia.github.io/salmonjs",
   "description": "Web Crawler in Node.js to spider dynamically whole websites.",
+  "full_description": "It helps you to map / process entire websites, spidering them and parsing each page in a smart way. It follows all the links and test several times the form objects. In this way is possible to check effectively the whole website.",
   "contributors": [
     {
       "name": "Fabio Cicerchia",
@@ -53,9 +54,9 @@
     "grunt-release": "0.7.0",
     "grunt-contrib-yuidoc": "0.5.2",
     "grunt-todo": "0.2.0",
-    "grunt-readme": "0.4.5",
     "grunt-sloc": "0.5.2",
-    "chai": "1.9.1"
+    "chai": "1.9.1",
+    "grunt-verb": "0.0.5"
   },
   "analyze": false,
   "scripts": {

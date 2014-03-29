@@ -75,6 +75,9 @@ lint:
 todo:
 	$(GRUNT) todo
 
+readme:
+	$(GRUNT) verb
+
 ci:
 	make install
 	make version

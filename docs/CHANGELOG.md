@@ -1,5 +1,3 @@
-# CHANGELOG
-
 ## 0.4.0 / 13 March 2014
 
  * Fixed proxy undefined + fix on pool mechanism
@@ -30,7 +28,6 @@
  * Rebranding: say goodbye to spidey, say hello to salmonJS
  * Added timeout for upload - perhaps the CI servers have been banned by ImageBin
  * Exclude the upload test from travis ci - because every time is taking ages
- * Added timeout for upload - perhaps the CI servers have been banned by ImageBin
  * Added more nodejs versions
  * Fixed #7
  * Fixed broken test
@@ -43,7 +40,6 @@
  * Re-added glob for bug in worker.js
  * Improved docs
  * Improved tests
- * Improved tests
  * Improved tests for crawler, parser and test
  * Fixed overall code coverage percentage
  * Improved makefile to run single test file
@@ -54,7 +50,6 @@
  * Fix percentage colours
  * Fixed code coverage issue
  * Removed unused method
- * Updated
  * Improved to run coverage on single files
  * Added info for insight
  * Fixed problem with unknown variable
@@ -64,9 +59,7 @@
  * Improved to execute all the JS events in the parser
  * Removed support for casperjs as parser
  * Display messages from parser process
- * Updated
  * Fixed typo
- * Updated
  * Fixed problem with testing variable which has broken the parsers
  * Fixed redirection problem
  * Locking navigation for one test (needs to be debugged why)
@@ -77,7 +70,6 @@
  * Fix travis ci
  * Disabled the processing if it's not HTML
  * Added follow redirects option
- * Updated
  * Specify only for the branches to build.
  * Linted
  * Fixed text match after test case structure change
@@ -100,14 +92,12 @@
 
 ## 0.2.0 / 23 November 2013
 
- * Minor changes
  * Improved tests, minor changes to the code
  * Improvement on the coverage report and page report
  * Fixed viewport size and page content
  * Improved coverage generation
  * Improved tests for parsers (and relative source code)
  * Fixed problem with unknown variable
- * Updated
  * Improved coverage report
  * Fixed parser to remove duplicate slashes
  * Fixed bug with external urls
@@ -131,8 +121,6 @@
  * Added tests with CasperJS for DOM interaction + draft for parser with CasperJS (broken at the moment)
  * Improved url normalisation
  * Added IOC
- * Minor changes
- * Updated package.json
  * Fixed form processing
  * Fixed fallback value when undefined for event and xPath properties
  * Fixed wrong comparison value for indexOf
@@ -153,7 +141,6 @@
  * Removed duplicated element
  * Fixed the issue when the 'Crawler.onStdOut' is executed after 'Crawler.onExit'
  * Better redis error handling
- * Updated
  * Removed duplicated code
  * Fixed bug with or condition
  * Minor changes + improved documentation
@@ -161,7 +148,6 @@
  * Added screenshot feature
  * Fixed name after rebranding
  * Rebrand
- * Updated
  * Group reports by execution time
  * Dos2unix
  * Added html template for reports
@@ -170,21 +156,15 @@
  * Fixed problem with output
  * Minor improvements
  * Crated a separate file for the console
- * Updated
- * Updated
  * Added http authentication
- * Updated
  * Fixed existsSync using the right node.js version
  * Fixed tests
  * Changed tests
  * Fixed to retrieve also the events attached as attribute
  * Fixed param in tests
- * Updated
  * Added and fixed tests
  * Added help
  * Fixed bug with empty url
- * Fixed winston logging
- * Updated
  * Fixed winston logging
  * Fixed bug about querystring parsing
  * Linted the code
@@ -195,7 +175,6 @@
  * Improved to parse url and file path
  * Retrieving events bound to elements & process them + fix signature hash
  * Added title (ascii art)
- * Updated
  * Added tests
  * Converted project from PHP to Node.js
  * First draft (needs to be refactored and tested)

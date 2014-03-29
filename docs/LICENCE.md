@@ -1,4 +1,4 @@
-Spidey's license follows:
+SalmonJS's license follows:
 
 ====
 
@@ -24,8 +24,8 @@ SOFTWARE.
 
 ====
 
-This license applies to all parts of Spidey that are not externally
-maintained libraries. The externally maintained libraries used by Spidey are:
+This license applies to all parts of SalmonJS that are not externally
+maintained libraries. The externally maintained libraries used by SalmonJS are:
 
 - tiny-sha1, located at src/sha1. tiny-sha1's license follows:
   """

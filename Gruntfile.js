@@ -199,7 +199,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-release');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-todo');
-    grunt.loadNpmTasks('grunt-readme');
+    grunt.loadNpmTasks('grunt-verb');
     grunt.loadNpmTasks('grunt-sloc');
 
 //    grunt.registerTask('default', 'jasmine_node');
