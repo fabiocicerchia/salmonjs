@@ -199,5 +199,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-release');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-todo');
-    grunt.loadNpmTasks('grunt-verb');
+    if (process.argv.join(' ').indexOf('jasmine_node') ===-1) {
+        grunt.loadNpmTasks('grunt-verb');
+    }
 };

@@ -59,7 +59,7 @@ test:
 
 coverage:
 	$(GRUNT) jasmine_node
-	cat build/reports/coverage/lcov.info | sed -r "s/SF:.+\/(src|test)/SF:\1/" | coveralls
+	cat build/reports/coverage/lcov.info | sed -r "s/SF:.+\/(src|test)\//SF:\1\//" | coveralls
 
 documentation:
 	$(YUIDOC) -o docs/api -t docs/theme/friendly-theme bin src test
@@ -83,5 +83,6 @@ ci:
 	make versions
 	make lint
 	make test
+	make coverage
 
 .PHONY: test
