@@ -32,10 +32,26 @@ var rootdir = require('path').resolve('.'),
     chai    = require('chai'),
     expect  = chai.expect;
 
+describe('serialise', function() {
+    it('serialise', function (done) {
+        var Utils  = require(srcdir + '/utils'),
+            crypto = {},
+            utils;
+
+        utils = new Utils(crypto);
+        expect(utils.serialise({})).to.equal(''); // encode entities properly
+        expect(utils.serialise({a: 1, b: 2})).to.equal('a=1&b=2'); // encode entities properly
+        expect(utils.serialise([])).to.equal(''); // encode entities properly
+        expect(utils.serialise(['a', 'b'])).to.equal('0=a&1=b'); // encode entities properly
+
+        done();
+    });
+});
+
 describe('serialise2', function() {
     it('serialise2', function (done) {
         var Utils  = require(srcdir + '/utils'),
-            crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto = {},
             utils;
 
         utils = new Utils(crypto);
@@ -48,7 +64,7 @@ describe('serialise2', function() {
 describe('serialise3', function() {
     it('serialise3', function (done) {
         var Utils  = require(srcdir + '/utils'),
-            crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto = {},
             utils;
 
         utils = new Utils(crypto);
@@ -75,7 +91,7 @@ describe('sha1', function() {
 describe('htmlEscape', function() {
     it('htmlEscape', function (done) {
         var Utils  = require(srcdir + '/utils'),
-            crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto = {},
             utils,
             unescaped;
 
@@ -110,7 +126,7 @@ describe('htmlEscape', function() {
 describe('normaliseData', function() {
     it('normaliseData', function (done) {
         var Utils  = require(srcdir + '/utils'),
-            crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto = {},
             utils;
 
         // normaliseData
@@ -140,7 +156,7 @@ describe('normaliseData', function() {
 describe('sleep', function() {
     it('sleep', function (done) {
         var Utils  = require(srcdir + '/utils'),
-            crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto = {},
             utils;
 
         utils = new Utils(crypto);
@@ -159,7 +175,7 @@ describe('sleep', function() {
 describe('onlyUnique', function() {
     it('onlyUnique', function (done) {
         var Utils  = require(srcdir + '/utils'),
-            crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto = {},
             utils;
 
         utils = new Utils(crypto);
@@ -178,9 +194,9 @@ describe('onlyUnique', function() {
     });
 });
 describe('fireEventObject', function() {
-    it('fireEventObject', function (done) {
+    it('not found', function (done) {
         var Utils = require(srcdir + '/utils'),
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto   = {},
             utils;
 
         utils = new Utils(crypto);
@@ -210,11 +226,83 @@ describe('fireEventObject', function() {
 
         done();
     });
+    it('found', function (done) {
+        var Utils = require(srcdir + '/utils'),
+            crypto   = {},
+            utils;
+
+        utils = new Utils(crypto);
+
+        var evt = {
+            initCustomEvent: function () {}
+        };
+        window = {
+            dispatchEvent: function () {},
+            eventContainer: {
+                getElementByXpath: function () {
+                    return {
+                        dispatchEvent: function () {}
+                    };
+                }
+            }
+        };
+        document = {
+            createEvent: function () {
+                return evt;
+            }
+        };
+
+        var type = typeof utils.fireEventDOM({'event': 'click', xPath: 'window'});
+        expect(type === 'customevent' || type === 'object').to.equal(true);
+
+        expect(utils.fireEventObject({'event': 'click', xPath: 'window'})).to.deep.equal(evt);
+
+        done();
+    });
 });
 describe('fireEventDOM', function() {
-    it('fireEventDOM', function (done) {
+    it('not found', function (done) {
         var Utils = require(srcdir + '/utils'),
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto   = {},
+            utils;
+
+        utils = new Utils(crypto);
+
+        window = {};
+        document = {
+            createElement: function () {
+                return {
+                    dispatchEvent: function () {}
+                };
+            },
+            createEvent: function () {
+                return {
+                    initCustomEvent: function () {}
+                };
+            }
+        };
+        window.eventContainer = {
+            getElementByXpath: function() {
+                return undefined;
+            }
+        };
+
+        var type = typeof utils.fireEventDOM({'event': 'click', xPath: '//*'});
+        expect(type).to.equal('undefined');
+
+        window.eventContainer = {
+            getElementByXpath: function() {
+                return undefined;
+            }
+        };
+
+        expect(utils.fireEventDOM({'event': 'click', xPath: undefined})).to.equal(undefined);
+
+        done();
+    });
+    it('found', function (done) {
+        var Utils = require(srcdir + '/utils'),
+            crypto   = {},
             utils;
 
         utils = new Utils(crypto);
@@ -247,7 +335,7 @@ describe('fireEventDOM', function() {
             }
         };
 
-        expect(utils.fireEventDOM({'event': 'click', xPath: undefined})).to.equal(undefined);
+        expect(utils.fireEventDOM({'event': 'click', xPath: '//div[0]'})).to.equal(undefined);
 
         done();
     });
@@ -255,7 +343,7 @@ describe('fireEventDOM', function() {
 describe('arrayToQuery', function() {
     it('arrayToQuery', function (done) {
         var Utils  = require(srcdir + '/utils'),
-            crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto = {},
             utils;
 
         utils = new Utils(crypto);
@@ -282,7 +370,7 @@ describe('arrayToQuery', function() {
 describe('normaliseUrl', function() {
     it('normaliseUrl', function (done) {
         var Utils  = require(srcdir + '/utils'),
-            crypto = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto = {},
             utils;
 
         utils = new Utils(crypto);
@@ -332,7 +420,7 @@ describe('normaliseUrl', function() {
 describe('parseINIString', function() {
     it('parseINIString', function (done) {
         var Utils   = require(srcdir + '/utils'),
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            crypto   = {},
             utils   = new Utils(crypto),
             ini;
 

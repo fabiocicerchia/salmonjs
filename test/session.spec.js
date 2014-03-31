@@ -58,10 +58,9 @@ describe('dump2', function() {
     it('dump2', function (done) {
         var fs     = new (require(srcdir + '/fs'))(require('fs')),
             client = {
-                keys: function (key, callback) { callback('error', undefined); },
-                hgetall: function (key, callback) { callback(undefined, {sk1: 'test', sk2: 'test'}); }
+                keys: function (key, callback) { callback('error', undefined); }
             },
-            zlib   = {gzip : function (data, callback) { callback(undefined, data); }},
+            zlib   = {},
             utils  = {},
             conf   = {},
             spawn  = function() {},
@@ -83,7 +82,7 @@ describe('dump3', function() {
                 keys: function (key, callback) { callback(undefined, ['key1', 'key2']); },
                 hgetall: function (key, callback) { callback('error2', undefined); }
             },
-            zlib   = {gzip : function (data, callback) { callback(undefined, data); }},
+            zlib   = {},
             utils  = {},
             conf   = {},
             spawn  = function() {},

@@ -60,7 +60,7 @@ function spawnStderr(data) {
  *
  * @class Crawler
  */
-var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist, utils, pool) {
+var Crawler = function (config, spawn, test, client, winston, fs, optimist, utils, pool) {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -261,14 +261,14 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     };
 
     /**
-     * Execute PhantomJS.
+     * Execute sub-process
      *
-     * @method execPhantomjs
+     * @method execSubProcess
      * @return undefined
      */
-    this.execPhantomjs = function () {
+    this.execSubProcess = function () {
         var idRequest = utils.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
-            phantom,
+            subprocess,
             params  = {
                 idCrawler:       this.idUri,
                 execId:          this.timeStart,
@@ -302,11 +302,11 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         settings.push(JSON.stringify(params));
 
         try {
-            phantom = spawn(config.parser.cmd, settings);
+            subprocess = spawn(config.parser.cmd, settings);
 
-            phantom.stdout.on('data', this.onStdOut);
-            phantom.stderr.on('data', this.onStdErr);
-            phantom.on('exit', this.onExit);
+            subprocess.stdout.on('data', this.onStdOut);
+            subprocess.stderr.on('data', this.onStdErr);
+            subprocess.on('exit', this.onExit);
         } catch (err) {
             winston.error(err.message.red);
             this.handleError();
@@ -351,7 +351,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         );
 
         if (config.parser.interface === 'phantom') {
-            return this.execPhantomjs();
+            return this.execSubProcess();
         }
 
         return undefined;

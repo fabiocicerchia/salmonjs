@@ -66,7 +66,7 @@ var Utils = function (crypto) {
      * @param {String} plainText The string to be converted to hash
      * @return {String}
      */
-    this.sha1 = function  (plainText) {
+    this.sha1 = function (plainText) {
         return crypto.createHash('sha1').update(plainText).digest('hex');
     };
 
@@ -243,6 +243,10 @@ var Utils = function (crypto) {
         var normalised,
             baseDomain = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, 'http$1://$2/'),
             qs;
+
+        if (url === undefined) {
+            return undefined;
+        }
 
         if (url.substr(0, 2) === '//') {
             url = baseUrl.split(':')[0] + ':' + url;

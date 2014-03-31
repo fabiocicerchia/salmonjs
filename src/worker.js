@@ -81,7 +81,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
     pool.memoryThreshold = poolSettings.memoryThreshold;
     pool.delay           = poolSettings.delay;
 
-    var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist, utils, pool);
+    var crawler = new Crawler(config, spawn, test, client, winston, fs, optimist, utils, pool);
     crawler.init();
     crawler.timeStart       = timeStart;
     crawler.username        = username;

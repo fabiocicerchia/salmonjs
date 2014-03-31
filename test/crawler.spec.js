@@ -55,7 +55,6 @@ describe('run', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -65,10 +64,10 @@ describe('run', function() {
             crawler;
 
         utils.sha1 = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         config.parser.interface = 'phantom';
-        crawler.execPhantomjs = function () { return 'OK'; };
-        expect(crawler.run('', '', '', '', '')).to.equal('OK'); // runs
+        crawler.execSubProcess = function () { return 'OK'; };
+        expect(crawler.run({url: '', type: '', data: '', evt: '', xPath: ''})).to.equal('OK'); // runs
 
         done();
     });
@@ -96,7 +95,6 @@ describe('run2', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -106,9 +104,9 @@ describe('run2', function() {
             crawler;
 
         utils.sha1 = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         config.parser.interface = 'fake';
-        expect(crawler.run('', '', '', '', '')).to.equal(undefined); // doesn\'t run
+        expect(crawler.run({url: '', type: '', data: '', evt: '', xPath: ''})).to.equal(undefined); // doesn\'t run
 
         done();
     });
@@ -135,28 +133,28 @@ describe('analiseRedisResponse', function() {
                     delay: 5000 // Delay between an attempt and another one in milliseconds.
                 }
             },
-            spawn    = function() {
-                return {
-                    stdout: { on:function(){}},
-                    stderr: { on:function(){}},
-                    on: function(){ }
-                };
-            },
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            spawn    = function() {},
             testObj  = require(srcdir + '/test'),
             client   = {hset: function () {}},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
-            pool     = {addToQueue: function () { done(); }},
+            pool     = {
+                addToQueue: function (settings, options) {
+                    options.exit();
+                }
+            },
             optimist = {argv: {$0: ['jasmine-node']}},
             utils    = {},
             crawler;
 
         utils.sha1 = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils, pool);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils, pool);
 
         __dirname = '';
 
+        crawler.checkRunningCrawlers = function () {
+            done();
+        };
         crawler.analiseRedisResponse(undefined, null, '', {url: '', type: '', data: {}, evt: '', xPath: ''}, spawn);
     });
 });
@@ -182,14 +180,7 @@ describe('analiseRedisResponse2', function() {
                     delay: 5000 // Delay between an attempt and another one in milliseconds.
                 }
             },
-            spawn    = function() {
-                return {
-                    stdout: { on:function(){}},
-                    stderr: { on:function(){}},
-                    on: function(param){ if (param ==='exit') { done(); }}
-                };
-            },
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
+            spawn    = function() {},
             testObj  = require(srcdir + '/test'),
             client   = {hset: function () {}},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -198,14 +189,14 @@ describe('analiseRedisResponse2', function() {
             utils    = {},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         try {
             crawler.analiseRedisResponse('err', null, '', {url: '', type: '', data: {}, evt: '', xPath: ''}, spawn);
         } catch (err) {
             expect(err).to.equal('err');
         }
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         crawler.checkRunningCrawlers = function () { done(); };
 
         crawler.analiseRedisResponse(undefined, 'whatever', '', {url: '', type: '', data: {}, evt: '', xPath: ''}, spawn);
@@ -235,9 +226,12 @@ describe('checkAndRun', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
-            client   = {hgetall: function() { done(); } },
+            client   = {
+                hgetall: function(key, callback) {
+                    callback();
+                }
+            },
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
@@ -245,8 +239,11 @@ describe('checkAndRun', function() {
             crawler;
 
         utils.sha1 = function (str) { expect(str).to.equal('GET{"GET":{},"POST":{},"COOKIE":{},"HEADERS":{},"CONFIRM":{},"PROMPT":{}}'); return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
+        crawler.analiseRedisResponse = function () {
+            done();
+        };
         crawler.checkAndRun({url: '', type: '', data: '', evt: '', xPath: ''});
     });
 });
@@ -273,7 +270,6 @@ describe('checkRunningCrawlers', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -282,7 +278,7 @@ describe('checkRunningCrawlers', function() {
             utils    = {},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.possibleCrawlers = 1;
         expect(crawler.checkRunningCrawlers()).to.equal(true); // doesn\'t exit when there are running crawlers
@@ -313,7 +309,6 @@ describe('checkRunningCrawlers1', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -322,7 +317,7 @@ describe('checkRunningCrawlers1', function() {
             utils    = {},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.possibleCrawlers = 0;
         expect(crawler.checkRunningCrawlers()).to.equal(false); // exits when there are no running crawlers
@@ -353,7 +348,6 @@ describe('onStdOut', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -362,7 +356,7 @@ describe('onStdOut', function() {
             utils    = {},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.processOutput = '';
         crawler.onStdOut('test\n');
@@ -397,7 +391,6 @@ describe('onStdErr', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -407,7 +400,7 @@ describe('onStdErr', function() {
             crawler,
             resp;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.handleError = function () {};
 
@@ -440,7 +433,6 @@ describe('handleError', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -449,7 +441,7 @@ describe('handleError', function() {
             utils    = {},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         crawler.tries = 10;
         crawler.storeDetails = true;
         crawler.storeDetailsToFile = function () {};
@@ -481,7 +473,6 @@ describe('onExit', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -490,7 +481,7 @@ describe('onExit', function() {
             utils    = {},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.processPage = function () { return true; };
 
@@ -522,7 +513,6 @@ describe('storeDetailsToFile', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -533,7 +523,7 @@ describe('storeDetailsToFile', function() {
 
         utils.sha1 = function () { return ''; };
         utils.htmlEscape = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         var report = {
             errors:     [],
@@ -577,7 +567,6 @@ describe('storeDetailsToFile2', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -588,7 +577,7 @@ describe('storeDetailsToFile2', function() {
 
         utils.sha1 = function () { return ''; };
         utils.htmlEscape = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         var report = {
             errors:     ['ERROR: test\nTRACE:\n -> file:line (in function "")'],
@@ -632,11 +621,11 @@ describe('processPage', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
+            crypto   = {},
             utils    = new (require(srcdir + '/utils'))(crypto),
             glob     = {},
             testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
@@ -644,7 +633,7 @@ describe('processPage', function() {
             content,
             data;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         data = {
             idCrawler: '',
@@ -704,11 +693,11 @@ describe('processPage2', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
+            crypto   = {},
             utils    = new (require(srcdir + '/utils'))(crypto),
             glob     = {},
             testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
@@ -716,7 +705,7 @@ describe('processPage2', function() {
             content,
             data;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         data = {
             idCrawler: '',
@@ -776,11 +765,11 @@ describe('processPage3', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
+            crypto   = {},
             utils    = new (require(srcdir + '/utils'))(crypto),
             glob     = {},
             testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
@@ -788,7 +777,7 @@ describe('processPage3', function() {
             content,
             data;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         data = {
             idCrawler: '',
@@ -848,11 +837,11 @@ describe('processPage4', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
+            crypto   = {},
             utils    = new (require(srcdir + '/utils'))(crypto),
             glob     = {},
             testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
@@ -861,7 +850,7 @@ describe('processPage4', function() {
             data;
 
         utils.sha1 = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         data = {
             idCrawler: '',
@@ -927,11 +916,11 @@ describe('processPage5', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
+            crypto   = {},
             utils    = new (require(srcdir + '/utils'))(crypto),
             glob     = {},
             testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
@@ -940,7 +929,7 @@ describe('processPage5', function() {
             data;
 
         utils.sha1 = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         data = {
             idCrawler: '',
@@ -1007,11 +996,11 @@ describe('processPage6', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
+            crypto   = {},
             utils    = new (require(srcdir + '/utils'))(crypto),
             glob     = {},
             testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
@@ -1019,7 +1008,7 @@ describe('processPage6', function() {
             content;
 
         utils.sha1 = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         var data = {
             idCrawler: '',
@@ -1085,11 +1074,11 @@ describe('processPage7', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
+            crypto   = {},
             utils    = new (require(srcdir + '/utils'))(crypto),
             glob     = {},
             testObj  = new (require(srcdir + '/test'))(fs, glob, '', utils),
@@ -1098,7 +1087,7 @@ describe('processPage7', function() {
             data;
 
         utils.sha1 = function () { return ''; };
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         data = {
             idCrawler: '',
@@ -1165,7 +1154,6 @@ describe('processPage9', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -1175,7 +1163,7 @@ describe('processPage9', function() {
             crawler,
             content;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.storeDetails = false;
         crawler.storeDetailsToFile = function () {};
@@ -1212,7 +1200,6 @@ describe('processPage10', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -1222,7 +1209,7 @@ describe('processPage10', function() {
             crawler,
             content;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.storeDetails = true;
         crawler.storeDetailsToFile = function () {};
@@ -1236,8 +1223,8 @@ describe('processPage10', function() {
         done();
     });
 });
-describe('execPhantomjs', function() {
-    it('execPhantomjs', function (done) {
+describe('execSubProcess', function() {
+    it('execSubProcess', function (done) {
         var Crawler  = require(srcdir + '/crawler'),
             config   = {
                 redis: {
@@ -1265,7 +1252,6 @@ describe('execPhantomjs', function() {
                     on: function(param, callback){ if (param ==='exit') { callback(); }}
                 };
             },
-            crypto   = {createHash: function() { return {update: function () { return {digest: function() { return '';}}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -1275,7 +1261,7 @@ describe('execPhantomjs', function() {
 
         utils.sha1 = function () { return ''; };
         utils.serialise = function () { return ''; };
-        var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        var crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         crawler.onStdOut = function() {};
         crawler.onStdErr = function() {};
         crawler.onExit = function() {
@@ -1283,11 +1269,11 @@ describe('execPhantomjs', function() {
         };
 
         config.parser.interface = 'phantom';
-        crawler.execPhantomjs();
+        crawler.execSubProcess();
     });
 });
-describe('execPhantomjs2', function() {
-    it('execPhantomjs2', function (done) {
+describe('execSubProcess2', function() {
+    it('execSubProcess2', function (done) {
         var Crawler  = require(srcdir + '/crawler'),
             config   = {
                 redis: {
@@ -1315,7 +1301,6 @@ describe('execPhantomjs2', function() {
                     on: function(param, callback){ if (param ==='exit') { callback(); }}
                 };
             },
-            crypto   = {createHash: function() { return {update: function () { return {digest: function() { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -1325,7 +1310,7 @@ describe('execPhantomjs2', function() {
 
         utils.sha1 = function () { return ''; };
         utils.serialise = function () { return ''; };
-        var crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        var crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         crawler.onStdOut = function() {};
         crawler.onStdErr = function() {};
         crawler.onExit = function() {
@@ -1336,7 +1321,7 @@ describe('execPhantomjs2', function() {
         };
 
         config.parser.interface = 'phantom';
-        crawler.execPhantomjs();
+        crawler.execSubProcess();
     });
 });
 describe('handleError2', function() {
@@ -1362,7 +1347,6 @@ describe('handleError2', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -1372,7 +1356,7 @@ describe('handleError2', function() {
             crawler;
 
         // tries to run another crawler if max attempts is not reached
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         crawler.run = function () {
             done();
         };
@@ -1403,7 +1387,6 @@ describe('init', function() {
                 }
             },
             spawn    = {},
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {on: function (evt, cb) { cb({}); }},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -1412,7 +1395,7 @@ describe('init', function() {
             utils    = {},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.init();
         expect(typeof crawler.idCrawler).to.equal('string');
@@ -1450,7 +1433,6 @@ describe('proxySettings', function() {
                     on: function(param, callback){ if (param ==='exit') { callback(); }}
                 };
             },
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {on: function (evt, cb) { cb({}); }},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -1459,7 +1441,7 @@ describe('proxySettings', function() {
             utils    = {sha1: function(str) { return str; }, sleep: function () {}},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         crawler.proxy = 'username:password@ip:port';
 
         crawler.onStdOut = function(data) {
@@ -1470,7 +1452,7 @@ describe('proxySettings', function() {
         crawler.onStdErr = function() {};
         crawler.onExit = function() {};
 
-        crawler.execPhantomjs();
+        crawler.execSubProcess();
     });
 });
 describe('proxySettings2', function() {
@@ -1502,7 +1484,6 @@ describe('proxySettings2', function() {
                     on: function(param, callback){ if (param ==='exit') { callback(); }}
                 };
             },
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {on: function (evt, cb) { cb({}); }},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
@@ -1511,7 +1492,7 @@ describe('proxySettings2', function() {
             utils    = {sha1: function(str) { return str; }},
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
         crawler.proxy = 'ip:port';
 
         crawler.onStdOut = function(data) {
@@ -1522,7 +1503,7 @@ describe('proxySettings2', function() {
         crawler.onStdErr = function() {};
         crawler.onExit = function() {};
 
-        crawler.execPhantomjs();
+        crawler.execSubProcess();
     });
 });
 describe('politeness', function() {
@@ -1554,26 +1535,26 @@ describe('politeness', function() {
                     on: function(param, callback){ if (param ==='exit') { callback(); }}
                 };
             },
-            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             testObj  = require(srcdir + '/test'),
             client   = {on: function (evt, cb) { cb({}); }},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
             fs       = require(srcdir + '/fs'),
             optimist = {argv: {$0: ['jasmine-node']}},
+            crypto   = {createHash: function () { return {update: function () { return {digest: function () { return ''; }}; }}; }},
             utils    = new (require(srcdir + '/utils'))(crypto),
             crawler;
 
-        crawler = new Crawler(config, spawn, crypto, testObj, client, winston, fs, optimist, utils);
-        crawler.execPhantomjs = function () { return 'OK'; };
+        crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
+        crawler.execSubProcess = function () { return 'OK'; };
 
         var start = Date.now();
-        crawler.run('', '', '', '', '');
+        crawler.run({url: '', type: '', data: '', evt: '', xPath: ''});
         var end = Date.now();
         expect((end-start)/1000 >= 1).to.equal(true); // It waits 1 second
 
         start = Date.now();
         crawler.politeInterval = 2000;
-        crawler.run('', '', '', '', '');
+        crawler.run({url: '', type: '', data: '', evt: '', xPath: ''});
         end = Date.now();
         expect((end-start)/1000 >= 2).to.equal(true); // It waits 2 second
 
