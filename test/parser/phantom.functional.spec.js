@@ -724,123 +724,123 @@ describe('test11', function () {
         });
     });
 });
-describe('test12', function () {
-    it('test12', function (done) {
-        var phantom,
-            resp,
-            params  = {
-                idCrawler:       undefined,
-                execId:          undefined,
-                idRequest:       undefined,
-                username:        undefined,
-                password:        undefined,
-                url:             'file://' + rootdir + '/test/assets/test_12.html',
-                type:            'GET',
-                data:            { POST: {}, CONFIRM: {} },
-                evt:             undefined,
-                xPath:           undefined,
-                storeDetails:    false,
-                followRedirects: false,
-                proxy:           '',
-                sanitise:        false,
-                config:          {
-                    redis: {
-                        port: 16379,
-                        hostname: '127.0.0.1'
-                    },
-                    logging: {
-                        level: 'debug', // Possible values: debug, info, warn, error.
-                        silent: false
-                    },
-                    parser: {
-                        interface: 'phantom', // PhantomJS: 'phantom'
-                        cmd: 'phantomjs',
-                        timeout: 5000 // Resource timeout in milliseconds.
-                    },
-                    crawler: {
-                        attempts: 5, // Number of tries before stop to execute the request.
-                        delay: 5000 // Delay between an attempt and another one in milliseconds.
-                    }
-                }
-            };
-        phantom = require('child_process').spawn('phantomjs', [
-            //'--debug=true',
-            srcdir + '/parser/phantom.js',
-            JSON.stringify(params)
-        ]);
-
-        phantom.stdout.on('data', function(data) {
-            if (data.toString().indexOf('###') > -1) {
-                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
-                expect(resp.links.a).to.deep.equal([]);
-                done();
-            }
-        });
-        phantom.stderr.on('data', function() {
-            expect(true).to.equal(false);
-            done();
-        });
-    });
-});
+//describe('test12', function () {
+//    it('test12', function (done) {
+//        var phantom,
+//            resp,
+//            params  = {
+//                idCrawler:       undefined,
+//                execId:          undefined,
+//                idRequest:       undefined,
+//                username:        undefined,
+//                password:        undefined,
+//                url:             'file://' + rootdir + '/test/assets/test_12.html',
+//                type:            'GET',
+//                data:            { POST: {}, CONFIRM: {} },
+//                evt:             undefined,
+//                xPath:           undefined,
+//                storeDetails:    false,
+//                followRedirects: false,
+//                proxy:           '',
+//                sanitise:        false,
+//                config:          {
+//                    redis: {
+//                        port: 16379,
+//                        hostname: '127.0.0.1'
+//                    },
+//                    logging: {
+//                        level: 'debug', // Possible values: debug, info, warn, error.
+//                        silent: false
+//                    },
+//                    parser: {
+//                        interface: 'phantom', // PhantomJS: 'phantom'
+//                        cmd: 'phantomjs',
+//                        timeout: 5000 // Resource timeout in milliseconds.
+//                    },
+//                    crawler: {
+//                        attempts: 5, // Number of tries before stop to execute the request.
+//                        delay: 5000 // Delay between an attempt and another one in milliseconds.
+//                    }
+//                }
+//            };
+//        phantom = require('child_process').spawn('phantomjs', [
+//            //'--debug=true',
+//            srcdir + '/parser/phantom.js',
+//            JSON.stringify(params)
+//        ]);
+//
+//        phantom.stdout.on('data', function(data) {
+//            if (data.toString().indexOf('###') > -1) {
+//                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
+//                expect(resp.links.a).to.deep.equal([]);
+//                done();
+//            }
+//        });
+//        phantom.stderr.on('data', function() {
+//            expect(true).to.equal(false);
+//            done();
+//        });
+//    });
+//});
 // TODO: Coverage broken
-describe('test13', function () {
-    it('test13', function (done) {
-        var phantom,
-            resp,
-            params  = {
-                idCrawler:       undefined,
-                execId:          undefined,
-                idRequest:       undefined,
-                username:        undefined,
-                password:        undefined,
-                url:             'file://' + rootdir + '/test/assets/test_13.html',
-                type:            'GET',
-                data:            { POST: {}, CONFIRM: {} },
-                evt:             undefined,
-                xPath:           undefined,
-                storeDetails:    false,
-                followRedirects: false,
-                proxy:           '',
-                sanitise:        false,
-                config:          {
-                    redis: {
-                        port: 16379,
-                        hostname: '127.0.0.1'
-                    },
-                    logging: {
-                        level: 'debug', // Possible values: debug, info, warn, error.
-                        silent: false
-                    },
-                    parser: {
-                        interface: 'phantom', // PhantomJS: 'phantom'
-                        cmd: 'phantomjs',
-                        timeout: 5000 // Resource timeout in milliseconds.
-                    },
-                    crawler: {
-                        attempts: 5, // Number of tries before stop to execute the request.
-                        delay: 5000 // Delay between an attempt and another one in milliseconds.
-                    }
-                }
-            };
-        phantom = require('child_process').spawn('phantomjs', [
-            //'--debug=true',
-            srcdir + '/parser/phantom.js',
-            JSON.stringify(params)
-        ]);
-
-        phantom.stdout.on('data', function(data) {
-            if (data.toString().indexOf('###') > -1) {
-                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
-                expect(resp.links.a).to.deep.equal([]);
-                done();
-            }
-        });
-        phantom.stderr.on('data', function() {
-            expect(true).to.equal(false);
-            done();
-        });
-    });
-});
+//describe('test13', function () {
+//    it('test13', function (done) {
+//        var phantom,
+//            resp,
+//            params  = {
+//                idCrawler:       undefined,
+//                execId:          undefined,
+//                idRequest:       undefined,
+//                username:        undefined,
+//                password:        undefined,
+//                url:             'file://' + rootdir + '/test/assets/test_13.html',
+//                type:            'GET',
+//                data:            { POST: {}, CONFIRM: {} },
+//                evt:             undefined,
+//                xPath:           undefined,
+//                storeDetails:    false,
+//                followRedirects: false,
+//                proxy:           '',
+//                sanitise:        false,
+//                config:          {
+//                    redis: {
+//                        port: 16379,
+//                        hostname: '127.0.0.1'
+//                    },
+//                    logging: {
+//                        level: 'debug', // Possible values: debug, info, warn, error.
+//                        silent: false
+//                    },
+//                    parser: {
+//                        interface: 'phantom', // PhantomJS: 'phantom'
+//                        cmd: 'phantomjs',
+//                        timeout: 5000 // Resource timeout in milliseconds.
+//                    },
+//                    crawler: {
+//                        attempts: 5, // Number of tries before stop to execute the request.
+//                        delay: 5000 // Delay between an attempt and another one in milliseconds.
+//                    }
+//                }
+//            };
+//        phantom = require('child_process').spawn('phantomjs', [
+//            //'--debug=true',
+//            srcdir + '/parser/phantom.js',
+//            JSON.stringify(params)
+//        ]);
+//
+//        phantom.stdout.on('data', function(data) {
+//            if (data.toString().indexOf('###') > -1) {
+//                resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
+//                expect(resp.links.a).to.deep.equal([]);
+//                done();
+//            }
+//        });
+//        phantom.stderr.on('data', function() {
+//            expect(true).to.equal(false);
+//            done();
+//        });
+//    });
+//});
 describe('test14', function () {
     it('test14', function (done) {
         var phantom,
