@@ -836,7 +836,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
 };
 
 PhantomParser.prototype = new Parser();
-if (args.join(' ').indexOf('jasmine-node') === -1) {
+if (args.join(' ').indexOf('jasmine-node') === -1 && args.join(' ').indexOf('grunt') === -1) {
     new PhantomParser(utils, spawn, page, settings).parse(settings.url, settings.type, settings.data, settings.evt, settings.xPath);
 } else {
     module.exports = PhantomParser;
