@@ -250,7 +250,6 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
          */
         client.on('error', function (err) {
             winston.error('REDIS - %s'.red, err.toString());
-            // TODO: Is it really good to exit?
             if (optimist.argv.$0.indexOf('jasmine-node') === -1 && optimist.argv.$0.indexOf('grunt') === -1) {
                 process.exit(1);
             }

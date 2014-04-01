@@ -40,6 +40,8 @@ var FSWrapper = function (fs) {
         fs = require('fs');
     }
 
+    var currentFs = this;
+
     /**
      * Method to handle the differences between Node.js FS.readFileSync and
      * PhantomJS FS.read.
@@ -106,8 +108,11 @@ var FSWrapper = function (fs) {
      * @return undefined
      */
     this.mkdirSync = function (path, mode) {
-        var method = (fs.mkdirSync !== undefined) ? 'mkdirSync' : 'makeDirectory';
-        return fs[method].call(path, mode);
+        if (fs.mkdirSync !== undefined) {
+            return fs.mkdirSync(path, mode);
+        }
+
+        return fs.makeDirectory(path);
     };
 
     /**
@@ -120,6 +125,19 @@ var FSWrapper = function (fs) {
      */
     this.readdirSync = function (path) {
         var method = (fs.readdirSync !== undefined) ? 'readdirSync' : 'list';
+        return fs[method].call(fs, path);
+    };
+
+    /**
+     * Method to handle the differences between Node.js FS.unlinkSync and
+     * PhantomJS FS.remove.
+     *
+     * @method unlinkSync
+     * @param {String} path The path
+     * @return {Array}
+     */
+    this.unlinkSync = function (path) {
+        var method = (fs.unlinkSync !== undefined) ? 'unlinkSync' : 'remove';
         return fs[method].call(fs, path);
     };
 
@@ -152,10 +170,10 @@ var FSWrapper = function (fs) {
             files = this.readdirSync(path);
             files.forEach(function(file) {
                 var curPath = path + '/' + file;
-                if (this.isDirectory(curPath)) {
-                    this.removeTree(curPath);
+                if (currentFs.isDirectory(curPath)) {
+                    currentFs.deleteTree(curPath);
                 } else {
-                    this.unlinkSync(curPath);
+                    currentFs.unlinkSync(curPath);
                 }
             });
             fs.rmdirSync(path);
