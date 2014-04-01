@@ -118,6 +118,7 @@ describe('getCases', function () {
         expect(testObj.getCases('')).to.deep.equal([]); // doesn\'t return anything if there are no matches
         expect(testObj.getCases('non-existent')).to.deep.equal([]); // doesn\'t return anything if there are no matches
 
+        fsWrapper.deleteTree(testObj.TEST_CASE_DIRECTORY + 'http---www-example-com');
         fsWrapper.mkdirSync(testObj.TEST_CASE_DIRECTORY + 'http---www-example-com');
         fsWrapper.writeFileSync(testObj.TEST_CASE_DIRECTORY + 'http---www-example-com/test.tst', '[POST]\na=1\nb=2\n');
 

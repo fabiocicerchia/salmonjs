@@ -126,7 +126,7 @@ var Test = function (fsWrapper, glob, mainDir, utils, cases_dir) {
             }
         }
 
-        fsWrapper.writeFileSync(testCaseFile, content, {flag: 'w+', mode: 0755});
+        fsWrapper.writeFileSync(testCaseFile, content.toString(), {flag: 'w+', mode: 0755});
 
         if (callback !== undefined) {
             callback();
