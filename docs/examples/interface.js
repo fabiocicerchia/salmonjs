@@ -1,7 +1,7 @@
 var SalmonJS = require('./src/main'),
     redis    = require('redis'),
     conf     = {
-        uri:         'http://fabiocicerchia.github.io/salmonjs',
+        uri:         'http://www.salmonjs.org',
         credentials: 'username:password',
         details:     true,
         follow:      true,

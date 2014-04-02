@@ -106,7 +106,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
         page.onConsoleMessage         = this.onConsoleMessage;
         page.onNavigationRequested    = this.onNavigationRequested;
         page.viewportSize             = { width: 1024, height: 800 };
-        page.settings.userAgent       = 'salmonJS/0.4.0 (+http://fabiocicerchia.github.io/salmonjs)';
+        page.settings.userAgent       = 'salmonJS/0.4.0 (+http://www.salmonjs.org)';
 
         this.setHttpHeaders(page);
     };

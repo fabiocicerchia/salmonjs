@@ -111,7 +111,7 @@ describe('setUpPage', function () {
         expect(phantomParser.page.onConsoleMessage).to.equal(phantomParser.onConsoleMessage); // it has been set up properly
         expect(phantomParser.page.onNavigationRequested).to.equal(phantomParser.onNavigationRequested); // it has been set up properly
         expect(phantomParser.page.viewportSize).to.deep.equal({ width: 1024, height: 800 }); // it has been set up properly
-        expect(phantomParser.page.settings.userAgent).to.equal('salmonJS/0.4.0 (+http://fabiocicerchia.github.io/salmonjs)'); // it has been set up properly
+        expect(phantomParser.page.settings.userAgent).to.equal('salmonJS/0.4.0 (+http://www.salmonjs.org)'); // it has been set up properly
 
         done();
     });

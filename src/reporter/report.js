@@ -180,7 +180,7 @@ var reporter = function (utils) {
         html += utils.htmlEscape(report.content);
         html += '</pre>\n';
         html += '        </div>\n';
-        html += '        <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/salmonjs">salmonJS</a> version 0.4.0</div>\n';
+        html += '        <div class="footer">Generated using <a href="http://www.salmonjs.org">salmonJS</a> version 0.4.0</div>\n';
         html += '    </body>\n';
         html += '</html>\n';
 

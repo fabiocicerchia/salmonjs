@@ -7,7 +7,7 @@
     "email": "info@fabiocicerchia.it",
     "url": "http://www.fabiocicerchia.it"
   },
-  "homepage": "http://fabiocicerchia.github.io/salmonjs",
+  "homepage": "http://www.salmonjs.org",
   "description": "Web Crawler in Node.js to spider dynamically whole websites.",
   "full_description": "It helps you to map / process entire websites, spidering them and parsing each page in a smart way. It follows all the links and test several times the form objects. In this way is possible to check effectively the whole website.",
   "contributors": [
