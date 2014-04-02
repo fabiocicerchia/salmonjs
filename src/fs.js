@@ -66,6 +66,11 @@ var FSWrapper = function (fs) {
      * @return {String}
      */
     this.writeFileSync = function (filename, data, options) {
+        var nodeVer = parseFloat(('0' + process.version.node).replace(/^([0-9]+\.[0-9]+)\.?.*$/, '$1'));
+        if (nodeVer < 0.10) {
+            options = options !== undefined ? (options.encoding || 'utf8') : 'utf8';
+        }
+
         if (fs.writeFileSync !== undefined) {
             return fs.writeFileSync(filename, data, options);
         }
