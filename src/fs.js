@@ -66,8 +66,11 @@ var FSWrapper = function (fs) {
      * @return {String}
      */
     this.writeFileSync = function (filename, data, options) {
-        var method = (fs.writeFileSync !== undefined) ? 'writeFileSync' : 'write';
-        return fs[method].call(fs, filename, data, options);
+        if (fs.writeFileSync !== undefined) {
+            return fs.writeFileSync(filename, data, options);
+        }
+
+        return fs.write(filename, data, options);
     };
 
     /**
