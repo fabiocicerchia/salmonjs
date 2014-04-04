@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 0.4.1 / 04 April 2014
+
+ * Fixed #45
+
+## 0.4.0 / 13 March 2014
+
+ * Fixed proxy undefined + fix on pool mechanism
+ * Fixed #9
+ * Updated version numbers
+ * Closed #33
+ * Minor improvements
+ * Closed #20
+ * Changed CDN
+ * Closed #14
+ * Closed #23
+ * Closed #25
+
 ## 0.3.0 / 29 December 2013
 
  * Fixed travis tests
