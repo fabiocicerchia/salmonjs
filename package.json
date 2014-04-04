@@ -41,7 +41,8 @@
     "winston": "0.7.3",
     "insight": "0.3.1",
     "request": "2.34.0",
-    "htmltidy": "0.0.6"
+    "htmltidy": "0.0.6",
+    "URIjs": "1.12.1"
   },
   "devDependencies": {
     "jshint": "2.4.4",

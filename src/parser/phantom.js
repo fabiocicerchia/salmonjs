@@ -678,7 +678,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
         });
 
         if (page.content.indexOf('<html') !== -1) {
-            if (settings.storeDetails) {
+            if (settings.storeDetails && settings.storeDetails !== 'undefined') {
                 fs.makeDirectory(fs.absolute(settings.storeDetails) + '/' + settings.execId + '/');
                 page.render(fs.absolute(settings.storeDetails) + '/' + settings.execId + '/' + settings.idRequest + '.png');
             }

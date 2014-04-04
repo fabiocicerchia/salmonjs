@@ -172,7 +172,8 @@ describe('test2', function () {
             if (data.toString().indexOf('###') > -1) {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_02.html#',
+                    //'file://' + rootdir + '/test/assets/test_02.html#',
+                    'file://' + rootdir + '/test/assets/test_02.html',
                 ]);
                 done();
             }
@@ -232,7 +233,8 @@ describe('test3', function () {
             if (data.toString().indexOf('###') > -1) {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_03.html#',
+                    //'file://' + rootdir + '/test/assets/test_03.html#',
+                    'file://' + rootdir + '/test/assets/test_03.html',
                 ]);
                 done();
             }
@@ -292,7 +294,8 @@ describe('test4', function () {
             if (data.toString().indexOf('###') > -1) {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_04.html#',
+                    //'file://' + rootdir + '/test/assets/test_04.html#',
+                    'file://' + rootdir + '/test/assets/test_04.html',
                 ]);
                 done();
             }
@@ -352,7 +355,8 @@ describe('test5', function () {
             if (data.toString().indexOf('###') > -1) {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_05.html#',
+                    'file://' + rootdir + '/test/assets/test_05.html',
+                    //'file://' + rootdir + '/test/assets/test_05.html#',
                 ]);
                 done();
             }
@@ -1073,7 +1077,8 @@ describe('test17', function () {
             if (data.toString().indexOf('###') > -1) {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_17.html#',
+                    'file://' + rootdir + '/test/assets/test_17.html',
+                    //'file://' + rootdir + '/test/assets/test_17.html#',
                 ]);
                 done();
             }
@@ -1252,7 +1257,8 @@ describe('test20', function () {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.links.a).to.deep.equal([]);
                 expect(resp.links.meta).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_20.html#'
+                    'file://' + rootdir + '/test/assets/test_20.html'
+                    //'file://' + rootdir + '/test/assets/test_20.html#'
                 ]);
                 done();
             }
@@ -1869,7 +1875,7 @@ describe('test27', function () {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.report.confirms).to.deep.equal(['whatever', 'something','whatever', 'something', 'whatever', 'something']);
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_27.html#something',
+                    'file://' + rootdir + '/test/assets/test_27.html#something'
                 ]);
                 done();
             }
@@ -1930,7 +1936,7 @@ describe('test27_2', function () {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.report.confirms).to.deep.equal(['whatever', 'something','whatever', 'something', 'whatever', 'something']);
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_27.html#whatever2',
+                    'file://' + rootdir + '/test/assets/test_27.html#whatever2'
                 ]);
                 done();
             }
@@ -1991,7 +1997,7 @@ describe('test27_3', function () {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.report.confirms).to.deep.equal(['whatever', 'something','whatever', 'something', 'whatever', 'something']);
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_27.html#something2',
+                    'file://' + rootdir + '/test/assets/test_27.html#something2'
                 ]);
                 done();
             }
@@ -2052,7 +2058,7 @@ describe('test27_4', function () {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.report.confirms).to.deep.equal(['whatever', 'something','whatever', 'something', 'whatever', 'something']);
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_27.html#whatever3',
+                    'file://' + rootdir + '/test/assets/test_27.html#whatever3'
                 ]);
                 done();
             }
@@ -2113,7 +2119,7 @@ describe('test28_2', function () {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.report.prompts).to.deep.equal([{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''}]);
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_28.html#whatever3',
+                    'file://' + rootdir + '/test/assets/test_28.html#whatever3'
                 ]);
                 done();
             }
@@ -2174,7 +2180,7 @@ describe('test28', function () {
                 resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
                 expect(resp.report.prompts).to.deep.equal([{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''},{'msg':'whatever','defaultVal':''}]);
                 expect(resp.links.a).to.deep.equal([
-                    'file://' + rootdir + '/test/assets/test_28.html#something2',
+                    'file://' + rootdir + '/test/assets/test_28.html#something2'
                 ]);
                 done();
             }

@@ -248,35 +248,18 @@ var Utils = function (crypto) {
             return undefined;
         }
 
-        if (url.substr(0, 2) === '//') {
-            url = baseUrl.split(':')[0] + ':' + url;
-        }
+        var URI = require('URIjs');
+        normalised = URI(url).absoluteTo(baseUrl).normalizePathname().normalizeSearch().toString();
 
-        if (baseUrl.substr(0, 7) !== 'file://' && baseUrl.substr(baseUrl.length - 1, 1) !== '/' && baseUrl.indexOf('?') === -1 && baseUrl.indexOf('#') === -1) {
-            baseUrl += '/';
-        }
-
-        baseUrl = baseUrl.replace(/#.*$/, '');
-
-        if (url.indexOf('/') === 0) {
-            normalised = baseDomain.substr(0, baseDomain.length - 1) + url;
-        } else if (url.indexOf('?') === 0) {
-            normalised = baseDomain + url;
-        } else if (url.indexOf('#') === 0) {
-            normalised = baseUrl + url;
-        } else if (url === baseUrl || url === '') {
-            normalised = baseUrl;
-        } else if (url.indexOf('://') !== -1 && url.indexOf(baseUrl) === 0) {
-            normalised = url;
-        } else if (url.indexOf('://') !== -1 && url.indexOf(baseDomain) === 0) {
-            normalised = url;
+        var domain = URI(baseUrl).domain();
+        if (domain !== '' && domain !== URI(normalised).domain()) {
+            return undefined;
         }
 
         if (normalised !== undefined && normalised.indexOf('?') > 0) {
             qs = normalised.replace(/.*\?(.+)(#.*)?/, '$1');
             normalised = normalised.replace('?' + qs, '?' + this.arrayToQuery(this.normaliseData(qs)));
         }
-
         return normalised;
     };
 

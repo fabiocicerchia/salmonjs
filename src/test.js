@@ -81,6 +81,10 @@ var Test = function (fsWrapper, glob, mainDir, utils, cases_dir) {
      * @return undefined
      */
     this.createNewCaseFile = function (url, name, data, callback) {
+        if (currentTest.TEST_CASE_DIRECTORY === undefined) {
+            return;
+        }
+
         var mainUrl      = url.replace(/^(.+):\/\/(\/?[^\/]+)\/?.*$/, '$1://$2'),
             content      = '',
             dir          = currentTest.TEST_CASE_DIRECTORY + '/' + mainUrl.replace(/[^a-zA-Z0-9]/g, '-'),

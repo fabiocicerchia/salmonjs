@@ -77,7 +77,7 @@ describe('processQueue', function() {
         pool.queue = [{data: {}, options: {}}];
         pool.size = 0;
         pool.processQueue();
-        expect(pool.queue).to.deep.equal([{data: {}, options: {}}]); // check the queue is the same when the size is lower than the elements in queue
+        expect(pool.queue).to.deep.equal([]); // check the queue is the same when the size is lower than the elements in queue
 
         pool.queue = [{data: {}, options: {}}];
         pool.size = 1;

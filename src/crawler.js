@@ -583,7 +583,7 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
                 data:       currentCrawler.data
             };
 
-            if (currentCrawler.storeDetails) {
+            if (currentCrawler.storeDetails && currentCrawler.storeDetails !== 'undefined') {
                 currentCrawler.storeDetailsToFile(report);
             }
         }
@@ -668,7 +668,7 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
 
         links = result.links;
 
-        if (currentCrawler.storeDetails) {
+        if (currentCrawler.storeDetails && currentCrawler.storeDetails !== 'undefined') {
             currentCrawler.storeDetailsToFile(result.report);
         }
 
