@@ -174,7 +174,9 @@ var Pool = function (spawn, os, config) {
         childProcess.stderr.on('data', options.stderr || currentPool.spawnStderr);
         childProcess.on('exit', function () {
             currentPool.running--;
-            options['exit']();
+            if (options.exit) {
+                options.exit();
+            }
             currentPool.processQueue();
         });
     };

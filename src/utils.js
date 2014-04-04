@@ -241,7 +241,6 @@ var Utils = function (crypto) {
      */
     this.normaliseUrl = function (url, baseUrl) {
         var normalised,
-            baseDomain = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, 'http$1://$2/'),
             qs;
 
         if (url === undefined) {
