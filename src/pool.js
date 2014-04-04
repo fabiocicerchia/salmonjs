@@ -73,6 +73,8 @@ var Pool = function (spawn, os) {
      */
     this.delay = 1000;
 
+    this.running = 0;
+
     /**
      * Current instance.
      *
@@ -129,7 +131,11 @@ var Pool = function (spawn, os) {
      * @return undefined
      */
     this.processQueue = function () {
-        if (this.queue.length === 0 || this.queue.length > this.size) {
+        if (this.queue.length === 0) {
+            return;
+        }
+
+        if (this.running > this.size) {
             return;
         }
 
@@ -140,7 +146,7 @@ var Pool = function (spawn, os) {
         }
 
         var settings = this.queue.shift();
-        if (settings.data === undefined) {
+        if (settings === undefined || !settings.hasOwnProperty('data')) {
             return;
         }
 
@@ -158,10 +164,12 @@ var Pool = function (spawn, os) {
         ];
 
         childProcess = spawn('node', args, { detached: true });
+        this.running++;
         childProcess.stdout.on('data', options.stdout || currentPool.spawnStdout);
         childProcess.stderr.on('data', options.stderr || currentPool.spawnStderr);
         childProcess.on('exit', function () {
-            options.exit();
+            currentPool.running--;
+            options['exit']();
             currentPool.processQueue();
         });
     };
