@@ -740,7 +740,7 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
                     COOKIE:  {},
                     HEADERS: {},
                     CONFIRM: result.report.confirms.filter(utils.onlyUnique),
-                    PROMPT:  result.result.prompts.filter(utils.onlyUnique)
+                    PROMPT:  result.report.prompts.filter(utils.onlyUnique)
                 };
                 test.createNewCaseFile(element.action, element.type, data);
 

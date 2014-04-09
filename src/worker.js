@@ -33,6 +33,7 @@ var Crawler = require('./crawler');
 
 if (process.argv.join(' ').indexOf('worker.js') !== -1) {
     var args            = process.argv,
+        JSONfn          = require('jsonfn').JSONfn,
         timeStart       = args[2],
         username        = args[3],
         password        = args[4],
@@ -45,7 +46,7 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         container       = args[11],
         evt             = args[12],
         xPath           = args[13],
-        poolSettings    = JSON.parse(args[14]),
+        poolSettings    = JSONfn.parse(args[14]),
         config          = JSON.parse(args[15]),
         Crawler         = require('../src/crawler'),
         Pool            = require('../src/pool'),

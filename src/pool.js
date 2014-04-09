@@ -112,7 +112,7 @@ var Pool = function (spawn, os, config) {
      */
     this.spawnStdout = function (data) {
         data = data.toString();
-        console.log('POOL OUT: ' + data.substr(0, data.length - 1));
+        console.log(data.substr(0, data.length - 1));
     };
 
     /**
