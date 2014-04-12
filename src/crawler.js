@@ -702,24 +702,21 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
                 });
             });
 
-            currentCrawler.possibleCrawlers += links.a.length;
-            links.a.forEach(function (element) {
-                currentCrawler.checkAndRun({ url: element, type: 'GET'});
-            });
+            var unique_links = [];
+            for (tag in links) {
+                if (links.hasOwnProperty(tag) && tag !== 'form') {
+                    links[tag].forEach(function (element) {
+                        unique_links.push(element);
+                    });
+                }
+            }
 
-            currentCrawler.possibleCrawlers += links.link.length;
-            links.link.forEach(function (element) {
-                currentCrawler.checkAndRun({ url: element, type: 'GET'});
-            });
-
-            currentCrawler.possibleCrawlers += links.script.length;
-            links.script.forEach(function (element) {
-                currentCrawler.checkAndRun({ url: element, type: 'GET'});
-            });
-
-            currentCrawler.possibleCrawlers += links.meta.length;
-            links.meta.forEach(function (element) {
-                currentCrawler.checkAndRun({ url: element, type: 'GET'});
+            unique_links = unique_links.filter(utils.onlyUnique);
+            unique_links.forEach(function (element) {
+                if (element !== currentCrawler.url) {
+                    currentCrawler.possibleCrawlers++;
+                    currentCrawler.checkAndRun({ url: element, type: 'GET'});
+                }
             });
 
             links.form.forEach(function (element) {
