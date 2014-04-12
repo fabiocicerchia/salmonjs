@@ -626,9 +626,9 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
             reportFile,
             indexFile;
 
-        indexContent = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
-        indexContent    += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
-        indexContent    += ' XPath: ' + (currentCrawler.xPath === '' ? 'N/A' : currentCrawler.xPath) + '</a>\n';
+        indexContent  = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
+        indexContent += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
+        indexContent += ' XPath: ' + (currentCrawler.xPath === '' ? 'N/A' : currentCrawler.xPath) + '</a>\n';
 
         reportFile = currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/' + reportName + '.html';
         indexFile  = currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/index.html';
@@ -704,16 +704,16 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
             });
 
             var unique_links = [];
-            for (var tag in links) {
-                if (links.hasOwnProperty(tag) && tag !== 'form') {
-                    links[tag].forEach(function (element) {
+            utils.loopEach(links, function (tag, links_tag) {
+                if (tag !== 'form' && tag !== 'events') {
+                    utils.loopEach(links_tag, function (id, element) {
                         unique_links.push(element);
                     });
                 }
-            }
+            });
 
             unique_links = unique_links.filter(utils.onlyUnique);
-            unique_links.forEach(function (element) {
+            utils.loopEach(unique_links, function (id, element) {
                 if (element !== currentCrawler.url) {
                     currentCrawler.possibleCrawlers++;
                     currentCrawler.checkAndRun({ url: element, type: 'GET'});

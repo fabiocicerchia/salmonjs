@@ -2583,7 +2583,7 @@ if (process.env.TRAVIS !== 'true') {
             phantom.stdout.on('data', function(data) {
                 if (data.toString().indexOf('###') > -1) {
                     resp = JSON.parse(data.toString().substr(data.toString().indexOf('###') + 3));
-                    expect(resp.report.content).to.equal('<!DOCTYPE html><html><head>\n<title></title>\n</head>\n<body>\n<table>\n<tbody>\n<tr>\n<td>badly formatted html</td>\n</tr>\n</tbody>\n</table>\n\n\n\n</body></html>');
+                    expect(resp.report.content).to.equal('<!DOCTYPE html><html><head>\n    <title></title>\n  </head>\n  <body>\n    <table>\n      <tbody>\n        <tr>\n          <td>\n            badly formatted html\n          </td>\n        </tr>\n      </tbody>\n    </table>\n  \n\n\n</body></html>');
                     done();
                 }
             });

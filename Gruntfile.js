@@ -24,7 +24,8 @@ module.exports = function(grunt) {
         jshint: {
             options :{
                 ignores: [
-                    'src/sha1.js'
+                    'src/sha1.js',
+                    'test/assets/complex/**/*.js'
                 ],
                 globals: {
                     __dirname: false,

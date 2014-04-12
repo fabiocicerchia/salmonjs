@@ -516,7 +516,7 @@ describe('storeDetailsToFile', function() {
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
-            fs       = {mkdir: function() {done();}},
+            fs       = {mkdir: function() {}, existsSync: function () {}, mkdirSync: function () {done();}, writeFileSync: function () {}, appendFileSync: function () {}},
             optimist = {argv: {$0: ['jasmine-node']}},
             utils    = {},
             crawler;
@@ -570,7 +570,7 @@ describe('storeDetailsToFile2', function() {
             testObj  = require(srcdir + '/test'),
             client   = {},
             winston  = {error: function () {}, info: function () {}, warn: function () {}, debug: function() {}},
-            fs       = {mkdir: function() {done();}},
+            fs       = {mkdir: function() {}, existsSync: function () {}, mkdirSync: function () {done();}, writeFileSync: function () {}, appendFileSync: function () {}},
             optimist = {argv: {$0: ['jasmine-node']}},
             utils    = {},
             crawler;
