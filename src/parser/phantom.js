@@ -698,21 +698,13 @@ var PhantomParser = function (utils, spawn, page, settings) {
                 });
             });
 
-            currentParser.links.a = [].map.call(links.a, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.a).filter(utils.onlyUnique);
-
-            currentParser.links.link = [].map.call(links.link, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.link).filter(utils.onlyUnique);
-
-            currentParser.links.script = [].map.call(links.script, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.script).filter(utils.onlyUnique);
-
-            currentParser.links.meta = [].map.call(links.meta, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.meta).filter(utils.onlyUnique);
+            for (tag in links) {
+                if (links.hasOwnProperty(tag) && tag !== 'form') {
+                    currentParser.links[tag] = [].map.call(links[tag], function (item) {
+                        return utils.normaliseUrl(item, url);
+                    }).concat(currentParser.links[tag]).filter(utils.onlyUnique);
+                }
+            }
 
             currentParser.links.form = [].map.call(links.form, function (item) {
                 item.action = item.action || url;
@@ -748,14 +740,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
      * @return {Object} A list of links (anchors, links, scripts and forms).
      */
     this.onEvaluate = function () {
-        var urls = {
-                a:      [],
-                link:   [],
-                script: [],
-                meta:   [],
-                form:   [],
-                events: []
-            },
+        var urls = {},
             currentUrl = document.location.href,
             attribute,
             tag,
@@ -763,10 +748,24 @@ var PhantomParser = function (utils, spawn, page, settings) {
 
         for (tag in tags) {
             if (tags.hasOwnProperty(tag)) {
+                urls[tag] = [];
                 attribute = tags[tag];
-                urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) {
-                    return item[attribute];
-                });
+                if (typeof attribute === 'object') {
+                    for (attr in attribute) {
+                        if (attribute.hasOwnProperty(attr)) {
+                            links = [].map.call(document.querySelectorAll(tag), function (item) {
+                                return item[attr];
+                            });
+                            if (links.length > 0) {
+                                urls[tag] = urls[tag].concat(links);
+                            }
+                        }
+                    }
+                } else {
+                    urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) {
+                        return item[attribute];
+                    });
+                }
             }
         }
 
@@ -811,7 +810,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
      * @return {Object}
      */
     this.onEvaluateNonHtml = function () {
-        var urls = {
+        var urls        = {
                 mixed: [],
             },
             content     = arguments[0],
