@@ -724,8 +724,14 @@ var PhantomParser = function (utils, spawn, page, settings) {
 
         links = page.evaluate(currentParser.onEvaluateNonHtml, page.content);
 
-        if (links.hasOwnProperty('mixed')) {
-            currentParser.links.mixed = [].map.call(links.mixed, function (item) {
+        if (links.hasOwnProperty('mixed_full')) {
+            currentParser.links.mixed_full = [].map.call(links.mixed_full, function (item) {
+                return utils.normaliseUrl(item, url);
+            }).concat(currentParser.links.mixed).filter(utils.onlyUnique);
+        }
+        if (links.hasOwnProperty('mixed_rel')) {
+            currentParser.links.mixed_rel = [].map.call(links.mixed_rel, function (item) {
+                item = item.replace(/^['"](.+)['"]$/, '$1');
                 return utils.normaliseUrl(item, url);
             }).concat(currentParser.links.mixed).filter(utils.onlyUnique);
         }
@@ -810,25 +816,30 @@ var PhantomParser = function (utils, spawn, page, settings) {
      * @return {Object}
      */
     this.onEvaluateNonHtml = function () {
-        var urls        = {
+        var urls          = {
                 mixed: [],
             },
-            content     = arguments[0],
-            protocol    = '((https?|ftp):)?',
-            credentials = '([\\w]+:\\w+@)?',
-            hostname    = '(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])',
-            ip          = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])',
-            port        = '(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?',
-            path_char   = '(([a-z0-9\\-_.!~*\'\\(\\):@&=+$,])|(%[0-9a-f][0-9a-f]))',
-            path        = path_char + '*(?:;' + path_char + '*)*(?:/' + path_char + '*(?:;' + path_char + '*)*)*',
-            querystring = '(\\?' + path_char + '*)?',
-            hash        = '(#' + path_char + '*)?',
-            regex       = new RegExp(
+            content       = arguments[0],
+            protocol      = '((https?|ftp):)?',
+            credentials   = '([\\w]+:\\w+@)?',
+            hostname      = '(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])',
+            ip            = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])',
+            port          = '(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?',
+            path_char     = '(([a-z0-9\\-_.!~*\'\\(\\):@&=+$,])|(%[0-9a-f][0-9a-f]))',
+            path          = path_char + '*(?:;' + path_char + '*)*(?:/' + path_char + '*(?:;' + path_char + '*)*)*',
+            querystring   = '(\\?' + path_char + '*)?',
+            hash          = '(#' + path_char + '*)?',
+            regex_fullurl = new RegExp(
                 '(' + protocol + '//' + credentials + '(' + hostname + '|' + ip + ')' + port + '/' + path + querystring + hash + ')',
+                'igm'
+            ),
+            regex_relurl = new RegExp(
+                '\'('+path+')\'|"('+path+')"',
                 'igm'
             );
 
-        urls.mixed = content.match(regex);
+        urls.mixed_full = content.match(regex_fullurl);
+        urls.mixed_rel  = content.match(regex_relurl);
 
         return urls;
     };
