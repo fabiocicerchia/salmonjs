@@ -630,12 +630,13 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
         indexContent    += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
         indexContent    += ' XPath: ' + (currentCrawler.xPath === '' ? 'N/A' : currentCrawler.xPath) + '</a>\n';
 
-        reportFile = __dirname + currentCrawler.storeDetails + currentCrawler.timeStart + '/' + reportName + '.html';
-        indexFile  = __dirname + currentCrawler.storeDetails + currentCrawler.timeStart + '/index.html';
-        fs.mkdir(__dirname + currentCrawler.storeDetails + currentCrawler.timeStart + '/', '0777', function () {
-            fs.writeFileSync(reportFile, reportContent);
-            fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
-        });
+        reportFile = currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/' + reportName + '.html';
+        indexFile  = currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/index.html';
+        if (!fs.existsSync(currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/')) {
+            fs.mkdirSync(currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/', '0777');
+        }
+        fs.writeFileSync(reportFile, reportContent);
+        fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
     };
 
     /**
