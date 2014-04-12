@@ -35,7 +35,7 @@ var args = process.argv,
         fixUri:       true,
         hideComments: true,
         indent:       true
-    }
+    },
     tidy = require('htmltidy').tidy;
 
 tidy(html, opts, function(err, html) {

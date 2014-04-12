@@ -122,9 +122,9 @@ module.exports = function Parser() {
         frame: [ 'longdesc', 'src' ],
         iframe: [ 'longdesc', 'src' ],
         img: [ 'longdesc', 'src' ],
-        input: 'src', // Possible exception: only when type="image"
+        input: [ 'src', 'formaction' ], // Possible exception: only when type="image" / HTML5
         link: 'href',
-        object: [ 'archive', 'classid', 'codebase' ],
+        object: [ 'archive', 'classid', 'codebase', 'data' ], // HTML: 4, 4, 4, 5
         q: 'cite',
         script: 'src',
         // HTML 5
@@ -133,9 +133,7 @@ module.exports = function Parser() {
         del: 'cite',
         embed: 'src',
         html: 'manifest',
-        input: 'formaction',
         ins: 'cite',
-        object: 'data',
         source: 'src',
         track: 'src',
         video: [ 'poster', 'src' ]

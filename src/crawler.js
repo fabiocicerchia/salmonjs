@@ -704,7 +704,7 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
             });
 
             var unique_links = [];
-            for (tag in links) {
+            for (var tag in links) {
                 if (links.hasOwnProperty(tag) && tag !== 'form') {
                     links[tag].forEach(function (element) {
                         unique_links.push(element);

@@ -698,7 +698,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
                 });
             });
 
-            for (tag in links) {
+            for (var tag in links) {
                 if (links.hasOwnProperty(tag) && tag !== 'form') {
                     currentParser.links[tag] = [].map.call(links[tag], function (item) {
                         return utils.normaliseUrl(item, url);
@@ -750,6 +750,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
             currentUrl = document.location.href,
             attribute,
             tag,
+            links,
             tags = arguments[0];
 
         for (tag in tags) {
@@ -757,7 +758,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
                 urls[tag] = [];
                 attribute = tags[tag];
                 if (typeof attribute === 'object') {
-                    for (attr in attribute) {
+                    for (var attr in attribute) {
                         if (attribute.hasOwnProperty(attr)) {
                             links = [].map.call(document.querySelectorAll(tag), function (item) {
                                 return item[attr];

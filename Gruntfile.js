@@ -65,7 +65,7 @@ module.exports = function(grunt) {
                 laxcomma: false,
                 loopfunc: true,
                 maxcomplexity: 22, // TODO: Set to 5
-                maxdepth: 5,
+                maxdepth: 6, // TODO: Set to 5
                 maxerr: 100,
                 maxlen: 300,
                 maxparams: 10, // TODO: Set to 5
