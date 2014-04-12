@@ -162,8 +162,8 @@ var Pool = function (spawn, os, config) {
         // TODO: Pass all the argv to pool and to parser. way easier and shorter!
         args = [
             __dirname + '/worker.js',
-            data.timeStart, data.username, data.password, data.details,
-            data.follow, data.proxy, data.sanitise, data.url, data.type,
+            data.timeStart, data.username, data.password, data.storeDetails,
+            data.followRedirects, data.proxy, data.sanitise, data.url, data.type,
             JSON.stringify(data.container), data.evt, data.xPath,
             JSON.stringify(currentPool), JSON.stringify(config)
         ];
