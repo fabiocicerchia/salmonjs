@@ -29,9 +29,16 @@
 
 var args = process.argv,
     html = require('fs').readFileSync(args[2]).toString(),
+    opts = {
+        doctype:      'auto',
+        fixBackslash: true,
+        fixUri:       true,
+        hideComments: true,
+        indent:       true
+    }
     tidy = require('htmltidy').tidy;
 
-tidy(html, function(err, html) {
+tidy(html, opts, function(err, html) {
     if (err) {
         console.log('ERROR: ' + err);
     } else {
