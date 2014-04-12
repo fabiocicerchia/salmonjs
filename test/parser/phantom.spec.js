@@ -377,67 +377,67 @@ describe('onEvaluateNonHtml', function () {
 
         content = 'http://username:password@hostname/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'http://hostname/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'http://username:password@127.0.0.1/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'http://127.0.0.1/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'https://username:password@hostname/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'https://hostname/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'https://username:password@127.0.0.1/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'https://127.0.0.1/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'ftp://username:password@hostname/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'ftp://hostname/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'ftp://username:password@127.0.0.1/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'ftp://127.0.0.1/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = '//username:password@hostname/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = '//hostname/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = '//username:password@127.0.0.1/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = '//127.0.0.1/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         //content = '/path?arg=value#anchor';
         //resp = phantomParser.onEvaluateNonHtml(content);
@@ -445,67 +445,67 @@ describe('onEvaluateNonHtml', function () {
 
         content = 'http://username:password@hostname:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'http://hostname:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'http://username:password@127.0.0.1:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'http://127.0.0.1:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'https://username:password@hostname:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'https://hostname:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'https://username:password@127.0.0.1:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'https://127.0.0.1:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'ftp://username:password@hostname:21/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'ftp://hostname:21/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'ftp://username:password@127.0.0.1:21/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = 'ftp://127.0.0.1:21/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = '//username:password@hostname:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = '//hostname:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = '//username:password@127.0.0.1:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         content = '//127.0.0.1:80/path?arg=value#anchor';
         resp = phantomParser.onEvaluateNonHtml(content);
-        expect(resp).to.deep.equal({mixed: [], mixed_full:[content], mixed_rel: null});
+        expect(resp).to.deep.equal({mixed_full:[content], mixed_rel: null});
 
         //content = '/path?arg=value#anchor';
         //resp = phantomParser.onEvaluateNonHtml(content);

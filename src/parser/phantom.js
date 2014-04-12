@@ -583,7 +583,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
      * @return undefined
      */
     this.onLoadFinished = function () {
-        if (settings.sanitise) {
+        if (settings.sanitise !== undefined && settings.sanitise.toString() === 'true') {
             var tmp_fn  = fs.workingDirectory + '/file_' + ((new Date()).getTime()) + '.html',
                 args    = [ fs.workingDirectory + '/src/tidy.js', tmp_fn ],
                 process;
@@ -727,13 +727,13 @@ var PhantomParser = function (utils, spawn, page, settings) {
         if (links.hasOwnProperty('mixed_full')) {
             currentParser.links.mixed_full = [].map.call(links.mixed_full, function (item) {
                 return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.mixed).filter(utils.onlyUnique);
+            }).concat(currentParser.links.mixed_full).filter(utils.onlyUnique);
         }
         if (links.hasOwnProperty('mixed_rel')) {
             currentParser.links.mixed_rel = [].map.call(links.mixed_rel, function (item) {
                 item = item.replace(/^['"](.+)['"]$/, '$1');
                 return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.mixed).filter(utils.onlyUnique);
+            }).concat(currentParser.links.mixed_rel).filter(utils.onlyUnique);
         }
 
         currentParser.exit();
@@ -818,7 +818,8 @@ var PhantomParser = function (utils, spawn, page, settings) {
      */
     this.onEvaluateNonHtml = function () {
         var urls          = {
-                mixed: [],
+                mixed_full: [],
+                mixed_rel:  [],
             },
             content       = arguments[0],
             protocol      = '((https?|ftp):)?',

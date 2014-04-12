@@ -2309,32 +2309,30 @@ describe('test30', function () {
     });
 });
 
-if (process.argv.join(' ').indexOf('grunt') === -1) {
-    describe('test31', function () {
-        it('test31', function (done) {
-            var PhantomParser = require(srcdir + '/parser/phantom'),
-                utils         = new (require(srcdir + '/utils'))({}),
-                content       = fs.readFileSync('test/assets/test_31.xml').toString(),
-                phantom,
-                resp;
+describe('test31', function () {
+    it('test31', function (done) {
+        var PhantomParser = require(srcdir + '/parser/phantom'),
+            utils         = new (require(srcdir + '/utils'))({}),
+            content       = fs.readFileSync('test/assets/test_31.xml').toString(),
+            phantom,
+            resp;
 
-            utils.onlyUnique = function() { return true; };
-            utils.normaliseUrl = function(url) { return url; };
-            phantom = new PhantomParser(utils, {}, webpage, { storeDetails: undefined});
+        utils.onlyUnique = function() { return true; };
+        utils.normaliseUrl = function(url) { return url; };
+        phantom = new PhantomParser(utils, {}, webpage, { storeDetails: undefined});
 
-            phantom.setUpPage = function(page) {
-                page.onInitialized = function() {
-                };
+        phantom.setUpPage = function(page) {
+            page.onInitialized = function() {
             };
-            resp = phantom.cloneWebPage({content: content, url: 'http://www.example.com'});
+        };
+        resp = phantom.cloneWebPage({content: content, url: 'http://www.example.com'});
 
-            phantom.parsePage(resp);
-            var json = JSON.parse(lastMessage.substr(3));
-            expect(json.links.mixed).to.deep.equal(['http://www.w3.org/2005/Atom','http://example.org/feed/','http://example.org/','http://example.org/2003/12/13/atom03','http://example.org/2003/12/13/atom03.html','http://example.org/2003/12/13/atom03/edit',null]);
-            done();
-        });
+        phantom.parsePage(resp);
+        var json = JSON.parse(lastMessage.substr(3));
+        expect(json.links.mixed_full).to.deep.equal(['http://www.w3.org/2005/Atom','http://example.org/feed/','http://example.org/','http://example.org/2003/12/13/atom03','http://example.org/2003/12/13/atom03.html','http://example.org/2003/12/13/atom03/edit',null]);
+        done();
     });
-}
+});
 // TODO: Something changed
 //describe('upload', function () {
 //    it('upload', function (done) {
