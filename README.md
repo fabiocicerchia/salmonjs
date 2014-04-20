@@ -252,6 +252,41 @@ For a list of bugs please go to the [GitHub Issue Page](https://github.com/fabio
 
 
 ## Changelog
+### 0.5.0 / ?
+
+ * Added few more examples
+ * Added demo website for integration/functional testing
+ * Added support to retrieve relative url as well
+ * Fixed problem with storing report file when the directory already exists
+ * Improved url processing speed - removing duplicates
+ * Added more html tags to the parser
+ * Fixed issue with report + issue with serialisation of the pool's queue
+ * Fixed minor bugs with processing local files + added urijs
+ * Fixed #45
+ * Updated project url to www.salmonjs.org
+ * Disabled 2 tests because of a possible "bug" in phantomjs
+ * Removed ci for node.js 0.11
+ * Disabled gzip, it's not recognised properly from phantomjs
+ * Added readme generation via grunt
+ * Added todo file, generated via grunt
+ * Linted the code
+ * Added dev utilities with grunt
+ * Coverage improvements
+ * Improved tests
+ * Removed casperjs and added jasmine & grunt
+ * Improved documentation + cleanup + fixed tests
+ * Fixed #38
+ * Fixed #39
+ * Fixed #26
+ * Fixed #37
+ * Fixed #40
+ * Fixed #34
+ * Fixed #15 #16
+
+### 0.4.1 / 04 April 2014
+
+ * Fixed #45
+
 ### 0.4.0 / 13 March 2014
 
  * Fixed proxy undefined + fix on pool mechanism
