@@ -34,20 +34,20 @@ var Crawler = require('./crawler');
 if (process.argv.join(' ').indexOf('worker.js') !== -1) {
     var args            = process.argv,
         JSONfn          = require('jsonfn').JSONfn,
-        timeStart       = args[2],
-        username        = args[3],
-        password        = args[4],
-        storeDetails    = args[5],
-        followRedirects = args[6],
-        proxy           = args[7],
-        sanitise        = args[8],
-        url             = args[9],
-        type            = args[10],
-        container       = args[11],
-        evt             = args[12],
-        xPath           = args[13],
-        poolSettings    = JSONfn.parse(args[14]),
-        config          = JSON.parse(args[15]),
+        timeStart,
+        username,
+        password,
+        storeDetails,
+        followRedirects,
+        proxy,
+        sanitise,
+        url,
+        type,
+        container,
+        evt,
+        xPath,
+        poolSettings,
+        config,
         Crawler         = require('../src/crawler'),
         Pool            = require('../src/pool'),
         winston         = require('winston'),
@@ -55,7 +55,6 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         os              = require('os'),
         glob            = require('glob'),
         redis           = require('redis'),
-        client          = redis.createClient(config.redis.port, config.redis.hostname),
         spawn           = require('child_process').spawn,
         crypto          = require('crypto'),
         optimist        = require('optimist'),
@@ -63,34 +62,45 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         test            = new (require('../src/test'))(fs, glob, '.', utils);
     require('path');
 
-    winston.cli();
-    winston.remove(winston.transports.Console);
-    winston.add(
-        winston.transports.Console,
-        {
-            level: config.logging.level,
-            silent: config.logging.silent,
-            colorize: true,
-            timestamp: true
-        }
-    );
+    process.on('message', function(m) {
+        timeStart       = m.settings[0],
+        username        = m.settings[1],
+        password        = m.settings[2],
+        storeDetails    = m.settings[3],
+        followRedirects = m.settings[4],
+        proxy           = m.settings[5],
+        sanitise        = m.settings[6],
+        url             = m.settings[7],
+        type            = m.settings[8],
+        container       = m.settings[9],
+        evt             = m.settings[10],
+        xPath           = m.settings[11],
+        poolSettings    = m.settings[12],
+        config          = m.settings[13],
+        client          = redis.createClient(config.redis.port, config.redis.hostname);
 
-    var pool = new Pool(spawn, os, config);
-    // TODO: add method to set this stuff
-    pool.size            = poolSettings.size;
-    pool.queue           = poolSettings.queue;
-    pool.memoryThreshold = poolSettings.memoryThreshold;
-    pool.delay           = poolSettings.delay;
+        winston.cli();
+        winston.remove(winston.transports.Console);
+        winston.add(
+            winston.transports.Console,
+            {
+                level: config.logging.level,
+                silent: config.logging.silent,
+                colorize: true,
+                timestamp: true
+            }
+        );
 
-    var crawler = new Crawler(config, spawn, test, client, winston, fs, optimist, utils, pool);
-    crawler.init();
-    crawler.timeStart       = timeStart;
-    crawler.username        = username;
-    crawler.password        = password;
-    crawler.storeDetails    = storeDetails;
-    crawler.followRedirects = followRedirects;
-    crawler.proxy           = proxy;
-    crawler.sanitise        = sanitise;
-    var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
-    crawler.run({url: url, type: type, data: data, evt: evt, xPath: xPath});
+        var crawler = new Crawler(config, spawn, test, client, winston, fs, optimist, utils);
+        crawler.init();
+        crawler.timeStart       = timeStart;
+        crawler.username        = username;
+        crawler.password        = password;
+        crawler.storeDetails    = storeDetails;
+        crawler.followRedirects = followRedirects;
+        crawler.proxy           = proxy;
+        crawler.sanitise        = sanitise;
+        var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
+        crawler.run({url: url, type: type, data: data, evt: evt, xPath: xPath});
+    });
 }

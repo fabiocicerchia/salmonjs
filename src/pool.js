@@ -36,7 +36,7 @@
  *
  * @class Pool
  */
-var Pool = function (spawn, os, config) {
+var Pool = function (os, config) {
     /**
      * Settings queue.
      *
@@ -104,30 +104,6 @@ var Pool = function (spawn, os, config) {
     };
 
     /**
-     * The spawn's stdout callback.
-     *
-     * @method spawnStdout
-     * @param {Object} data The data sent back from the worker.
-     * @return undefined
-     */
-    this.spawnStdout = function (data) {
-        data = data.toString();
-        console.log(data.substr(0, data.length - 1));
-    };
-
-    /**
-     * The spawn's stderr callback.
-     *
-     * @method spawnStderr
-     * @param {Object} data The data sent back from the worker.
-     * @return undefined
-     */
-    this.spawnStderr = function (data) {
-        data = data.toString();
-        console.log('POOL ERR: ' + data.substr(0, data.length - 1).red);
-    };
-
-    /**
      * Process the queue if there are enough slots available, and the used
      * memory is not more than the allowed one.
      *
@@ -135,21 +111,23 @@ var Pool = function (spawn, os, config) {
      * @return undefined
      */
     this.processQueue = function () {
-        if (this.queue.length === 0) {
+        if (currentPool.queue.length === 0) {
             return;
         }
 
-        if (this.running > this.size) {
+        if (currentPool.running >= currentPool.size) {
             return;
         }
 
         if (this.memoryThreshold > -1 && os.freemem() < this.memoryThreshold) {
+            // TODO: TO BE TESTED
             console.log('Waiting for ' + this.delay + 'ms before process again the queue.');
             setTimeout(currentPool.processQueue, this.delay);
             return;
         }
 
-        var settings = this.queue.shift();
+        // TODO: CHECK IF IT EXISTS IN REDIS
+        var settings = currentPool.queue.shift();
         if (settings === undefined || !settings.hasOwnProperty('data')) {
             return;
         }
@@ -159,25 +137,32 @@ var Pool = function (spawn, os, config) {
             args,
             childProcess;
 
-        // TODO: Pass all the argv to pool and to parser. way easier and shorter!
-        args = [
-            __dirname + '/worker.js',
-            data.timeStart, data.username, data.password, data.storeDetails,
-            data.followRedirects, data.proxy, data.sanitise, data.url, data.type,
-            JSON.stringify(data.container), data.evt, data.xPath,
-            JSON.stringify(currentPool), JSON.stringify(config)
-        ];
+        currentPool.running++;
 
-        childProcess = spawn('node', args, { detached: true });
-        this.running++;
-        childProcess.stdout.on('data', options.stdout || currentPool.spawnStdout);
-        childProcess.stderr.on('data', options.stderr || currentPool.spawnStderr);
-        childProcess.on('exit', function () {
+        childProcess = require('child_process').fork(__dirname + '/worker.js');
+        childProcess.send({
+            settings: [
+                data.timeStart, data.username, data.password, data.storeDetails,
+                data.followRedirects, data.proxy, data.sanitise, data.url, data.type,
+                data.container, data.evt, data.xPath,
+                currentPool, config
+            ]
+        });
+
+        childProcess.on('exit', function (code) {
             currentPool.running--;
-            if (options.exit) {
-                options.exit();
+
+            if (currentPool.queue.length > 0) {
+                currentPool.processQueue();
+            } else if (currentPool.running === 0) {
+                process.exit();
             }
-            currentPool.processQueue();
+        });
+
+        childProcess.on('message', function(m) {
+            if (typeof m.queue !== 'undefined') {
+                currentPool.addToQueue(m.queue, m.settings);
+            }
         });
     };
 };

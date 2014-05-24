@@ -28,30 +28,6 @@
  */
 
 /**
- * The spawn's stdout callback.
- *
- * @method spawnStdout
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStdout(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1));
-}
-
-/**
- * The spawn's stderr callback.
- *
- * @method spawnStderr
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStderr(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1).red);
-}
-
-/**
  * Crawler Class
  *
  * It call the parser (PhantomJS) to retrieve all the information from the URL,
@@ -60,7 +36,7 @@ function spawnStderr(data) {
  *
  * @class Crawler
  */
-var Crawler = function (config, spawn, test, client, winston, fs, optimist, utils, pool) {
+var Crawler = function (config, spawn, test, client, winston, fs, optimist, utils) {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -289,7 +265,7 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
             host,
             settings = [];
 
-        if (this.proxy !== 'undefined') {
+        if (this.proxy !== null) {
             auth = this.proxy.replace(/^(.+):(.+)@(.+):(.+)$/, '$1:$2');
             host = this.proxy.replace(/^(.+):(.+)@(.+):(.+)$/, '$3:$4');
             if (auth !== this.proxy) {
@@ -305,6 +281,10 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
 
             subprocess.stdout.on('data', this.onStdOut);
             subprocess.stderr.on('data', this.onStdErr);
+            subprocess.on('error', function (err) {
+                winston.error(err.red);
+                this.handleError();
+            });
             subprocess.on('exit', this.onExit);
         } catch (err) {
             winston.error(err.message.red);
@@ -398,8 +378,8 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        pool.addToQueue(
-            {
+        process.send({
+            queue: {
                 idUri:           1,
                 timeStart:       currentCrawler.timeStart,
                 idRequest:       Date.now(),
@@ -413,16 +393,10 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
                 storeDetails:    currentCrawler.storeDetails,
                 followRedirects: currentCrawler.followRedirects,
                 proxy:           currentCrawler.proxy
-            },
-            {
-                stdout: spawnStdout,
-                stderr: spawnStderr,
-                exit:   function () {
-                    currentCrawler.possibleCrawlers--;
-                    currentCrawler.checkRunningCrawlers('No items left to be processed');
-                }
             }
-        );
+        });
+        currentCrawler.possibleCrawlers--;
+        currentCrawler.checkRunningCrawlers('No items left to be processed');
     };
 
     /**
@@ -455,6 +429,16 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
         id      = redisId.substr(0, 8);
 
         winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
+
+        var protocol = container.url.split(/:/)[0].toLowerCase();
+        if (protocol !== 'http' && protocol !== 'https' && protocol !== 'file') {
+            winston.warn('%s ' + 'Skipping not supported URL: %s'.yellow, winstonCrawlerId, container.url);
+
+            currentCrawler.possibleCrawlers--;
+            currentCrawler.checkRunningCrawlers('No items left to be processed');
+            return;
+        }
+
         winston.debug(
             '%s Checking %s "%s" - %s on %s',
             winstonCrawlerId,

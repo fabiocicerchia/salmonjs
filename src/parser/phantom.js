@@ -332,7 +332,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
     this.onNavigationRequested = function (url) {
         // TODO: What to do with reloads?
         // TODO: There is a random bug here.
-        if (url !== 'about:blank' && !settings.followRedirects && url.indexOf(currentParser.url) === -1) {
+        if (url !== 'about:blank' && !url.match(/^file:\/\//) && !settings.followRedirects && url.indexOf(currentParser.url) === -1) {
             return currentParser.exit();
         }
 
@@ -583,7 +583,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
      * @return undefined
      */
     this.onLoadFinished = function () {
-        if (settings.sanitise !== undefined && settings.sanitise.toString() === 'true') {
+        if (settings.sanitise !== undefined && settings.sanitise == 'true') {
             var tmp_fn  = fs.workingDirectory + '/file_' + ((new Date()).getTime()) + '.html',
                 args    = [ fs.workingDirectory + '/src/tidy.js', tmp_fn ],
                 process;
@@ -836,7 +836,8 @@ var PhantomParser = function (utils, spawn, page, settings) {
                 'igm'
             ),
             regex_relurl = new RegExp(
-                '\'('+path+')\'|"('+path+')"',
+                //'\'('+path+')\'|"('+path+')"',
+                '\'(/'+path+')\'|"(/'+path+')"|\'(../'+path+')\'|"(../'+path+')"',
                 'igm'
             );
 

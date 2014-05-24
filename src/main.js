@@ -68,7 +68,9 @@ var SalmonJS = function (redis, argv) {
         os        = require('os'),
         spawn     = require('child_process').spawn,
         zlib      = require('zlib'),
-        pool      = new (require('./pool'))(spawn, os, config);
+        pool      = new (require('./pool'))(os, config);
+
+    var currentInstance = this;
 
     ioc.add('client',    client);
     ioc.add('config',    config);
@@ -139,30 +141,6 @@ var SalmonJS = function (redis, argv) {
     };
 
     /**
-     * The spawn's stdout callback.
-     *
-     * @method spawnStdout
-     * @param {Object} data The data sent back from the worker.
-     * @return undefined
-     */
-    this.spawnStdout = function(data) {
-        data = data.toString();
-        console.log(data.substr(0, data.length - 1));
-    };
-
-    /**
-     * The spawn's stderr callback.
-     *
-     * @method spawnStderr
-     * @param {Object} data The data sent back from the worker.
-     * @return undefined
-     */
-    this.spawnStderr = function(data) {
-        data = data.toString();
-        console.log(data.substr(0, data.length - 1).red);
-    };
-
-    /**
      * Resolve the URI and add the protocol.
      *
      * @method resolveURI
@@ -191,7 +169,7 @@ var SalmonJS = function (redis, argv) {
      * @return undefined
      */
     this.start = function() {
-        var uri = this.resolveURI(argv.uri);
+        var uri = currentInstance.resolveURI(argv.uri);
 
         winston.info('Start processing "' + uri.green + '"...');
 
@@ -220,9 +198,7 @@ var SalmonJS = function (redis, argv) {
                 sanitise:        argv.sanitise,
             },
             {
-                stdout: this.spawnStdout,
-                stderr: this.spawnStderr,
-                exit:   function () {
+                exit: function () {
                     process.exit();
                 }
             }
