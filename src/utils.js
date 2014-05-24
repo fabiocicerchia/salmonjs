@@ -248,10 +248,16 @@ var Utils = function (crypto) {
         }
 
         var URI = require('URIjs');
-        normalised = URI(url).absoluteTo(baseUrl).normalizePathname().normalizeSearch().toString();
+        normalised = URI(url);
+        if (url.indexOf(':') === -1 || url.match(/:[0-9\/]/g)) {
+            normalised = normalised.absoluteTo(baseUrl);
+        }
+        normalised = normalised.normalizePathname();
+        normalised = normalised.normalizeSearch();
+        normalised = normalised.toString();
 
         var domain = URI(baseUrl).domain();
-        if (domain !== '' && domain !== URI(normalised).domain()) {
+        if (domain !== URI(normalised).domain()) {
             return undefined;
         }
 
