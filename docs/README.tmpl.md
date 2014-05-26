@@ -52,5 +52,8 @@ website you DO NOT OWN!**
 ## Changelog
 {%= docs("CHANGELOG") %}
 
+## Contributing
+{%= docs("CONTRIBUTING") %}
+
 ## Licence
 {%= docs("../LICENCE") %}

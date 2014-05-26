@@ -30,7 +30,7 @@
 /**
  * Session Class
  *
- * Session management, it dumps and restores the Redis DB and the SalmonJS
+ * Session management, it dumps and restores the Redis DB and the salmonJS
  * configuration.
  *
  * @class Session

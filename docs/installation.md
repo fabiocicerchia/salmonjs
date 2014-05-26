@@ -1,10 +1,12 @@
-You can install it directly from npm:
+At the moments salmonjs is available only a NPM package.
+
+So, you can install it directly from NPM using the following command:
 
 ```
 [user@hostname ~]$ npm install salmonjs -g
 ```
 
-or you can download the source code from GitHub and run these commands:
+Eventually you can get the source code from GitHub and then run this command:
 
 ```
 [user@hostname ~/salmonjs]$ npm install

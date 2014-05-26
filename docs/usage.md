@@ -20,7 +20,7 @@ Options:
   -r, --restore      Restore the previous interrupted session                                    [default: false]
   -s, --sanitise     Sanitise any malformed HTML page                                            [default: false]
   --cases            Test cases folder
-  --redis            Redis configuration (format "ip:port")                                      [default: "127.0.0.1:16379"]
+  --redis            Redis configuration (format "ip:port")                                      [default: "127.0.0.1:6379"]
   --timeout          Resource timeout                                                            [default: 5000]
   --attempts         Number of attempts before stop to request the URL                           [default: 5]
   --interval         Number of millisecond before try to fetch an URL after a failure            [default: 5000]

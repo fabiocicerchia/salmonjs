@@ -29,6 +29,7 @@ It helps you to map / process entire websites, spidering them and parsing each p
 * [How it works](#how-it-works)
 * [Bugs](#bugs)
 * [Changelog](#changelog)
+* [Contributing](#contributing)
 * [Licence](#licence)
 
 
@@ -105,26 +106,51 @@ Here below few suggestions about its usage:
 
 
 ## Dependencies
-Here the list of main dependencies:
+salmonJS is based on [Node.js](http://nodejs.org/download/) and [PhantomJS](http://phantomjs.org/download.html) and uses [Redis](http://redis.io/download) as queue manager.
 
- * [Node.js](http://nodejs.org/download/)
-    * Tested with v0.8.26 and v0.10.25
- * [PhantomJS](http://phantomjs.org/download.html)
-    * Tested with v1.9.7
- * [Grunt](http://gruntjs.com/) (optional, only for tests)
-    * Tested with v0.4.4
- * [Redis](http://redis.io/download)
-    * Tested with v2.9.6
+salmonJS is tested using **TravisCI** on the following versions:
+ * Node.js: v0.8.26 and v0.10.25
+ * PhantomJS: v1.9.7
+ * Redis: v2.9.6
+
+This is the list of main dependencies:
+ * optimist v0.6.1
+ * path v0.4.9
+ * colors v0.6.2
+ * redis v0.10.1
+ * glob v3.2.9
+ * winston v0.7.3
+ * insight v0.3.1
+ * request v2.34.0
+ * htmltidy v0.0.6
+ * URIjs v1.12.1
+ * jsonfn v0.31.0
+
+This is the list of development dependencies:
+ * jshint v2.4.4
+ * yuidocjs v0.3.49
+ * jasmine-node v1.14.2
+ * phapper v0.1.9
+ * grunt-cli v0.1.13
+ * grunt-jasmine-node-coverage v0.1.8
+ * grunt-contrib-jshint v0.9.2
+ * grunt-release v0.7.0
+ * grunt-contrib-yuidoc v0.5.2
+ * grunt-todo v0.2.0
+ * chai v1.9.1
+ * grunt-verb v0.0.5
 
 
 ## Installation
-You can install it directly from npm:
+At the moments salmonjs is available only a NPM package.
+
+So, you can install it directly from NPM using the following command:
 
 ```
 [user@hostname ~]$ npm install salmonjs -g
 ```
 
-or you can download the source code from GitHub and run these commands:
+Eventually you can get the source code from GitHub and then run this command:
 
 ```
 [user@hostname ~/salmonjs]$ npm install
@@ -132,9 +158,7 @@ or you can download the source code from GitHub and run these commands:
 
 
 ## Configuration
-Change the file `src/config.js` accordingly to your needs.
-
-### Test Cases
+#### Test Cases
 
 Here an example of a test case file:
 
@@ -165,6 +189,25 @@ Message=true ; true = OK, false = Cancel
 Question="Answer"
 ```
 
+The file is using the INI format.
+
+There are different section you can use and customise to your needs:
+ * **GET**, used for the GET variables in the query string  
+   The key is the variable name, the value is the variable's value.
+ * **POST**, used for the POST variables  
+   The key is the variable name, the value is the variable's value.  
+   It's possible to send also files using `@` in front of the value to upload (the file MUST exists).
+ * **COOKIE**, used to set the cookies  
+   The key is the cookie name, the value is the content.  
+   It's not possible to configure the domain, the path and the expiration date of the cookie. It'll be configured automatically salmonJS
+ * **HTTP_HEADERS**, used to set HTTP headers  
+   The key is the HTTP header name, the value is the header's value.
+ * **CONFIRM**, used to change the JS confirm message behaviour  
+   The key is the message text, the value is the button to be clicked.  
+   Possible values: `true` = OK, `false` = Cancel
+ * **PROMPT**, used to change the JS prompt message behaviour  
+   The key is the question text, the value is the answer.
+
 
 ## Usage
 ```
@@ -189,7 +232,7 @@ Options:
   -r, --restore      Restore the previous interrupted session                                    [default: false]
   -s, --sanitise     Sanitise any malformed HTML page                                            [default: false]
   --cases            Test cases folder
-  --redis            Redis configuration (format "ip:port")                                      [default: "127.0.0.1:16379"]
+  --redis            Redis configuration (format "ip:port")                                      [default: "127.0.0.1:6379"]
   --timeout          Resource timeout                                                            [default: 5000]
   --attempts         Number of attempts before stop to request the URL                           [default: 5]
   --interval         Number of millisecond before try to fetch an URL after a failure            [default: 5000]
@@ -202,12 +245,16 @@ Options:
 
 
 ## Examples
+These are just few examples how to use salmonjs:
+
 ```
 [user@hostname ~]$ salmonjs --uri "http://www.google.com"
 [user@hostname ~]$ salmonjs --uri "www.google.com"
 [user@hostname ~]$ salmonjs --uri "/tmp/file.html"
 [user@hostname ~]$ salmonjs --uri "file.html"
 ```
+
+You can find more detailed examples in the folder [docs/examples](https://github.com/fabiocicerchia/salmonjs/tree/develop/docs/examples).
 
 
 ## Tests
@@ -217,34 +264,34 @@ Options:
 
 
 ## How it works
- * Start processing an URL
- * Open a system process to PhantomJS
-  * Open the URL
-  * If there is a JS event, put it into a dedicate stack
-  * Inject custom event listener
-    * Override existent event listener
-  * Collect all the relevant info from the page for the report
-  * On load complete, execute the events in the stack
-  * Start to process the web page
-  * Get all the links from the page content
-  * Normalise and filter by uniqueness all the URLs collected
-  * Get all the JS events bound to DOM elements
-  * Clone the web page for each new combination in the page (confirm)
-  * Put the web page instance in a dedicate stack for each JS event
-  * Process the all the web pages in the stack
-  * Get all the links from the page content
-  * Reiterate until there are no more JS events
- * If there is an error retry up to 5 times
- * Collect all the data sent by the parser
- * Create test cases for POST data with normalised fields
- * Get POST test cases for current URL
- * Launch a new crawler for each test case
- * Store details in report file
- * Increase the counter for possible crawlers to be launched based on the links
- * Check the links if are already been processed
-  * If not, launch a new process for each link
- * If there are no more links to be processed, check if there are still sub-crawlers running
-  * If not so, terminate the process
+ 1. Start processing an URL
+ 2. Open a system process to PhantomJS
+  1. Open the URL
+  2. If there is a JS event, put it into a dedicate stack
+  3. Inject custom event listener
+    1. Override existent event listener
+  4. Collect all the relevant info from the page for the report
+  5. On load complete, execute the events in the stack
+  6. Start to process the web page
+  7. Get all the links from the page content
+  8. Normalise and filter by uniqueness all the URLs collected
+  9. Get all the JS events bound to DOM elements
+  10. Clone the web page for each new combination in the page (confirm)
+  11. Put the web page instance in a dedicate stack for each JS event
+  12. Process the all the web pages in the stack
+  13. Get all the links from the page content
+  14. Reiterate until there are no more JS events
+ 3. If there is an error retry up to 5 times
+ 4. Collect all the data sent by the parser
+ 5. Create test cases for POST data with normalised fields
+ 6. Get POST test cases for current URL
+ 7. Launch a new crawler for each test case
+ 8. Store details in report file
+ 9. Increase the counter for possible crawlers to be launched based on the links
+ 10. Check the links if are already been processed
+  1. If not, launch a new process for each link
+ 11. If there are no more links to be processed, check if there are still sub-crawlers running
+  1. If not so, terminate the process
 
 
 ## Bugs
@@ -377,8 +424,197 @@ For a list of bugs please go to the [GitHub Issue Page](https://github.com/fabio
  * Fixed several bugs
 
 
+## Contributing
+Please take a moment to review this document in order to make the contribution
+process easy and effective for everyone involved.
+
+Following these guidelines helps to communicate that you respect the time of
+the developers managing and developing this open source project. In return,
+they should reciprocate that respect in addressing your issue, assessing
+changes, and helping you finalize your pull requests.
+
+
+### Using the issue tracker
+
+The issue tracker is the preferred channel for [bug reports](#bugs),
+[features requests](#features) and [submitting pull
+requests](#pull-requests), but please respect the following restrictions:
+
+* Please **do not** derail or troll issues. Keep the discussion on topic and
+  respect the opinions of others.
+
+
+<a name="bugs"></a>
+### Bug reports
+
+A bug is a _demonstrable problem_ that is caused by the code in the repository.
+Good bug reports are extremely helpful - thank you!
+
+Guidelines for bug reports:
+
+1. **Use the GitHub issue search** &mdash; check if the issue has already been
+   reported.
+
+2. **Check if the issue has been fixed** &mdash; try to reproduce it using the
+   latest `master` or development branch in the repository.
+
+3. **Isolate the problem** &mdash; ideally create a [reduced test
+   case](http://css-tricks.com/6263-reduced-test-cases/).
+
+A good bug report shouldn't leave others needing to chase you up for more
+information. Please try to be as detailed as possible in your report. What is
+your environment? What steps will reproduce the issue? What OS experiences the
+problem? What would you expect to be the outcome? All these details will help
+people to fix any potential bugs.
+
+Example:
+
+> Short and descriptive example bug report title
+>
+> A summary of the issue and the browser/OS environment in which it occurs. If
+> suitable, include the steps required to reproduce the bug.
+>
+> 1. This is the first step
+> 2. This is the second step
+> 3. Further steps, etc.
+>
+> `<url>` - a link to the reduced test case
+>
+> Any other information you want to share that is relevant to the issue being
+> reported. This might include the lines of code that you have identified as
+> causing the bug, and potential solutions (and your opinions on their
+> merits).
+
+
+<a name="features"></a>
+### Feature requests
+
+Feature requests are welcome. But take a moment to find out whether your idea
+fits with the scope and aims of the project. It's up to *you* to make a strong
+case to convince the project's developers of the merits of this feature. Please
+provide as much detail and context as possible.
+
+
+<a name="pull-requests"></a>
+### Pull requests
+
+Good pull requests - patches, improvements, new features - are a fantastic
+help. They should remain focused in scope and avoid containing unrelated
+commits.
+
+**Please ask first** before embarking on any significant pull request (e.g.
+implementing features, refactoring code), otherwise you risk spending a lot of
+time working on something that the project's developers might not want to merge
+into the project.
+
+Please adhere to the coding conventions used throughout a project (indentation,
+accurate comments, etc.) and any other requirements (such as test coverage).
+
+Adhering to the following this process is the best way to get your work
+included in the project:
+
+1. [Fork](http://help.github.com/fork-a-repo/) the project, clone your fork,
+   and configure the remotes:
+
+   ```bash
+   # Clone your fork of the repo into the current directory
+   git clone https://github.com/<your-username>/salmonjs
+   # Navigate to the newly cloned directory
+   cd salmonjs
+   # Assign the original repo to a remote called "upstream"
+   git remote add upstream https://github.com/salmonjs/salmonjs
+   ```
+
+2. If you cloned a while ago, get the latest changes from upstream:
+
+   ```bash
+   git checkout master
+   git pull upstream master
+   ```
+
+3. Create a new topic branch (off the main project development branch) to
+   contain your feature, change, or fix:
+
+   ```bash
+   git checkout -b <topic-branch-name>
+   ```
+
+4. Make sure to update, or add to the tests when appropriate. Patches and
+   features will not be accepted without tests. Run `npm test` to check that
+   all tests pass after you've made changes.
+
+5. Commit your changes in logical chunks. Please adhere to these [git commit
+   message guidelines](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)
+   or your code is unlikely be merged into the main project. Use Git's
+   [interactive rebase](https://help.github.com/articles/interactive-rebase)
+   feature to tidy up your commits before making them public.
+
+6. Locally merge (or rebase) the upstream development branch into your topic branch:
+
+   ```bash
+   git pull [--rebase] upstream master
+   ```
+
+7. Push your topic branch up to your fork:
+
+   ```bash
+   git push origin <topic-branch-name>
+   ```
+
+8. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/)
+    with a clear title and description.
+
+9. If you are asked to amend your changes before they can be merged in, please
+   use `git commit --amend` (or rebasing for multi-commit Pull Requests) and
+   force push to your remote feature branch. You may also be asked to squash
+   commits.
+
+**IMPORTANT**: By submitting a patch, you agree to license your work under the
+same license as that used by the project.
+
+
+<a name="maintainers"></a>
+### Maintainers
+
+If you have commit access, please follow this process for merging patches and cutting new releases.
+
+#### Reviewing changes
+
+1. Check that a change is within the scope and philosophy of the project.
+2. Check that a change has any necessary tests and a proper, descriptive commit message.
+3. Checkout the change and test it locally.
+4. If the change is good, and authored by someone who cannot commit to
+   `master`, please try to avoid using GitHub's merge button. Apply the change
+   to `master` locally (feel free to amend any minor problems in the author's
+   original commit if necessary).
+5. If the change is good, and authored by another maintainer/collaborator, give
+   them a "Ship it!" comment and let them handle the merge.
+
+#### Submitting changes
+
+1. All non-trivial changes should be put up for review using GitHub Pull
+   Requests.
+2. Your change should not be merged into `master` (or another feature branch),
+   without at least one "Ship it!" comment from another maintainer/collaborator
+   on the project. "Looks good to me" is not the same as "Ship it!".
+3. Try to avoid using GitHub's merge button. Locally rebase your change onto
+   `master` and then push to GitHub.
+4. Once a feature branch has been merged into its target branch, please delete
+   the feature branch from the remote repository.
+
+#### Releasing a new version
+
+1. Include all new functional changes in the CHANGELOG.
+2. Use a dedicated commit to increment the version. The version needs to be
+   added to the `CHANGELOG.md` (inc. date) and the `package.json`.
+3. The commit message must be of `v0.0.0` format.
+4. Create an annotated tag for the version: `git tag -m "v0.0.0" v0.0.0`.
+5. Push the changes and tags to GitHub: `git push --tags origin master`.
+6. Publish the new version to npm: `npm publish`.
+
+
 ## Licence
-SalmonJS's license follows:
+salmonJS's license follows:
 
 ====
 
@@ -404,8 +640,8 @@ SOFTWARE.
 
 ====
 
-This license applies to all parts of SalmonJS that are not externally
-maintained libraries. The externally maintained libraries used by SalmonJS are:
+This license applies to all parts of salmonJS that are not externally
+maintained libraries. The externally maintained libraries used by salmonJS are:
 
 - tiny-sha1, located at src/sha1. tiny-sha1's license follows:
   """
