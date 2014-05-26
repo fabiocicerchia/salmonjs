@@ -47,28 +47,43 @@
 
       <section id="main_content">
         <h1>
-<a name="salmonjs" class="anchor" href="#salmonjs"><span class="octicon octicon-link"></span></a>salmonJS</h1>
+<a name="salmonjs" class="anchor" href="#salmonjs"><span class="octicon octicon-link"></span></a>salmonjs</h1>
 
 <p><a href="https://travis-ci.org/fabiocicerchia/salmonjs"><img src="https://travis-ci.org/fabiocicerchia/salmonjs.png" alt="Build Status"></a>
 <a href="https://gemnasium.com/fabiocicerchia/salmonjs"><img src="https://gemnasium.com/fabiocicerchia/salmonjs.png" alt="Dependency Status"></a>
-<a href="https://coveralls.io/r/fabiocicerchia/salmonjs"><img src="https://coveralls.io/repos/fabiocicerchia/salmonjs/badge.png" alt="Coverage Status"></a>
 <a href="https://codeclimate.com/github/fabiocicerchia/salmonjs"><img src="https://codeclimate.com/github/fabiocicerchia/salmonjs.png" alt="Code Climate"></a>
 <a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/fabiocicerchia/salmonjs/trend.png" alt="Bitdeli Badge"></a></p>
 
 <p><a href="https://nodei.co/npm/salmonjs/"><img src="https://nodei.co/npm/salmonjs.png?downloads=true&amp;stars=true" alt="NPM"></a></p>
 
-<p><a href="https://twitter.com/intent/tweet?text=salmonJS+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&amp;url=https%3A%2F%2Ffabiocicerchia.github.io%2Fsalmonjs&amp;hashtags=salmonjs&amp;original_referer=http%3A%2F%2Fgithub.com%2F&amp;tw_p=tweetbutton"><img src="http://jpillora.com/github-twitter-button/img/tweet.png" alt="salmonJS - Web Crawler in Node.js to spider dynamically whole websites."></a></p>
+<p><a href="https://twitter.com/intent/tweet?text=salmonJS+-+Web+Crawler+in+Node.js+to+spider+dynamically+whole+websites.&amp;url=https%3A%2F%2Fwww.salmonjs.org&amp;hashtags=salmonjs&amp;original_referer=http%3A%2F%2Fgithub.com%2F&amp;tw_p=tweetbutton"><img src="http://jpillora.com/github-twitter-button/img/tweet.png" alt="salmonJS - Web Crawler in Node.js to spider dynamically whole websites."></a></p>
 
 <p>Web Crawler in Node.js to spider dynamically whole websites.</p>
 
 <p><strong>IMPORTANT: This is a DEVELOPMENT tool, therefore SHOULD NOT be used against a
 website you DO NOT OWN!</strong></p>
 
-<p>It helps you to map / process entire websites, spidering them and parsing each
-page in a smart way. It follows all the links and test several times the form
-objects. In this way is possible to check effectively the whole website.</p>
+<p>It helps you to map / process entire websites, spidering them and parsing each page in a smart way. It follows all the links and test several times the form objects. In this way is possible to check effectively the whole website.</p>
 
 <h2>
+<a name="table-of-contents" class="anchor" href="#table-of-contents"><span class="octicon octicon-link"></span></a>Table Of Contents</h2>
+
+<ul>
+<li><a href="#table-of-contents">Table Of Contents</a></li>
+<li><a href="#whats-this-for">What's this for?</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#tests">Tests</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#bugs">Bugs</a></li>
+<li><a href="#changelog">Changelog</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#licence">Licence</a></li>
+</ul><h2>
 <a name="whats-this-for" class="anchor" href="#whats-this-for"><span class="octicon octicon-link"></span></a>What's this for?</h2>
 
 <p>This project was born with the aim of improve the legacy code, but it's not
@@ -158,32 +173,65 @@ performance.</p>
 <li>List of successful and failed requests</li>
 </ul>
 </li>
+<li>Pool system to limit the number of workers in the same time, then queue them</li>
 <li>Multiple crawlers working asynchronously one URL each one</li>
 <li>Support for the following HTML tags:
 a, area, base, form, frame, iframe, img, input, link, script</li>
 <li>URL normalisation</li>
 <li>Process the web page using PhantomJS</li>
 <li>Process all the output content types</li>
+<li>Keep the connection alive for lower CPU and memory load on the server</li>
 </ul><h2>
 <a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
 
-<p>Here the list of main dependencies:</p>
+<p>salmonJS is based on <a href="http://nodejs.org/download/">Node.js</a> and <a href="http://phantomjs.org/download.html">PhantomJS</a> and uses <a href="http://redis.io/download">Redis</a> as queue manager.</p>
+
+<p>salmonJS is tested using <strong>TravisCI</strong> on the following versions:</p>
 
 <ul>
-<li><a href="http://nodejs.org/download/">Node.js</a></li>
-<li><a href="http://phantomjs.org/download.html">PhantomJS</a></li>
-<li>
-<a href="http://casperjs.org/">CasperJS</a> (optional, only for tests)</li>
-<li><a href="http://redis.io/download">Redis</a></li>
+<li>Node.js: v0.8.26 and v0.10.25</li>
+<li>PhantomJS: v1.9.7</li>
+<li>Redis: v2.9.6</li>
+</ul><p>This is the list of main dependencies:</p>
+
+<ul>
+<li>optimist v0.6.1</li>
+<li>path v0.4.9</li>
+<li>colors v0.6.2</li>
+<li>redis v0.10.1</li>
+<li>glob v3.2.9</li>
+<li>winston v0.7.3</li>
+<li>insight v0.3.1</li>
+<li>request v2.34.0</li>
+<li>htmltidy v0.0.6</li>
+<li>URIjs v1.12.1</li>
+<li>jsonfn v0.31.0</li>
+</ul><p>This is the list of development dependencies:</p>
+
+<ul>
+<li>jshint v2.4.4</li>
+<li>yuidocjs v0.3.49</li>
+<li>jasmine-node v1.14.2</li>
+<li>phapper v0.1.9</li>
+<li>grunt-cli v0.1.13</li>
+<li>grunt-jasmine-node-coverage v0.1.8</li>
+<li>grunt-contrib-jshint v0.9.2</li>
+<li>grunt-release v0.7.0</li>
+<li>grunt-contrib-yuidoc v0.5.2</li>
+<li>grunt-todo v0.2.0</li>
+<li>chai v1.9.1</li>
+<li>grunt-verb v0.0.5</li>
 </ul><h2>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
 
-<p>You can install it directly from npm:</p>
+<p>At the moments salmonjs is available only a NPM package.</p>
+
+<p>So, you can install it directly from NPM using the following command:</p>
 
 <pre><code>[user@hostname ~]$ npm install salmonjs -g
 </code></pre>
 
-<p>or you can download the source code from GitHub and run these commands:</p>
+<p>Eventually you can get the source code from GitHub and then run this command:</p>
 
 <pre><code>[user@hostname ~/salmonjs]$ npm install
 </code></pre>
@@ -191,15 +239,13 @@ a, area, base, form, frame, iframe, img, input, link, script</li>
 <h2>
 <a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
 
-<p>Change the file <code>src/config.js</code> accordingly to your needs.</p>
-
-<h3>
-<a name="test-cases" class="anchor" href="#test-cases"><span class="octicon octicon-link"></span></a>Test Cases</h3>
+<h4>
+<a name="test-cases" class="anchor" href="#test-cases"><span class="octicon octicon-link"></span></a>Test Cases</h4>
 
 <p>Here an example of a test case file:</p>
 
 <pre><code>; Test Case File
-; generated by salmonJS v0.4.0 (http://fabiocicerchia.github.io/salmonjs) at Sat, 01 Jan 1970 00:00:00 GMT
+; generated by salmonJS v0.5.0 (http://www.salmonjs.org) at Sat, 01 Jan 1970 00:00:00 GMT
 ; url = http://www.example.com
 ; id = http___www_example_com
 
@@ -224,7 +270,33 @@ Message=true ; true = OK, false = Cancel
 Question="Answer"
 </code></pre>
 
-<h2>
+<p>The file is using the INI format.</p>
+
+<p>There are different section you can use and customise to your needs:</p>
+
+<ul>
+<li>
+<strong>GET</strong>, used for the GET variables in the query string<br>
+The key is the variable name, the value is the variable's value.</li>
+<li>
+<strong>POST</strong>, used for the POST variables<br>
+The key is the variable name, the value is the variable's value.<br>
+It's possible to send also files using <code>@</code> in front of the value to upload (the file MUST exists).</li>
+<li>
+<strong>COOKIE</strong>, used to set the cookies<br>
+The key is the cookie name, the value is the content.<br>
+It's not possible to configure the domain, the path and the expiration date of the cookie. It'll be configured automatically salmonJS</li>
+<li>
+<strong>HTTP_HEADERS</strong>, used to set HTTP headers<br>
+The key is the HTTP header name, the value is the header's value.</li>
+<li>
+<strong>CONFIRM</strong>, used to change the JS confirm message behaviour<br>
+The key is the message text, the value is the button to be clicked.<br>
+Possible values: <code>true</code> = OK, <code>false</code> = Cancel</li>
+<li>
+<strong>PROMPT</strong>, used to change the JS prompt message behaviour<br>
+The key is the question text, the value is the answer.</li>
+</ul><h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <pre><code>              __                         _____ _______
@@ -232,31 +304,45 @@ Question="Answer"
 |__ --|  _  ||  ||        |  _  |     |       |__     |
 |_____|___._||__||__|__|__|_____|__|__|_______|_______|
 
-salmonJS v0.4.0
-
-Copyright (C) 2013 Fabio Cicerchia &lt;info@fabiocicerchia.it&gt;
+salmonJS v0.5.0
+Copyright (C) 2014 Fabio Cicerchia &lt;info@fabiocicerchia.it&gt;
 
 Web Crawler in Node.js to spider dynamically whole websites.
-Usage: ./bin/salmonjs
+Usage: node ./bin/salmonjs
 
 Options:
   --uri              The URI to be crawled                                                       [required]
   -c, --credentials  Username and password for HTTP authentication (format "username:password")
-  -d, --details      Store details for each page                                                 [default: false]
+  -d, --details      Store details for each page (in the specified folder)
   -f, --follow       Follows redirects                                                           [default: false]
   -p, --proxy        Proxy settings (format: "ip:port" or "username:password@ip:port")
+  -w, --workers      Maximum number of asynchronous workers                                      [default: 10]
+  -r, --restore      Restore the previous interrupted session                                    [default: false]
+  -s, --sanitise     Sanitise any malformed HTML page                                            [default: false]
+  --cases            Test cases folder
+  --redis            Redis configuration (format "ip:port")                                      [default: "127.0.0.1:6379"]
+  --timeout          Resource timeout                                                            [default: 5000]
+  --attempts         Number of attempts before stop to request the URL                           [default: 5]
+  --interval         Number of millisecond before try to fetch an URL after a failure            [default: 5000]
   --disable-stats    Disable anonymous report usage stats                                        [default: false]
+  -q, --quiet        Disable all the output messages
+  -v                 Verbose
+  --version          Display the current version
   --help             Show the help
 </code></pre>
 
 <h2>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
 
+<p>These are just few examples how to use salmonjs:</p>
+
 <pre><code>[user@hostname ~]$ salmonjs --uri "http://www.google.com"
 [user@hostname ~]$ salmonjs --uri "www.google.com"
 [user@hostname ~]$ salmonjs --uri "/tmp/file.html"
 [user@hostname ~]$ salmonjs --uri "file.html"
 </code></pre>
+
+<p>You can find more detailed examples in the folder <a href="https://github.com/fabiocicerchia/salmonjs/tree/develop/docs/examples">docs/examples</a>.</p>
 
 <h2>
 <a name="tests" class="anchor" href="#tests"><span class="octicon octicon-link"></span></a>Tests</h2>
@@ -267,18 +353,18 @@ Options:
 <h2>
 <a name="how-it-works" class="anchor" href="#how-it-works"><span class="octicon octicon-link"></span></a>How it works</h2>
 
-<ul>
+<ol>
 <li>Start processing an URL</li>
 <li>Open a system process to PhantomJS
 
-<ul>
+<ol>
 <li>Open the URL</li>
 <li>If there is a JS event, put it into a dedicate stack</li>
 <li>Inject custom event listener
 
-<ul>
+<ol>
 <li>Override existent event listener</li>
-</ul>
+</ol>
 </li>
 <li>Collect all the relevant info from the page for the report</li>
 <li>On load complete, execute the events in the stack</li>
@@ -291,7 +377,7 @@ Options:
 <li>Process the all the web pages in the stack</li>
 <li>Get all the links from the page content</li>
 <li>Reiterate until there are no more JS events</li>
-</ul>
+</ol>
 </li>
 <li>If there is an error retry up to 5 times</li>
 <li>Collect all the data sent by the parser</li>
@@ -302,42 +388,411 @@ Options:
 <li>Increase the counter for possible crawlers to be launched based on the links</li>
 <li>Check the links if are already been processed
 
-<ul>
+<ol>
 <li>If not, launch a new process for each link</li>
-</ul>
+</ol>
 </li>
 <li>If there are no more links to be processed, check if there are still sub-crawlers running
 
-<ul>
+<ol>
 <li>If not so, terminate the process</li>
-</ul>
+</ol>
 </li>
-</ul><h2>
+</ol><h2>
 <a name="bugs" class="anchor" href="#bugs"><span class="octicon octicon-link"></span></a>Bugs</h2>
 
 <p>For a list of bugs please go to the <a href="https://github.com/fabiocicerchia/salmonjs/issues?labels=Bug&amp;page=1&amp;state=open">GitHub Issue Page</a>.</p>
 
 <h2>
+<a name="changelog" class="anchor" href="#changelog"><span class="octicon octicon-link"></span></a>Changelog</h2>
+
+<h3>
+<a name="050--26-may-2014" class="anchor" href="#050--26-may-2014"><span class="octicon octicon-link"></span></a>0.5.0 / 26 May 2014</h3>
+
+<ul>
+<li>Improved documentation</li>
+<li>Fixed the pool system in order to make sure it doesn't fork too many process</li>
+<li>Fixed URL normalisation</li>
+<li>Fixed Redis port</li>
+<li>Fixed issue with sanitise &amp; link extraction</li>
+<li>Added few more examples</li>
+<li>Added demo website for integration/functional testing</li>
+<li>Added support to retrieve relative url as well</li>
+<li>Fixed problem with storing report file when the directory already exists</li>
+<li>Improved url processing speed - removing duplicates</li>
+<li>Added more html tags to the parser</li>
+<li>Fixed issue with report + issue with serialisation of the pool's queue</li>
+<li>Fixed minor bugs with processing local files + added urijs</li>
+<li>Fixed #45</li>
+<li>Updated project url to <a href="http://www.salmonjs.org">www.salmonjs.org</a>
+</li>
+<li>Disabled 2 tests because of a possible "bug" in phantomjs</li>
+<li>Removed ci for node.js 0.11</li>
+<li>Disabled gzip, it's not recognised properly from phantomjs</li>
+<li>Added readme generation via grunt</li>
+<li>Added todo file, generated via grunt</li>
+<li>Linted the code</li>
+<li>Added dev utilities with grunt</li>
+<li>Coverage improvements</li>
+<li>Improved tests</li>
+<li>Removed casperjs and added jasmine &amp; grunt</li>
+<li>Improved documentation + cleanup + fixed tests</li>
+<li>Fixed #38</li>
+<li>Fixed #39</li>
+<li>Fixed #26</li>
+<li>Fixed #37</li>
+<li>Fixed #40</li>
+<li>Fixed #34</li>
+<li>Fixed #15 #16</li>
+</ul><h3>
+<a name="041--04-april-2014" class="anchor" href="#041--04-april-2014"><span class="octicon octicon-link"></span></a>0.4.1 / 04 April 2014</h3>
+
+<ul>
+<li>Fixed #45</li>
+</ul><h3>
+<a name="040--13-march-2014" class="anchor" href="#040--13-march-2014"><span class="octicon octicon-link"></span></a>0.4.0 / 13 March 2014</h3>
+
+<ul>
+<li>Fixed proxy undefined + fix on pool mechanism</li>
+<li>Fixed #9</li>
+<li>Closed #33</li>
+<li>Closed #20</li>
+<li>Changed CDN</li>
+<li>Closed #14</li>
+<li>Closed #23</li>
+<li>Closed #25</li>
+<li>Minor improvements</li>
+<li>Fixed several bugs</li>
+</ul><h3>
+<a name="030--29-december-2013" class="anchor" href="#030--29-december-2013"><span class="octicon octicon-link"></span></a>0.3.0 / 29 December 2013</h3>
+
+<ul>
+<li>Workaround to avoid to stop the execution when 'about:blank'</li>
+<li>Fixed #30</li>
+<li>Improved code</li>
+<li>Fixed issue with upload</li>
+<li>Fixed #12</li>
+<li>Rebranding: say goodbye to spidey, say hello to salmonJS</li>
+<li>Added more nodejs versions</li>
+<li>Fixed #7</li>
+<li>Fixed #6</li>
+<li>Wrap the functional test to avoid problems with code coverage</li>
+<li>Fixed #5</li>
+<li>Closed #13</li>
+<li>Improved docs</li>
+<li>Improved tests</li>
+<li>Added insight support</li>
+<li>Improved to execute all the JS events in the parser</li>
+<li>Removed support for casperjs as parser</li>
+<li>Fixed tests to work with the new casperjs (dev) version</li>
+<li>Fixed #11</li>
+<li>Do not process the page if there are no links</li>
+<li>Disabled the processing if it's not HTML</li>
+<li>Added follow redirects option</li>
+<li>Linted</li>
+<li>Improved report</li>
+<li>Fixed issue with top parent node (that has no parentNode)</li>
+<li>Increased redis version</li>
+<li>Minor improvements</li>
+<li>Fixed several bugs</li>
+</ul><h3>
+<a name="021--25-november-2013" class="anchor" href="#021--25-november-2013"><span class="octicon octicon-link"></span></a>0.2.1 / 25 November 2013</h3>
+
+<ul>
+<li>Fixed attribute name for script tag (thanks to Ben Ellis)</li>
+<li>Added custom user agent value + removed duplicate property 'tags'</li>
+<li>Improved test case file to use section (e.g.: POST, GET, ...)</li>
+<li>Removed glob as external dependency</li>
+<li>Added report id and comments in test cases</li>
+<li>Minor improvements</li>
+<li>Fixed several bugs</li>
+</ul><h3>
+<a name="020--23-november-2013" class="anchor" href="#020--23-november-2013"><span class="octicon octicon-link"></span></a>0.2.0 / 23 November 2013</h3>
+
+<ul>
+<li>Fixed viewport size and page content</li>
+<li>Improved coverage generation</li>
+<li>Improved the crawler using workers</li>
+<li>Improved casper &amp; phantom parsers + more tests with casperjs + new classes to emulate fs &amp; glob + minor changes</li>
+<li>Added tests with CasperJS for DOM interaction + draft for parser with CasperJS</li>
+<li>Improved url normalisation</li>
+<li>Added IOC</li>
+<li>Removed winston log from mocha tests</li>
+<li>Added .travis.yml</li>
+<li>Added tests with mocha &amp; chai</li>
+<li>Add dependecy phantomjs to npm</li>
+<li>Fixed bugged behaviour which was keeping open the node.js process</li>
+<li>Checked if the attributes ('on*') attached at runtime are handled correctly</li>
+<li>Better redis error handling</li>
+<li>Fixed bug with or condition</li>
+<li>Minor changes + improved documentation</li>
+<li>Added screenshot feature</li>
+<li>Rebrand</li>
+<li>Added html template for reports</li>
+<li>Added support for report generation</li>
+<li>Crated a separate file for the console</li>
+<li>Added http authentication</li>
+<li>Fixed existsSync using the right node.js version</li>
+<li>Added help</li>
+<li>Linted the code</li>
+<li>Added sorting querystring parameters</li>
+<li>Improved to parse url and file path</li>
+<li>Retrieving events bound to elements &amp; process them + fix signature hash</li>
+<li>Added tests</li>
+<li>Converted project from PHP to Node.js</li>
+<li>Minor improvements</li>
+<li>Fixed several bugs</li>
+</ul><h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>Please take a moment to review this document in order to make the contribution
+process easy and effective for everyone involved.</p>
+
+<p>Following these guidelines helps to communicate that you respect the time of
+the developers managing and developing this open source project. In return,
+they should reciprocate that respect in addressing your issue, assessing
+changes, and helping you finalize your pull requests.</p>
+
+<h3>
+<a name="using-the-issue-tracker" class="anchor" href="#using-the-issue-tracker"><span class="octicon octicon-link"></span></a>Using the issue tracker</h3>
+
+<p>The issue tracker is the preferred channel for <a href="#bugs">bug reports</a>,
+<a href="#features">features requests</a> and <a href="#pull-requests">submitting pull
+requests</a>, but please respect the following restrictions:</p>
+
+<ul>
+<li>Please <strong>do not</strong> derail or troll issues. Keep the discussion on topic and
+respect the opinions of others.</li>
+</ul><p><a name="bugs"></a></p>
+
+<h3>
+<a name="bug-reports" class="anchor" href="#bug-reports"><span class="octicon octicon-link"></span></a>Bug reports</h3>
+
+<p>A bug is a <em>demonstrable problem</em> that is caused by the code in the repository.
+Good bug reports are extremely helpful - thank you!</p>
+
+<p>Guidelines for bug reports:</p>
+
+<ol>
+<li><p><strong>Use the GitHub issue search</strong> — check if the issue has already been
+reported.</p></li>
+<li><p><strong>Check if the issue has been fixed</strong> — try to reproduce it using the
+latest <code>master</code> or development branch in the repository.</p></li>
+<li><p><strong>Isolate the problem</strong> — ideally create a <a href="http://css-tricks.com/6263-reduced-test-cases/">reduced test
+case</a>.</p></li>
+</ol><p>A good bug report shouldn't leave others needing to chase you up for more
+information. Please try to be as detailed as possible in your report. What is
+your environment? What steps will reproduce the issue? What OS experiences the
+problem? What would you expect to be the outcome? All these details will help
+people to fix any potential bugs.</p>
+
+<p>Example:</p>
+
+<blockquote>
+<p>Short and descriptive example bug report title</p>
+
+<p>A summary of the issue and the browser/OS environment in which it occurs. If
+suitable, include the steps required to reproduce the bug.</p>
+
+<ol>
+<li>This is the first step</li>
+<li>This is the second step</li>
+<li>Further steps, etc.</li>
+</ol>
+<p><code>&lt;url&gt;</code> - a link to the reduced test case</p>
+
+<p>Any other information you want to share that is relevant to the issue being
+reported. This might include the lines of code that you have identified as
+causing the bug, and potential solutions (and your opinions on their
+merits).</p>
+</blockquote>
+
+<p><a name="features"></a></p>
+
+<h3>
+<a name="feature-requests" class="anchor" href="#feature-requests"><span class="octicon octicon-link"></span></a>Feature requests</h3>
+
+<p>Feature requests are welcome. But take a moment to find out whether your idea
+fits with the scope and aims of the project. It's up to <em>you</em> to make a strong
+case to convince the project's developers of the merits of this feature. Please
+provide as much detail and context as possible.</p>
+
+<p><a name="pull-requests"></a></p>
+
+<h3>
+<a name="pull-requests" class="anchor" href="#pull-requests"><span class="octicon octicon-link"></span></a>Pull requests</h3>
+
+<p>Good pull requests - patches, improvements, new features - are a fantastic
+help. They should remain focused in scope and avoid containing unrelated
+commits.</p>
+
+<p><strong>Please ask first</strong> before embarking on any significant pull request (e.g.
+implementing features, refactoring code), otherwise you risk spending a lot of
+time working on something that the project's developers might not want to merge
+into the project.</p>
+
+<p>Please adhere to the coding conventions used throughout a project (indentation,
+accurate comments, etc.) and any other requirements (such as test coverage).</p>
+
+<p>Adhering to the following this process is the best way to get your work
+included in the project:</p>
+
+<ol>
+<li>
+<p><a href="http://help.github.com/fork-a-repo/">Fork</a> the project, clone your fork,
+and configure the remotes:</p>
+
+<div class="highlight highlight-bash"><pre><span class="c"># Clone your fork of the repo into the current directory</span>
+git clone https://github.com/&lt;your-username&gt;/salmonjs
+<span class="c"># Navigate to the newly cloned directory</span>
+<span class="nb">cd </span>salmonjs
+<span class="c"># Assign the original repo to a remote called "upstream"</span>
+git remote add upstream https://github.com/salmonjs/salmonjs
+</pre></div>
+</li>
+<li>
+<p>If you cloned a while ago, get the latest changes from upstream:</p>
+
+<div class="highlight highlight-bash"><pre>git checkout master
+git pull upstream master
+</pre></div>
+</li>
+<li>
+<p>Create a new topic branch (off the main project development branch) to
+contain your feature, change, or fix:</p>
+
+<div class="highlight highlight-bash"><pre>git checkout -b &lt;topic-branch-name&gt;
+</pre></div>
+</li>
+<li><p>Make sure to update, or add to the tests when appropriate. Patches and
+features will not be accepted without tests. Run <code>npm test</code> to check that
+all tests pass after you've made changes.</p></li>
+<li><p>Commit your changes in logical chunks. Please adhere to these <a href="http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html">git commit
+message guidelines</a>
+or your code is unlikely be merged into the main project. Use Git's
+<a href="https://help.github.com/articles/interactive-rebase">interactive rebase</a>
+feature to tidy up your commits before making them public.</p></li>
+<li>
+<p>Locally merge (or rebase) the upstream development branch into your topic branch:</p>
+
+<div class="highlight highlight-bash"><pre>git pull <span class="o">[</span>--rebase<span class="o">]</span> upstream master
+</pre></div>
+</li>
+<li>
+<p>Push your topic branch up to your fork:</p>
+
+<div class="highlight highlight-bash"><pre>git push origin &lt;topic-branch-name&gt;
+</pre></div>
+</li>
+<li><p><a href="https://help.github.com/articles/using-pull-requests/">Open a Pull Request</a>
+with a clear title and description.</p></li>
+<li><p>If you are asked to amend your changes before they can be merged in, please
+use <code>git commit --amend</code> (or rebasing for multi-commit Pull Requests) and
+force push to your remote feature branch. You may also be asked to squash
+commits.</p></li>
+</ol><p><strong>IMPORTANT</strong>: By submitting a patch, you agree to license your work under the
+same license as that used by the project.</p>
+
+<p><a name="maintainers"></a></p>
+
+<h3>
+<a name="maintainers" class="anchor" href="#maintainers"><span class="octicon octicon-link"></span></a>Maintainers</h3>
+
+<p>If you have commit access, please follow this process for merging patches and cutting new releases.</p>
+
+<h4>
+<a name="reviewing-changes" class="anchor" href="#reviewing-changes"><span class="octicon octicon-link"></span></a>Reviewing changes</h4>
+
+<ol>
+<li>Check that a change is within the scope and philosophy of the project.</li>
+<li>Check that a change has any necessary tests and a proper, descriptive commit message.</li>
+<li>Checkout the change and test it locally.</li>
+<li>If the change is good, and authored by someone who cannot commit to
+<code>master</code>, please try to avoid using GitHub's merge button. Apply the change
+to <code>master</code> locally (feel free to amend any minor problems in the author's
+original commit if necessary).</li>
+<li>If the change is good, and authored by another maintainer/collaborator, give
+them a "Ship it!" comment and let them handle the merge.</li>
+</ol><h4>
+<a name="submitting-changes" class="anchor" href="#submitting-changes"><span class="octicon octicon-link"></span></a>Submitting changes</h4>
+
+<ol>
+<li>All non-trivial changes should be put up for review using GitHub Pull
+Requests.</li>
+<li>Your change should not be merged into <code>master</code> (or another feature branch),
+without at least one "Ship it!" comment from another maintainer/collaborator
+on the project. "Looks good to me" is not the same as "Ship it!".</li>
+<li>Try to avoid using GitHub's merge button. Locally rebase your change onto
+<code>master</code> and then push to GitHub.</li>
+<li>Once a feature branch has been merged into its target branch, please delete
+the feature branch from the remote repository.</li>
+</ol><h4>
+<a name="releasing-a-new-version" class="anchor" href="#releasing-a-new-version"><span class="octicon octicon-link"></span></a>Releasing a new version</h4>
+
+<ol>
+<li>Include all new functional changes in the CHANGELOG.</li>
+<li>Use a dedicated commit to increment the version. The version needs to be
+added to the <code>CHANGELOG.md</code> (inc. date) and the <code>package.json</code>.</li>
+<li>The commit message must be of <code>v0.0.0</code> format.</li>
+<li>Create an annotated tag for the version: <code>git tag -m "v0.0.0" v0.0.0</code>.</li>
+<li>Push the changes and tags to GitHub: <code>git push --tags origin master</code>.</li>
+<li>Publish the new version to npm: <code>npm publish</code>.</li>
+</ol><h2>
 <a name="licence" class="anchor" href="#licence"><span class="octicon octicon-link"></span></a>Licence</h2>
 
-<p>Copyright (C) 2013 Fabio Cicerchia <a href="mailto:info@fabiocicerchia.it">info@fabiocicerchia.it</a></p>
+<p>salmonJS's license follows:</p>
 
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:</p>
+<h1></h1>
 
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
+<p>Copyright (C) 2014 Fabio Cicerchia <a href="mailto:info@fabiocicerchia.it">info@fabiocicerchia.it</a></p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
 
 <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+
+<h1></h1>
+
+<p>This license applies to all parts of salmonJS that are not externally
+maintained libraries. The externally maintained libraries used by salmonJS are:</p>
+
+<ul>
+<li>
+<p>tiny-sha1, located at src/sha1. tiny-sha1's license follows:
+"""
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+"""</p>
+</li>
+</ul>
       </section>
 
       <footer>
