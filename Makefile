@@ -3,7 +3,7 @@
 # |__ --|  _  ||  ||        |  _  |     |       |__     |
 # |_____|___._||__||__|__|__|_____|__|__|_______|_______|
 #
-# salmonJS v0.4.0
+# salmonJS v0.5.0
 #
 # Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
 #

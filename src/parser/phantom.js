@@ -4,7 +4,7 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
  * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
@@ -106,7 +106,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
         page.onConsoleMessage         = this.onConsoleMessage;
         page.onNavigationRequested    = this.onNavigationRequested;
         page.viewportSize             = { width: 1024, height: 800 };
-        page.settings.userAgent       = 'salmonJS/0.4.0 (+http://www.salmonjs.org)';
+        page.settings.userAgent       = 'salmonJS/0.5.0 (+http://www.salmonjs.org)';
 
         this.setHttpHeaders(page);
     };
