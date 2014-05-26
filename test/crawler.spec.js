@@ -238,13 +238,13 @@ describe('checkAndRun', function() {
             utils    = {},
             crawler;
 
-        utils.sha1 = function (str) { expect(str).to.equal('GET{"GET":{},"POST":{},"COOKIE":{},"HEADERS":{},"CONFIRM":{},"PROMPT":{}}'); return ''; };
+        utils.sha1 = function (str) { expect(str).to.equal('http://www.example.comGET{"GET":{},"POST":{},"COOKIE":{},"HEADERS":{},"CONFIRM":{},"PROMPT":{}}'); return ''; };
         crawler = new Crawler(config, spawn, testObj, client, winston, fs, optimist, utils);
 
         crawler.analiseRedisResponse = function () {
             done();
         };
-        crawler.checkAndRun({url: '', type: '', data: '', evt: '', xPath: ''});
+        crawler.checkAndRun({url: 'http://www.example.com', type: '', data: '', evt: '', xPath: ''});
     });
 });
 describe('checkRunningCrawlers', function() {

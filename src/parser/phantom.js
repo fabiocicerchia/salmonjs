@@ -583,7 +583,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
      * @return undefined
      */
     this.onLoadFinished = function () {
-        if (settings.sanitise !== undefined && settings.sanitise == 'true') {
+        if (settings.sanitise !== undefined && settings.sanitise.toString() === 'true') {
             var tmp_fn  = fs.workingDirectory + '/file_' + ((new Date()).getTime()) + '.html',
                 args    = [ fs.workingDirectory + '/src/tidy.js', tmp_fn ],
                 process;
@@ -751,7 +751,8 @@ var PhantomParser = function (utils, spawn, page, settings) {
             attribute,
             tag,
             links,
-            tags = arguments[0];
+            tags = arguments[0],
+            elements;
 
         for (tag in tags) {
             if (tags.hasOwnProperty(tag)) {
@@ -760,51 +761,64 @@ var PhantomParser = function (utils, spawn, page, settings) {
                 if (typeof attribute === 'object') {
                     for (var attr in attribute) {
                         if (attribute.hasOwnProperty(attr)) {
-                            links = [].map.call(document.querySelectorAll(tag), function (item) {
-                                return item[attr];
-                            });
+                            elements = document.querySelectorAll(tag);
+                            links = [];
+                            if (elements.length > 0) {
+                                links = [].map.call(elements, function (item) {
+                                    return item[attr];
+                                });
+                            }
                             if (links.length > 0) {
                                 urls[tag] = urls[tag].concat(links);
                             }
                         }
                     }
                 } else {
-                    urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) {
-                        return item[attribute];
-                    });
+                    elements = document.querySelectorAll(tag);
+                    if (elements.length > 0) {
+                        urls[tag] = [].map.call(elements, function (item) {
+                            return item[attribute];
+                        });
+                    }
                 }
             }
         }
 
-        urls.meta = [].map.call(document.querySelectorAll('meta'), function (item) {
-            if (item.getAttribute('http-equiv') === 'refresh') {
-                return item.getAttribute('content').split(/=/, 2)[1];
-            }
+        elements = document.querySelectorAll('meta');
+        if (elements.length > 0) {
+            urls.meta = [].map.call(elements, function (item) {
+                if (item.getAttribute('http-equiv') === 'refresh') {
+                    return item.getAttribute('content').split(/=/, 2)[1];
+                }
 
-            return undefined;
-        });
-
-        urls.form = [].map.call(document.querySelectorAll('form'), function (item) {
-            var input, select, textarea;
-
-            input = [].map.call(item.getElementsByTagName('input'), function (item) {
-                return item.getAttribute('name');
+                return undefined;
             });
+        }
 
-            select = [].map.call(item.getElementsByTagName('select'), function (item) {
-                return item.getAttribute('name');
+        elements = document.querySelectorAll('form');
+        if (elements.length > 0) {
+            urls.form = [].map.call(elements, function (item) {
+                var input, select, textarea;
+
+                input = [].map.call(item.getElementsByTagName('input'), function (item) {
+                    return item.getAttribute('name');
+                });
+
+                select = [].map.call(item.getElementsByTagName('select'), function (item) {
+                    return item.getAttribute('name');
+                });
+
+                textarea = [].map.call(item.getElementsByTagName('textarea'), function (item) {
+                    return item.getAttribute('name');
+                });
+
+                return {
+                    action: item.getAttribute('action') || currentUrl,
+                    type:   item.getAttribute('method') || 'get',
+                    fields: input.concat(select).concat(textarea)
+                };
             });
-
-            textarea = [].map.call(item.getElementsByTagName('textarea'), function (item) {
-                return item.getAttribute('name');
-            });
-
-            return {
-                action: item.getAttribute('action') || currentUrl,
-                type:   item.getAttribute('method') || 'get',
-                fields: input.concat(select).concat(textarea)
-            };
-        });
+        }
 
         return urls;
     };
@@ -843,6 +857,9 @@ var PhantomParser = function (utils, spawn, page, settings) {
 
         urls.mixed_full = content.match(regex_fullurl);
         urls.mixed_rel  = content.match(regex_relurl);
+
+        urls.mixed_full = urls.mixed_full === null ? [] : urls.mixed_full;
+        urls.mixed_rel  = urls.mixed_rel === null ? [] : urls.mixed_rel;
 
         return urls;
     };

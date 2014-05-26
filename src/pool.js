@@ -36,7 +36,7 @@
  *
  * @class Pool
  */
-var Pool = function (os, config) {
+var Pool = function (os, config, fork) {
     /**
      * Settings queue.
      *
@@ -92,13 +92,12 @@ var Pool = function (os, config) {
      * Add settings to the queue, triggering also the queue processing.
      *
      * @method addToQueue
-     * @param {Object} data    The data that will be passed to the worker.
-     * @param {Object} options The pool options.
+     * @param {Object} data The data that will be passed to the worker.
      * @return undefined
      */
-    this.addToQueue = function (data, options) {
+    this.addToQueue = function (data) {
         if (typeof data === 'object' && Object.keys(data).length > 0) {
-            this.queue.push({data: data, options: options});
+            this.queue.push({data: data});
             this.processQueue();
         }
     };
@@ -132,30 +131,33 @@ var Pool = function (os, config) {
             return;
         }
 
-        var data     = settings.data,
-            options  = settings.options,
-            args,
+        var data = settings.data,
             childProcess;
+
+        if (data === {}) {
+            return;
+        }
 
         currentPool.running++;
 
-        childProcess = require('child_process').fork(__dirname + '/worker.js');
+        childProcess = fork(__dirname + '/worker.js');
         childProcess.send({
             settings: [
                 data.timeStart, data.username, data.password, data.storeDetails,
                 data.followRedirects, data.proxy, data.sanitise, data.url, data.type,
-                data.container, data.evt, data.xPath,
-                currentPool, config
+                data.container, data.evt, data.xPath, config
             ]
         });
 
-        childProcess.on('exit', function (code) {
+        childProcess.on('exit', function () {
             currentPool.running--;
 
             if (currentPool.queue.length > 0) {
                 currentPool.processQueue();
             } else if (currentPool.running === 0) {
-                process.exit();
+                if (process.argv.join('').indexOf('jasmine-node') !== -1 && process.argv.join('').indexOf('grunt') !== -1) {
+                    process.exit();
+                }
             }
         });
 

@@ -50,7 +50,7 @@ describe('addToQueue', function() {
         expect(pool.queue).to.deep.equal([]);
 
         pool.addToQueue({k1: 'v1'}, {});
-        expect(pool.queue).to.deep.equal([{data: {k1: 'v1'},options: {}}]);
+        expect(pool.queue).to.deep.equal([{data: {k1: 'v1'}}]);
 
         done();
     });
@@ -59,50 +59,46 @@ describe('processQueue', function() {
     it('processQueue', function (done) {
         var Pool = require(srcdir + '/pool'),
             pool,
-            spawn = function() {
+            fork = function() {
                 return {
+                    send: function () { },
                     stdout: { on:function () {}},
                     stderr: { on:function () {}},
-                    on: function () { }
+                    on: function (param, callback) { if (param ==='exit') { callback(); }}
                 };
             },
             os = {freemem: function() { return 100; }};
 
         __dirname = '';
-        pool = new Pool(spawn, os);
+        pool = new Pool(os, {}, fork);
 
         expect(pool.processQueue()).to.equal(undefined);
         expect(pool.queue).to.deep.equal([]);
 
-        pool.queue = [{data: {}, options: {}}];
+        pool.queue = [{data: {}}];
         pool.size = 0;
         pool.processQueue();
-        expect(pool.queue).to.deep.equal([]); // check the queue is the same when the size is lower than the elements in queue
+        expect(pool.queue).to.deep.equal([{data: {}}]); // check the queue is the same when the size is lower than the elements in queue
 
-        pool.queue = [{data: {}, options: {}}];
+        pool.queue = [{data: {}}];
         pool.size = 1;
         pool.memoryThreshold = 10;
         pool.processQueue();
         expect(pool.queue).to.deep.equal([]); // check the memory threshold is not reached
 
-        pool.queue = [{options: {}}];
+        pool.queue = [{data: {}}];
         pool.size = 10;
         pool.memoryThreshold = 10;
         pool.processQueue();
         expect(pool.queue).to.deep.equal([]); // check the queue item is invalid
 
-        spawn = function() {
-            return {
-                stdout: { on:function () {}},
-                stderr: { on:function () {}},
-                on: function (param, callback) { if (param ==='exit') { callback(); }}
-            };
-        };
-        pool = new Pool(spawn, os);
-        pool.queue = [{data: {}, options: { exit: function () { done(); }}}];
+        pool = new Pool(os, {}, fork);
+        pool.queue = [{data: {}}];
         pool.size = 10;
         pool.memoryThreshold = 10;
         pool.processQueue();
         expect(pool.queue).to.deep.equal([]); // check the queue item is process properly
+
+        done();
     });
 });

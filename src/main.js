@@ -68,7 +68,7 @@ var SalmonJS = function (redis, argv) {
         os        = require('os'),
         spawn     = require('child_process').spawn,
         zlib      = require('zlib'),
-        pool      = new (require('./pool'))(os, config);
+        pool      = new (require('./pool'))(os, config, require('child_process').fork);
 
     var currentInstance = this;
 

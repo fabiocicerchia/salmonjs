@@ -378,23 +378,25 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        process.send({
-            queue: {
-                idUri:           1,
-                timeStart:       currentCrawler.timeStart,
-                idRequest:       Date.now(),
-                username:        currentCrawler.username,
-                password:        currentCrawler.password,
-                url:             container.url,
-                type:            container.type,
-                data:            container.container,
-                evt:             container.evt,
-                xPath:           container.xPath,
-                storeDetails:    currentCrawler.storeDetails,
-                followRedirects: currentCrawler.followRedirects,
-                proxy:           currentCrawler.proxy
-            }
-        });
+        if (optimist.argv.$0.indexOf('jasmine-node') === -1 && optimist.argv.$0.indexOf('grunt') === -1) {
+            process.send({
+                queue: {
+                    idUri:           1,
+                    timeStart:       currentCrawler.timeStart,
+                    idRequest:       Date.now(),
+                    username:        currentCrawler.username,
+                    password:        currentCrawler.password,
+                    url:             container.url,
+                    type:            container.type,
+                    data:            container.container,
+                    evt:             container.evt,
+                    xPath:           container.xPath,
+                    storeDetails:    currentCrawler.storeDetails,
+                    followRedirects: currentCrawler.followRedirects,
+                    proxy:           currentCrawler.proxy
+                }
+            });
+        }
         currentCrawler.possibleCrawlers--;
         currentCrawler.checkRunningCrawlers('No items left to be processed');
     };
