@@ -1,8 +1,8 @@
-Spidey's license follows:
+salmonJS's license follows:
 
 ====
 
-Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@ SOFTWARE.
 
 ====
 
-This license applies to all parts of Spidey that are not externally
-maintained libraries. The externally maintained libraries used by Spidey are:
+This license applies to all parts of salmonJS that are not externally
+maintained libraries. The externally maintained libraries used by salmonJS are:
 
 - tiny-sha1, located at src/sha1. tiny-sha1's license follows:
   """

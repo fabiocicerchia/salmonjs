@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,8 @@
  * IOC Class
  *
  * Example taken from http://www.yusufaytas.com/dependency-injection-in-javascript/
+ *
+ * @class IOC
  */
 var IOC = function () {
     /**
@@ -58,14 +60,14 @@ var IOC = function () {
      * Return an object satisfying its dedependencies.
      *
      * @method get
-     * @param {Function} func The function to instantiate
+     * @param {Function} Func The function to instantiate
      * @return {Object}
      */
-    this.get = function (func) {
-        var obj          = new func(),
-            dependencies = this.resolveDependencies(func);
+    this.get = function (Func) {
+        var obj          = new Func(),
+            dependencies = this.resolveDependencies(Func);
 
-        func.apply(obj, dependencies);
+        Func.apply(obj, dependencies);
 
         return obj;
     };

@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,35 +27,27 @@
  * SOFTWARE.
  */
 
-var Parser          = require('../parser'),
-    config          = require('../config'),
-    fs              = require('fs'),
-    system          = require('system'),
-    args            = system.args,
-    testing         = args.join(' ').indexOf('casperjs --cli test') !== -1,
-    input           = !testing ? JSON.parse(args[1]) : [],
-    idCrawler       = input[0],
-    execId          = input[1],
-    idRequest       = input[2],
-    username        = input[3],
-    password        = input[4],
-    url             = input[5],
-    type            = input[6],
-    data            = input[7],
-    evt             = input[8],
-    xPath           = input[9],
-    storeDetails    = input[10] === 'true',
-    followRedirects = input[11] === 'true',
-    page            = require('webpage').create(),
-    utils           = new (require('../utils'))();
+var Parser     = require('../parser'),
+    fs         = require('fs'),
+    spawn      = require('child_process').spawn,
+    utils      = new (require('../utils'))(),
+    system     = typeof GLOBAL !== 'undefined' && typeof GLOBAL.system !== 'undefined' ? GLOBAL.system : require('system'),
+    args       = system.args || system.argv,
+    testing    = args.join(' ').indexOf('jasmine-node') !== -1 || args.join(' ').indexOf('grunt') !== -1,
+    settings   = !testing ? JSON.parse(args[1]) : {},
+    webpageObj = typeof webpage !== 'undefined' ? webpage : require('webpage'),
+    page       = webpageObj.create();
 
 /**
  * PhantomParser Class.
  *
+ * Use PhantomJS in order to process the page and get all the links and
+ * relevant information for the crawler.
+ *
  * @class PhantomParser
  * @extends Parser
  */
-var PhantomParser = function (utils, page) {
+var PhantomParser = function (utils, spawn, page, settings) {
     /**
      * The WebPage element.
      *
@@ -64,6 +56,15 @@ var PhantomParser = function (utils, page) {
      * @default {Object}
      */
     this.page = page;
+
+    /**
+     * Sanitised HTML content.
+     *
+     * @property sanitisedHtml
+     * @type {String}
+     * @default ""
+     */
+    this.sanitisedHtml = '';
 
     /**
      * Current instance.
@@ -75,13 +76,26 @@ var PhantomParser = function (utils, page) {
     var currentParser = this;
 
     /**
+     * Reset all the containers.
+     *
+     * @method reset
+     * @return undefined
+     */
+    this.reset = function () {
+        this.resetHttpHeaders(this.page);
+        this.resetCookie(this.page);
+        this.resetStack();
+        this.resetReport();
+    };
+
+    /**
      * Configure all the callbacks for PhantomJS.
      *
      * @method setUpPage
      * @return undefined
      */
     this.setUpPage = function (page) {
-        page.settings.resourceTimeout = config.parser.timeout;
+        page.settings.resourceTimeout = settings.config.parser.timeout;
         page.onResourceTimeout        = this.onResourceTimeout;
         page.onError                  = this.onError;
         page.onInitialized            = this.onInitialized;
@@ -92,29 +106,47 @@ var PhantomParser = function (utils, page) {
         page.onConsoleMessage         = this.onConsoleMessage;
         page.onNavigationRequested    = this.onNavigationRequested;
         page.viewportSize             = { width: 1024, height: 800 };
-        page.settings.userAgent       = 'salmonJS/0.4.0 (+http://fabiocicerchia.github.io/salmonjs)';
+        page.settings.userAgent       = 'salmonJS/0.5.0 (+http://www.salmonjs.org)';
 
-        this.setHttpHeaders();
+        this.setHttpHeaders(page);
     };
 
     /**
-     * TBD
+     * Set some HTTP headers for the request.
+     *
+     * @method setHttpHeaders
+     * @param {Object} page The WebPage object.
+     * @return undefined
      */
-    this.setHttpHeaders = function () {
+    this.setHttpHeaders = function (page) {
         var customHeaders = {};
 
-        customHeaders['Accept-Encoding'] = 'identity'; // TODO: Replace with 'gzip,deflate'
+        //customHeaders['Accept-Encoding'] = 'gzip,deflate';
         customHeaders.Connection = 'keep-alive';
 
-        if (username !== null && password !== null) {
-            customHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+        if (settings.username !== null && settings.password !== null) {
+            customHeaders.Authorization = 'Basic ' + btoa(settings.username + ':' + settings.password);
         }
 
         page.customHeaders = customHeaders;
     };
 
     /**
-     * TBD
+     * Reset the HTTP header container.
+     *
+     * @method resetHttpHeaders
+     * @param {Object} page The WebPage object.
+     * @return undefined
+     */
+    this.resetHttpHeaders = function (page) {
+        page.customHeaders = {};
+    };
+
+    /**
+     * Handle the querysting for the URL request.
+     *
+     * @method handleQueryString
+     * @return undefined
      */
     this.handleQueryString = function () {
         var currentQS = this.url.replace(/.*\?(.+)(#.*)?/, '$1');
@@ -129,7 +161,34 @@ var PhantomParser = function (utils, page) {
 
         var getParams = utils.arrayToQuery(utils.normaliseData(utils.arrayToQuery(currentQS)));
         this.url = this.url.replace(/\?(.+)(#.*)?/, '') + (getParams !== '' ? ('?' + getParams) : '');
+    };
 
+    /**
+     * Add a cookie for the current request.
+     *
+     * @method addCookie
+     * @param {Object} data The cookie settings.
+     * @return {Boolean}
+     */
+    this.addCookie = function(data) {
+        var res = this.page.addCookie(data);
+        if (!res) {
+            res = phantom.addCookie(data);
+        }
+
+        return res;
+    };
+
+    /**
+     * Reset the cookie container.
+     *
+     * @method resetCookie
+     * @param {Object} page The WebPage object.
+     * @return undefined
+     */
+    this.resetCookie = function (page) {
+        phantom.clearCookies();
+        page.clearCookies();
     };
 
     /**
@@ -151,7 +210,7 @@ var PhantomParser = function (utils, page) {
                     domain = this.url.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, '$2');
                 }
 
-                this.page.addCookie({
+                this.addCookie({
                     'name'   : cookie,
                     'value'  : this.data.COOKIE[cookie],
                     'domain' : domain
@@ -160,6 +219,7 @@ var PhantomParser = function (utils, page) {
         }
 
         var headers = {};
+        // TODO: Add a method
         for (var header in this.page.customHeaders) {
             if (this.page.customHeaders.hasOwnProperty(header)) {
                 headers[header] = this.page.customHeaders[header];
@@ -193,9 +253,15 @@ var PhantomParser = function (utils, page) {
 
         for (var cookie in this.data.COOKIE) {
             if (this.data.COOKIE.hasOwnProperty(cookie)) {
-                this.page.addCookie({
-                    'name'  : cookie,
-                    'value' : this.data.COOKIE[cookie]
+                var domain = '';
+                if (this.url.substr(0, 7) !== 'file://') {
+                    domain = this.url.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, '$2');
+                }
+
+                this.addCookie({
+                    'name'   : cookie,
+                    'value'  : this.data.COOKIE[cookie],
+                    'domain' : domain
                 });
             }
         }
@@ -231,11 +297,18 @@ var PhantomParser = function (utils, page) {
     };
 
     /**
-     * TBD
+     * In case an upload is required, open another process (upload.js) in order
+     * to upload the file(s) defined in the data object.
+     * Then set the output as page content for the current request and trigger
+     * the onLoadFinished to process it.
+     *
+     * @method spawnAndUseNodeJs
+     * @param {String} url  The URL where upload the data
+     * @param {Object} data The data to be uploaded
+     * @return undefined
      */
     this.spawnAndUseNodeJs = function (url, data) {
-        var spawn   = require('child_process').spawn,
-            args    = [ fs.workingDirectory + '/src/upload.js', url, JSON.stringify(data) ],
+        var args    = [ fs.workingDirectory + '/src/upload.js', url, JSON.stringify(data) ],
             process = spawn('node', args);
 
         process.stdout.on('data', function(data) {
@@ -253,15 +326,13 @@ var PhantomParser = function (utils, page) {
      * Handle the request to change the current URL.
      *
      * @method onNavigationRequested
-     * @param {String}  url          The target URL of this navigation event
-     * @param {String}  type         Type of navigation: 'Undefined', 'LinkClicked', 'FormSubmitted', 'BackOrForward', 'Reload', 'FormResubmitted', 'Other'
-     * @param {Boolean} willNavigate Flag to determine whether the navigation will happen
-     * @param {Boolean} main         Flag to determine whether this event comes from the main frame
+     * @param {String} url The target URL of this navigation event
      * @return undefined
      */
-    this.onNavigationRequested = function (url, type, willNavigate, main) {
+    this.onNavigationRequested = function (url) {
         // TODO: What to do with reloads?
-        if (url !== 'about:blank' && !followRedirects && url.indexOf(currentParser.url) === -1) {
+        // TODO: There is a random bug here.
+        if (url !== 'about:blank' && !url.match(/^file:\/\//) && !settings.followRedirects && url.indexOf(currentParser.url) === -1) {
             return currentParser.exit();
         }
 
@@ -299,6 +370,16 @@ var PhantomParser = function (utils, page) {
     };
 
     /**
+     * Reset the stackPages container.
+     *
+     * @method resetStack
+     * @return undefined
+     */
+    this.resetStack = function () {
+        currentParser.stackPages = [];
+    };
+
+    /**
      * Stop the execution of the current parser and return the data scraped.
      *
      * @method exit
@@ -308,13 +389,13 @@ var PhantomParser = function (utils, page) {
         var response;
 
         response = {
-            idCrawler: idCrawler,
+            idCrawler: settings.idCrawler,
             links:     currentParser.links,
             report:    currentParser.report
         };
 
         console.log('###' + JSON.stringify(response));
-        if (args.join(' ').indexOf('casperjs --cli test') === -1) {
+        if (args.join(' ').indexOf('jasmine-node') === -1) {
             phantom.exit(); // TODO: This will crash PhantomJS
         }
     };
@@ -421,8 +502,8 @@ var PhantomParser = function (utils, page) {
 
         // possible entrypoints: parseGet, putPageInStack.
         currentParser.report.confirms.push(msg);
-        if (data !== undefined && data.CONFIRM !== undefined && data.CONFIRM[msg] !== undefined) {
-            retVal = data.CONFIRM[msg];
+        if (settings.data !== undefined && settings.data.CONFIRM !== undefined && settings.data.CONFIRM[msg] !== undefined) {
+            retVal = settings.data.CONFIRM[msg];
         }
 
         // `true` === pressing the "OK" button, `false` === pressing the "Cancel" button
@@ -441,8 +522,8 @@ var PhantomParser = function (utils, page) {
         currentParser.report.prompts.push({msg: msg, defaultVal: defaultVal});
 
         // possible entrypoints: parseGet, putPageInStack.
-        if (data !== undefined && data.PROMPT !== undefined && data.PROMPT[msg] !== undefined) {
-            return data.PROMPT[msg];
+        if (settings.data !== undefined && settings.data.PROMPT !== undefined && settings.data.PROMPT[msg] !== undefined) {
+            return settings.data.PROMPT[msg];
         }
 
         return defaultVal;
@@ -463,12 +544,87 @@ var PhantomParser = function (utils, page) {
     };
 
     /**
+     * Reset the report and links containers.
+     *
+     * @method resetReport
+     * @return undefined
+     */
+    this.resetReport = function () {
+        this.report = {
+            errors:     [],
+            alerts:     [],
+            confirms:   [],
+            prompts:    [],
+            console:    [],
+            failure:    false,
+            resources:  {},
+            time:       { start: 0, end: 0, total: 0 },
+            content:    '',
+            httpMethod: '',
+            event:      '',
+            xPath:      '',
+            data:       {}
+        };
+
+        this.links = {
+            a:      [],
+            link:   [],
+            script: [],
+            meta:   [],
+            form:   [],
+            events: []
+        };
+    };
+
+    /**
      * Callback fired when the page has been loaded properly.
      *
      * @method onLoadFinished
      * @return undefined
      */
     this.onLoadFinished = function () {
+        if (settings.sanitise !== undefined && settings.sanitise.toString() === 'true') {
+            var tmp_fn  = fs.workingDirectory + '/file_' + ((new Date()).getTime()) + '.html',
+                args    = [ fs.workingDirectory + '/src/tidy.js', tmp_fn ],
+                process;
+
+            fs.write(tmp_fn, page.content, 0777);
+            process = spawn('node', args);
+
+            process.stdout.on('data', function(data) {
+                try { fs.remove(tmp_fn); } catch (ignore) {}
+                currentParser.sanitisedHtml += data.toString();
+            });
+
+            process.stderr.on('data', function(data) {
+                try { fs.remove(tmp_fn); } catch (ignore) {}
+                console.log(data.toString());
+                return currentParser.exit();
+            });
+
+            process.on('exit', function() {
+                try { fs.remove(tmp_fn); } catch (ignore) {}
+
+                if (page.content !== currentParser.sanitisedHtml) {
+                    console.log('HTML sanitised');
+                }
+
+                //TODO: What to do if it exits before receive data?
+                currentParser.page.setContent(currentParser.sanitisedHtml, currentParser.url);
+                currentParser.evaluateAndParse();
+            });
+        } else {
+            currentParser.evaluateAndParse();
+        }
+    };
+
+    /**
+     * Evaluate and parse the current page request.
+     *
+     * @method evaluateAndParse
+     * @return undefined
+     */
+    this.evaluateAndParse = function () {
         var step;
 
         // ReExecuteJsEvents
@@ -496,7 +652,7 @@ var PhantomParser = function (utils, page) {
      * @return {Object}
      */
     this.cloneWebPage = function (page) {
-        var newPage = require('webpage').create();
+        var newPage = webpageObj.create();
 
         currentParser.setUpPage(newPage);
         newPage.setContent(page.content, page.url);
@@ -522,9 +678,9 @@ var PhantomParser = function (utils, page) {
         });
 
         if (page.content.indexOf('<html') !== -1) {
-            if (storeDetails) {
-                fs.makeDirectory(fs.workingDirectory + '/report/' + execId + '/');
-                page.render(fs.workingDirectory + '/report/' + execId + '/' + idRequest + '.png');
+            if (settings.storeDetails && settings.storeDetails !== 'undefined') {
+                fs.makeDirectory(fs.absolute(settings.storeDetails) + '/' + settings.execId + '/');
+                page.render(fs.absolute(settings.storeDetails) + '/' + settings.execId + '/' + settings.idRequest + '.png');
             }
 
             links = page.evaluate(currentParser.onEvaluate, currentParser.tags);
@@ -534,35 +690,21 @@ var PhantomParser = function (utils, page) {
                 return window.eventContainer !== undefined ? window.eventContainer.getEvents() : [];
             });
 
-            for (var type in events) {
-                if (events.hasOwnProperty(type)) {
-                    for (var act in events[type]) {
-                        if (events[type].hasOwnProperty(act)) {
-                            for (var evt in events[type][act]) {
-                                if (events[type][act].hasOwnProperty(evt)) {
-                                    currentParser.putPageInStack(page, type, events[type][act][evt]);
-                                }
-                            }
-                        }
-                    }
+            utils.loopEach(events, function(type, type_value) {
+                utils.loopEach(type_value, function(act, act_value) {
+                    utils.loopEach(act_value, function(evt, evt_value) {
+                        currentParser.putPageInStack(page, type, evt_value);
+                    });
+                });
+            });
+
+            for (var tag in links) {
+                if (links.hasOwnProperty(tag) && tag !== 'form') {
+                    currentParser.links[tag] = [].map.call(links[tag], function (item) {
+                        return utils.normaliseUrl(item, url);
+                    }).concat(currentParser.links[tag]).filter(utils.onlyUnique);
                 }
             }
-
-            currentParser.links.a = [].map.call(links.a, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.a).filter(utils.onlyUnique);
-
-            currentParser.links.link = [].map.call(links.link, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.link).filter(utils.onlyUnique);
-
-            currentParser.links.script = [].map.call(links.script, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.script).filter(utils.onlyUnique);
-
-            currentParser.links.meta = [].map.call(links.meta, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.meta).filter(utils.onlyUnique);
 
             currentParser.links.form = [].map.call(links.form, function (item) {
                 item.action = item.action || url;
@@ -582,9 +724,17 @@ var PhantomParser = function (utils, page) {
 
         links = page.evaluate(currentParser.onEvaluateNonHtml, page.content);
 
-        currentParser.links.mixed = [].map.call(links.mixed, function (item) {
-            return utils.normaliseUrl(item, url);
-        }).concat(currentParser.links.mixed).filter(utils.onlyUnique);
+        if (links.hasOwnProperty('mixed_full')) {
+            currentParser.links.mixed_full = [].map.call(links.mixed_full, function (item) {
+                return utils.normaliseUrl(item, url);
+            }).concat(currentParser.links.mixed_full).filter(utils.onlyUnique);
+        }
+        if (links.hasOwnProperty('mixed_rel')) {
+            currentParser.links.mixed_rel = [].map.call(links.mixed_rel, function (item) {
+                item = item.replace(/^['"](.+)['"]$/, '$1');
+                return utils.normaliseUrl(item, url);
+            }).concat(currentParser.links.mixed_rel).filter(utils.onlyUnique);
+        }
 
         currentParser.exit();
     };
@@ -596,92 +746,128 @@ var PhantomParser = function (utils, page) {
      * @return {Object} A list of links (anchors, links, scripts and forms).
      */
     this.onEvaluate = function () {
-        var urls = {
-                a:      [],
-                link:   [],
-                script: [],
-                meta:   [],
-                form:   [],
-                events: []
-            },
+        var urls = {},
             currentUrl = document.location.href,
             attribute,
             tag,
-            tags = arguments[0];
+            links,
+            tags = arguments[0],
+            elements;
 
         for (tag in tags) {
             if (tags.hasOwnProperty(tag)) {
+                urls[tag] = [];
                 attribute = tags[tag];
-                urls[tag] = [].map.call(document.querySelectorAll(tag), function (item) {
-                    return item[attribute];
-                });
+                if (typeof attribute === 'object') {
+                    for (var attr in attribute) {
+                        if (attribute.hasOwnProperty(attr)) {
+                            elements = document.querySelectorAll(tag);
+                            links = [];
+                            if (elements.length > 0) {
+                                links = [].map.call(elements, function (item) {
+                                    return item[attr];
+                                });
+                            }
+                            if (links.length > 0) {
+                                urls[tag] = urls[tag].concat(links);
+                            }
+                        }
+                    }
+                } else {
+                    elements = document.querySelectorAll(tag);
+                    if (elements.length > 0) {
+                        urls[tag] = [].map.call(elements, function (item) {
+                            return item[attribute];
+                        });
+                    }
+                }
             }
         }
 
-        urls.meta = [].map.call(document.querySelectorAll('meta'), function (item) {
-            if (item.getAttribute('http-equiv') === 'refresh') {
-                return item.getAttribute('content').split(/=/, 2)[1];
-            }
+        elements = document.querySelectorAll('meta');
+        if (elements.length > 0) {
+            urls.meta = [].map.call(elements, function (item) {
+                if (item.getAttribute('http-equiv') === 'refresh') {
+                    return item.getAttribute('content').split(/=/, 2)[1];
+                }
 
-            return undefined;
-        });
-
-        urls.form = [].map.call(document.querySelectorAll('form'), function (item) {
-            var input, select, textarea;
-
-            input = [].map.call(item.getElementsByTagName('input'), function (item) {
-                return item.getAttribute('name');
+                return undefined;
             });
+        }
 
-            select = [].map.call(item.getElementsByTagName('select'), function (item) {
-                return item.getAttribute('name');
+        elements = document.querySelectorAll('form');
+        if (elements.length > 0) {
+            urls.form = [].map.call(elements, function (item) {
+                var input, select, textarea;
+
+                input = [].map.call(item.getElementsByTagName('input'), function (item) {
+                    return item.getAttribute('name');
+                });
+
+                select = [].map.call(item.getElementsByTagName('select'), function (item) {
+                    return item.getAttribute('name');
+                });
+
+                textarea = [].map.call(item.getElementsByTagName('textarea'), function (item) {
+                    return item.getAttribute('name');
+                });
+
+                return {
+                    action: item.getAttribute('action') || currentUrl,
+                    type:   item.getAttribute('method') || 'get',
+                    fields: input.concat(select).concat(textarea)
+                };
             });
-
-            textarea = [].map.call(item.getElementsByTagName('textarea'), function (item) {
-                return item.getAttribute('name');
-            });
-
-            return {
-                action: item.getAttribute('action') || currentUrl,
-                type:   item.getAttribute('method') || 'get',
-                fields: input.concat(select).concat(textarea)
-            };
-        });
+        }
 
         return urls;
     };
 
     /**
-     * TBD
+     * Retrieve all the links in the page.
+     * Generally used when the page is not HTML.
+     *
+     * @method onEvaluateNonHtml
+     * @return {Object}
      */
     this.onEvaluateNonHtml = function () {
-        var urls = {
-                mixed: [],
+        var urls          = {
+                mixed_full: [],
+                mixed_rel:  [],
             },
-            content     = arguments[0],
-            protocol    = '((https?|ftp):)?',
-            credentials = '([\w]+:\w+@)?',
-            hostname    = '(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])',
-            ip          = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])',
-            port        = '(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?',
-            path_char   = '(([a-z0-9\\-_.!~*\'\(\):@&=+$,])|(%[0-9a-f][0-9a-f]))',
-            path        = path_char + '*(?:;' + path_char + '*)*(?:/' + path_char + '*(?:;' + path_char + '*)*)*',
-            querystring = '(\\?' + path_char + '*)?',
-            hash        = '(#' + path_char + '*)?',
-            regex       = new RegExp(
-                '(' + protocol + '//' + credentials + '(' + hostname + '|' + ip + ')' + '/' + path + querystring + hash + ')',
+            content       = arguments[0],
+            protocol      = '((https?|ftp):)?',
+            credentials   = '([\\w]+:\\w+@)?',
+            hostname      = '(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])',
+            ip            = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])',
+            port          = '(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?',
+            path_char     = '(([a-z0-9\\-_.!~*\'\\(\\):@&=+$,])|(%[0-9a-f][0-9a-f]))',
+            path          = path_char + '*(?:;' + path_char + '*)*(?:/' + path_char + '*(?:;' + path_char + '*)*)*',
+            querystring   = '(\\?' + path_char + '*)?',
+            hash          = '(#' + path_char + '*)?',
+            regex_fullurl = new RegExp(
+                '(' + protocol + '//' + credentials + '(' + hostname + '|' + ip + ')' + port + '/' + path + querystring + hash + ')',
+                'igm'
+            ),
+            regex_relurl = new RegExp(
+                //'\'('+path+')\'|"('+path+')"',
+                '\'(/'+path+')\'|"(/'+path+')"|\'(../'+path+')\'|"(../'+path+')"',
                 'igm'
             );
 
-        urls.mixed = content.match(regex);
+        urls.mixed_full = content.match(regex_fullurl);
+        urls.mixed_rel  = content.match(regex_relurl);
+
+        urls.mixed_full = urls.mixed_full === null ? [] : urls.mixed_full;
+        urls.mixed_rel  = urls.mixed_rel === null ? [] : urls.mixed_rel;
 
         return urls;
     };
 };
 
 PhantomParser.prototype = new Parser();
-if (args.join(' ').indexOf('casperjs --cli test') === -1) {
-    new PhantomParser(utils, page).parse(url, type, data, evt, xPath);
+if (args.join(' ').indexOf('jasmine-node') === -1 && args.join(' ').indexOf('grunt') === -1) {
+    new PhantomParser(utils, spawn, page, settings).parse(settings.url, settings.type, settings.data, settings.evt, settings.xPath);
 } else {
     module.exports = PhantomParser;
 }

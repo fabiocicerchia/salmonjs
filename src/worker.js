@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,62 +32,56 @@ require('colors');
 var Crawler = require('./crawler');
 
 if (process.argv.join(' ').indexOf('worker.js') !== -1) {
-    var args            = process.argv,
-        timeStart       = args[2],
-        username        = args[3],
-        password        = args[4],
-        storeDetails    = args[5],
-        followRedirects = args[6],
-        proxy           = args[7],
-        url             = args[8],
-        type            = args[9],
-        container       = args[10],
-        evt             = args[11],
-        xPath           = args[12],
-        poolSettings    = JSON.parse(args[13]),
-        config          = require('../src/config'),
-        Crawler         = require('../src/crawler'),
-        Pool            = require('../src/pool'),
-        winston         = require('winston'),
-        fs              = require('fs'),
-        os              = require('os'),
-        glob            = require('glob'),
-        redis           = require('redis'),
-        client          = redis.createClient(config.redis.port, config.redis.hostname),
-        spawn           = require('child_process').spawn,
-        crypto          = require('crypto'),
-        optimist        = require('optimist'),
-        utils           = new (require('../src/utils'))(crypto),
-        test            = new (require('../src/test'))(fs, glob, '.', utils);
+    var Crawler  = require('../src/crawler'),
+        winston  = require('winston'),
+        fs       = require('fs'),
+        glob     = require('glob'),
+        redis    = require('redis'),
+        spawn    = require('child_process').spawn,
+        crypto   = require('crypto'),
+        optimist = require('optimist'),
+        utils    = new (require('../src/utils'))(crypto),
+        test     = new (require('../src/test'))(fs, glob, '.', utils);
     require('path');
 
-    winston.cli();
-    winston.remove(winston.transports.Console);
-    winston.add(
-        winston.transports.Console,
-        {
-            level: config.logging.level,
-            silent: config.logging.silent,
-            colorize: true,
-            timestamp: true
-        }
-    );
-    
-    var pool = new Pool(spawn, os);
-    // TODO: add method to set this stuff
-    pool.size            = poolSettings.size;
-    pool.queue           = poolSettings.queue;
-    pool.memoryThreshold = poolSettings.memoryThreshold;
-    pool.delay           = poolSettings.delay;
+    process.on('message', function(m) {
+        var timeStart       = m.settings[0],
+            username        = m.settings[1],
+            password        = m.settings[2],
+            storeDetails    = m.settings[3],
+            followRedirects = m.settings[4],
+            proxy           = m.settings[5],
+            sanitise        = m.settings[6],
+            url             = m.settings[7],
+            type            = m.settings[8],
+            container       = m.settings[9],
+            evt             = m.settings[10],
+            xPath           = m.settings[11],
+            config          = m.settings[12],
+            client          = redis.createClient(config.redis.port, config.redis.hostname);
 
-    var crawler = new Crawler(config, spawn, crypto, test, client, winston, fs, optimist, utils, pool);
-    crawler.init();
-    crawler.timeStart       = timeStart;
-    crawler.username        = username;
-    crawler.password        = password;
-    crawler.storeDetails    = storeDetails;
-    crawler.followRedirects = followRedirects;
-    crawler.proxy           = proxy;
-    var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
-    crawler.run(url, type, data, evt, xPath);
+        winston.cli();
+        winston.remove(winston.transports.Console);
+        winston.add(
+            winston.transports.Console,
+            {
+                level: config.logging.level,
+                silent: config.logging.silent,
+                colorize: true,
+                timestamp: true
+            }
+        );
+
+        var crawler = new Crawler(config, spawn, test, client, winston, fs, optimist, utils);
+        crawler.init();
+        crawler.timeStart       = timeStart;
+        crawler.username        = username;
+        crawler.password        = password;
+        crawler.storeDetails    = storeDetails;
+        crawler.followRedirects = followRedirects;
+        crawler.proxy           = proxy;
+        crawler.sanitise        = sanitise;
+        var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
+        crawler.run({url: url, type: type, data: data, evt: evt, xPath: xPath});
+    });
 }

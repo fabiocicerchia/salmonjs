@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,12 @@
  */
 
 /**
- * Utils Module
+ * Utils Class
  *
- * @module Utils
+ * A set of utility methods
+ * (string, array, html, encryption, normalisation, dom).
+ *
+ * @class Utils
  */
 var Utils = function (crypto) {
     /**
@@ -63,7 +66,7 @@ var Utils = function (crypto) {
      * @param {String} plainText The string to be converted to hash
      * @return {String}
      */
-    this.sha1 = function  (plainText) {
+    this.sha1 = function (plainText) {
         return crypto.createHash('sha1').update(plainText).digest('hex');
     };
 
@@ -238,43 +241,39 @@ var Utils = function (crypto) {
      */
     this.normaliseUrl = function (url, baseUrl) {
         var normalised,
-            baseDomain = baseUrl.replace(/^http(s)?:\/\/([^\/]+)\/?.*$/, 'http$1://$2/'),
             qs;
 
-        if (url.substr(0, 2) === '//') {
-            url = baseUrl.split(':')[0] + ':' + url;
+        if (url === undefined) {
+            return undefined;
         }
 
-        if (baseUrl.substr(0, 7) !== 'file://' && baseUrl.substr(baseUrl.length - 1, 1) !== '/' && baseUrl.indexOf('?') === -1 && baseUrl.indexOf('#') === -1) {
-            baseUrl += '/';
+        var URI = require('URIjs');
+        normalised = URI(url);
+        if (url.indexOf(':') === -1 || url.match(/:[0-9\/]/g)) {
+            normalised = normalised.absoluteTo(baseUrl);
         }
+        normalised = normalised.normalizePathname();
+        normalised = normalised.normalizeSearch();
+        normalised = normalised.toString();
 
-        baseUrl = baseUrl.replace(/#.*$/, '');
-
-        if (url.indexOf('/') === 0) {
-            normalised = baseDomain.substr(0, baseDomain.length - 1) + url;
-        } else if (url.indexOf('?') === 0) {
-            normalised = baseDomain + url;
-        } else if (url.indexOf('#') === 0) {
-            normalised = baseUrl + url;
-        } else if (url === baseUrl || url === '') {
-            normalised = baseUrl;
-        } else if (url.indexOf('://') !== -1 && url.indexOf(baseDomain) === 0) {
-            normalised = url;
-        } else if (url.indexOf('://') !== -1 && url.indexOf(baseUrl) === 0) {
-            normalised = url;
+        var domain = URI(baseUrl).domain();
+        if (domain !== URI(normalised).domain()) {
+            return undefined;
         }
 
         if (normalised !== undefined && normalised.indexOf('?') > 0) {
             qs = normalised.replace(/.*\?(.+)(#.*)?/, '$1');
             normalised = normalised.replace('?' + qs, '?' + this.arrayToQuery(this.normaliseData(qs)));
         }
-
         return normalised;
     };
 
     /**
-     * TBD
+     * Parse an INI file (from string to object).
+     *
+     * @method parseINIString
+     * @param {String} data The data to be parsed.
+     * @return {Object}
      */
     this.parseINIString = function (data) {
         var regex   = {

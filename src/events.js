@@ -6,7 +6,7 @@
  *
  * salmonJS v0.4.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,11 @@
 
 /**
  * Event Container Class
+ *
+ * Override the Event handler to intercept and collect all the events that will
+ * be bound to the DOM elements.
+ *
+ * @class EventContainer
  */
 var EventContainer = function () {
     /**
@@ -76,7 +81,7 @@ var EventContainer = function () {
             nodeList = [],
             id;
 
-        for (; element && parseInt(element.nodeType) === 1; element = element.parentNode) {
+        for (; element && parseInt(element.nodeType, 10) === 1; element = element.parentNode) {
             if (element.parentNode) {
                 nodeList = Array.prototype.slice.call(
                     element.parentNode.getElementsByTagName(element.tagName)

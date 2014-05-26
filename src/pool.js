@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,15 @@
  */
 
 /**
- * Pool Module
+ * Pool Class
  *
- * @module Pool
+ * It handle a queue of workers, it provides support for max number of
+ * concurrent workers (if all the slots are taken it'll wait until one will be
+ * freed).
+ *
+ * @class Pool
  */
-var Pool = function (spawn, os) {
+var Pool = function (os, config, fork) {
     /**
      * Settings queue.
      *
@@ -88,39 +92,14 @@ var Pool = function (spawn, os) {
      * Add settings to the queue, triggering also the queue processing.
      *
      * @method addToQueue
-     * @param {Object} data    The data that will be passed to the worker.
-     * @param {Object} options The pool options.
+     * @param {Object} data The data that will be passed to the worker.
      * @return undefined
      */
-    this.addToQueue = function (data, options) {
+    this.addToQueue = function (data) {
         if (typeof data === 'object' && Object.keys(data).length > 0) {
-            this.queue.push({data: data, options: options});
+            this.queue.push({data: data});
             this.processQueue();
         }
-    };
-
-    /**
-     * The spawn's stdout callback.
-     *
-     * @method spawnStdout
-     * @param {Object} data The data sent back from the worker.
-     * @return undefined
-     */
-    this.spawnStdout = function (data) {
-        data = data.toString();
-        console.log('POOL OUT: ' + data.substr(0, data.length - 1));
-    };
-
-    /**
-     * The spawn's stderr callback.
-     *
-     * @method spawnStderr
-     * @param {Object} data The data sent back from the worker.
-     * @return undefined
-     */
-    this.spawnStderr = function (data) {
-        data = data.toString();
-        console.log('POOL ERR: ' + data.substr(0, data.length - 1).red);
     };
 
     /**
@@ -131,46 +110,61 @@ var Pool = function (spawn, os) {
      * @return undefined
      */
     this.processQueue = function () {
-        if (this.queue.length === 0) {
+        if (currentPool.queue.length === 0) {
             return;
         }
 
-        if (this.running > this.size) {
+        if (currentPool.running >= currentPool.size) {
             return;
         }
 
         if (this.memoryThreshold > -1 && os.freemem() < this.memoryThreshold) {
+            // TODO: TO BE TESTED
             console.log('Waiting for ' + this.delay + 'ms before process again the queue.');
             setTimeout(currentPool.processQueue, this.delay);
             return;
         }
 
-        var settings = this.queue.shift();
+        // TODO: CHECK IF IT EXISTS IN REDIS
+        var settings = currentPool.queue.shift();
         if (settings === undefined || !settings.hasOwnProperty('data')) {
             return;
         }
 
-        var data     = settings.data,
-            options  = settings.options,
-            args,
+        var data = settings.data,
             childProcess;
 
-        args = [
-            __dirname + '/worker.js',
-            data.timeStart, data.username, data.password, data.details,
-            data.follow, data.proxy, data.url, data.type,
-            JSON.stringify(data.container), data.evt, data.xPath,
-            JSON.stringify(currentPool)
-        ];
+        if (data === {}) {
+            return;
+        }
 
-        childProcess = spawn('node', args, { detached: true });
-        this.running++;
-        childProcess.stdout.on('data', options.stdout || currentPool.spawnStdout);
-        childProcess.stderr.on('data', options.stderr || currentPool.spawnStderr);
+        currentPool.running++;
+
+        childProcess = fork(__dirname + '/worker.js');
+        childProcess.send({
+            settings: [
+                data.timeStart, data.username, data.password, data.storeDetails,
+                data.followRedirects, data.proxy, data.sanitise, data.url, data.type,
+                data.container, data.evt, data.xPath, config
+            ]
+        });
+
         childProcess.on('exit', function () {
             currentPool.running--;
-            options['exit']();
-            currentPool.processQueue();
+
+            if (currentPool.queue.length > 0) {
+                currentPool.processQueue();
+            } else if (currentPool.running === 0) {
+                if (process.argv.join('').indexOf('jasmine-node') !== -1 && process.argv.join('').indexOf('grunt') !== -1) {
+                    process.exit();
+                }
+            }
+        });
+
+        childProcess.on('message', function(m) {
+            if (typeof m.queue !== 'undefined') {
+                currentPool.addToQueue(m.queue, m.settings);
+            }
         });
     };
 };

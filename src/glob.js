@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,11 @@
 var utils = utils || new (require('./utils'))();
 
 /**
- * Glob Emulation Module
+ * Glob Emulation Class
+ *
  * It emulates the behaviour of glob.
  *
- * @module glob
+ * @class glob
  */
 var glob = {
     /**
@@ -74,7 +75,7 @@ var glob = {
 
         dirToProcess = dirToProcess.substr(0, (lastOccurrence === -1) ? dirToProcess.length : lastOccurrence);
 
-        regEx = '^' + dir.replace(/\//g, '\\/').replace(/\./g, '\\.').replace(/\*\*/g, '.+?').replace(/\*/g, '[^\/]+');
+        regEx = '^' + dir.replace(/\//g, '\\/').replace(/\./g, '\\.').replace(/\*\*/g, '.+?').replace(/\*/g, '[^\/]+') + '$';
 
         glob.list(dirToProcess, function (err, results) {
             filtered = [];
@@ -101,7 +102,7 @@ var glob = {
             fsWrapper = new FSWrapper(),
             results   = [],
             list      = fsWrapper.readdirSync(dir),
-            pending   = list.length - 2;
+            pending   = list.length;
 
         if (!pending) {
             return done(null, results);

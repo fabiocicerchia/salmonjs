@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,200 +27,183 @@
  * SOFTWARE.
  */
 
-var IOC     = require('./ioc'),
-    config  = require('../src/config'),
-    winston = require('winston'),
-    fs      = require('fs'),
-    path    = require('path'),
-    crypto  = require('crypto'),
-    Insight = require('insight'),
-    os      = require('os'),
-    pkg     = require('../package.json'),
-    redis   = require('redis'),
-    spawn   = require('child_process').spawn,
-    pool    = new (require('./pool'))(spawn, os),
-    client  = redis.createClient(config.redis.port, config.redis.hostname),
-    argv;
-
-require('path');
-require('colors');
-
-var insight = new Insight({
-    trackingCode:   'UA-439670-13',
-    packageName:    pkg.name,
-    packageVersion: pkg.version
-});
-
-var ioc = new IOC();
-ioc.add('config',    config);
-ioc.add('insight',   insight);
-ioc.add('spawn',     spawn);
-ioc.add('crypto',    crypto);
-ioc.add('redis',     redis);
-ioc.add('client',    client);
-ioc.add('winston',   winston);
-ioc.add('optimist',  require('optimist'));
-ioc.add('fs',        fs);
-ioc.add('glob',      require('./glob'));
-ioc.add('pool',      pool);
-ioc.add('utils',     ioc.get(require('../src/utils')));
-ioc.add('dirName',   __dirname);
-ioc.add('mainDir',   __dirname + '/..');
-ioc.add('fsWrapper', ioc.get(require('../src/fs')));
-ioc.add('test',      ioc.get(require('../src/test')));
-
 /**
- * Redis error handler
- */
-client.on('error', function (err) {
-    winston.error('REDIS - %s'.red, err.toString());
-    process.exit(1);
-});
-
-winston.cli();
-winston.remove(winston.transports.Console);
-winston.add(
-    winston.transports.Console,
-    {
-        level: config.logging.level,
-        silent: config.logging.silent,
-        colorize: true,
-        timestamp: true
-    }
-);
-
-console.log('              __                         _____ _______'.yellow);
-console.log('.-----.---.-.|  |.--------.-----.-----._|     |     __|'.yellow);
-console.log('|__ --|  _  ||  ||        |  _  |     |       |__     |'.yellow);
-console.log('|_____|___._||__||__|__|__|_____|__|__|_______|_______|'.yellow);
-console.log('');
-console.log('salmonJS v0.4.0'.grey);
-console.log('Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>'.grey);
-console.log('');
-
-argv = require('optimist')
-    .usage('Web Crawler in Node.js to spider dynamically whole websites.\nUsage: $0')
-    .demand('uri')
-    .alias('c', 'credentials')
-    .alias('d', 'details')
-    .alias('f', 'follow')
-    .alias('p', 'proxy')
-    .alias('w', 'workers')
-    .describe('uri', 'The URI to be crawled')
-    .describe('c', 'Username and password for HTTP authentication (format "username:password")')
-    .describe('d', 'Store details for each page')
-    .describe('f', 'Follows redirects')
-    .describe('p', 'Proxy settings (format: "ip:port" or "username:password@ip:port")')
-    .describe('w', 'Maximum number of asynchronous workers')
-    .describe('disable-stats', 'Disable anonymous report usage stats')
-    .describe('help', 'Show the help')
-    .string('uri')
-    .boolean('d')
-    .boolean('f')
-    .boolean('disable-stats')
-    .default('d', false)
-    .default('f', false)
-    .default('w', 10)
-    .default('disable-stats', false)
-    .argv;
-
-/**
- * The spawn's stdout callback.
+ * SalmonJS Class
  *
- * @method spawnStdout
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStdout(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1));
-}
-
-/**
- * The spawn's stderr callback.
+ * Main interface to be used in NodeJS as well.
+ * It provides all the functionalities available via the CLI.
  *
- * @method spawnStderr
- * @param {Object} data The data sent back from the worker.
- * @return undefined
+ * @class SalmonJS
  */
-function spawnStderr(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1).red);
-}
-
-function resolveURI(uri) {
-    uri = path.resolve(uri);
-    if (fs.existsSync(uri)) {
-        uri = 'file://' + encodeURI(uri);
-    } else {
-        uri = argv.uri;
-
-        if (uri.indexOf('://') < 0) {
-            uri = 'http://' + uri;
-        }
-    }
-
-    return uri;
-}
-
-function tracker() {
-    winston.info('Report anonymous statistics: %s', insight.optOut ? 'No'.red : 'Yes'.green);
-    var uniqId = os.type() + os.platform() + os.arch() + os.release() + process.versions.node + process.versions.v8 + '0.4.0';
-    uniqId = crypto.createHash('sha1').update(uniqId).digest('hex');
-    insight.track('cli', 'os',       os.type());
-    insight.track('cli', 'platform', os.platform());
-    insight.track('cli', 'arch',     os.arch());
-    insight.track('cli', 'release',  os.release());
-    insight.track('cli', 'node',     process.versions.node);
-    insight.track('cli', 'engine',   process.versions.v8);
-    insight.track('cli', 'salmonJS', '0.4.0');
-}
-
-function start() {
-    var uri = resolveURI(argv.uri);
-
-    tracker();
-    winston.info('Start processing "' + uri.green + '"...');
-
-    client.send_command('FLUSHDB', []);
-
-    var username, password;
-    username = argv.credentials !== undefined ? argv.credentials.replace(/^([^:]+):.+/, '$1') : '';
-    password = argv.credentials !== undefined ? argv.credentials.replace(/^[^:]+:(.+)/, '$1') : '';
-
-    pool.size = argv.workers;
-    pool.addToQueue(
-        {
-            timeStart:       Date.now(),
-            idRequest:       Date.now(),
-            username:        username,
-            password:        password,
-            url:             uri,
-            type:            'GET',
-            data:            {},
-            evt:             '',
-            xPath:           '',
-            storeDetails:    argv.details,
-            followRedirects: argv.follow,
-            proxy:           argv.proxy
+var SalmonJS = function (redis, argv) {
+    // TODO: convert to this.*
+    var IOC       = require('./ioc'),
+        ioc       = new IOC(),
+        logLevels = [ 'error', 'warn', 'info', 'debug' ],
+        logLevel  = argv.v === undefined ? 2 : (typeof argv.v === 'object' ? argv.v.length : argv.v.length + 1),
+        config    = {
+            redis: {
+                port: argv.redis.split(':')[1],
+                hostname: argv.redis.split(':')[0]
+            },
+            logging: {
+                level: logLevels[(logLevel > logLevels.length) ? logLevels.length - 1 : logLevel], // Possible values: debug, info, warn, error.
+                silent: argv.quiet
+            },
+            parser: {
+                interface: 'phantom', // PhantomJS: 'phantom'
+                cmd: 'phantomjs',
+                timeout: argv.timeout // Resource timeout in milliseconds.
+            },
+            crawler: {
+                attempts: argv.attempts, // Number of tries before stop to execute the request.
+                delay: argv.interval // Delay between an attempt and another one in milliseconds.
+            }
         },
-        {
-            stdout: spawnStdout,
-            stderr: spawnStderr,
-            exit:   function () {
-                process.exit();
+        winston   = require('winston'),
+        fs        = require('fs'),
+        path      = require('path'),
+        crypto    = require('crypto'),
+        client    = redis.createClient(config.redis.port, config.redis.hostname),
+        os        = require('os'),
+        spawn     = require('child_process').spawn,
+        zlib      = require('zlib'),
+        pool      = new (require('./pool'))(os, config, require('child_process').fork);
+
+    var currentInstance = this;
+
+    ioc.add('client',    client);
+    ioc.add('config',    config);
+    ioc.add('cases_dir', argv.cases ? path.resolve(argv.cases) : undefined);
+    ioc.add('crypto',    crypto);
+    ioc.add('dirName',   __dirname);
+    ioc.add('fs',        fs);
+    ioc.add('fsWrapper', ioc.get(require('../src/fs')));
+    ioc.add('glob',      require('./glob'));
+    ioc.add('mainDir',   __dirname + '/..');
+    ioc.add('optimist',  require('optimist'));
+    ioc.add('pool',      pool);
+    ioc.add('spawn',     spawn);
+    ioc.add('test',      ioc.get(require('../src/test')));
+    var utils = ioc.get(require('../src/utils'));
+    ioc.add('utils',     utils);
+    ioc.add('winston',   winston);
+
+    /**
+     * Redis error handler
+     */
+    client.on('error', function (err) {
+        winston.error('REDIS - %s'.red, err.toString());
+        process.exit(1);
+    });
+
+    /**
+     * Handle the signals in order to stop gracefully the execution.
+     *
+     * @method handleSignals
+     * @return undefined
+     */
+    this.handleSignals = function () {
+        winston.info('Gracefully shutting down');
+
+        var Session = require('./session'),
+            session = new Session(client, fs, zlib, utils, argv, pool);
+
+        winston.debug('Dumping the session...');
+        session.dump(function (err) {
+            if (err) {
+                winston.error(err);
+            }
+
+            winston.debug('Exiting...');
+            process.exit();
+        });
+    };
+
+    /**
+     * Restore the previous interrupted session.
+     *
+     * @method restoreSession
+     * @param {Function} callback A callback to be invoked once restore the session.
+     * @return undefined
+     */
+    this.restoreSession = function (callback) {
+        var Session = require('./session'),
+            session = new Session(client, fs, zlib, utils, argv, pool);
+
+        session.restore(function (conf) {
+            utils.loopEach(conf, function (key, value) {
+                argv[key] = value;
+            });
+
+            callback();
+        });
+    };
+
+    /**
+     * Resolve the URI and add the protocol.
+     *
+     * @method resolveURI
+     * @param {String} uri The URI to be resolved.
+     * @return {String}
+     */
+    this.resolveURI = function (uri) {
+        uri = path.resolve(uri);
+        if (fs.existsSync(uri)) {
+            uri = 'file://' + encodeURI(uri);
+        } else {
+            uri = argv.uri;
+
+            if (uri.indexOf('://') < 0) {
+                uri = 'http://' + uri;
             }
         }
-    );
-}
 
-if (argv.help !== undefined || argv.uri === undefined) {
-    argv.showHelp();
-} else {
-    if (insight.optOut === undefined) {
-        insight.askPermission(undefined, start);
-    } else {
-        insight.optOut = argv['disable-stats'];
-        start();
-    }
-}
+        return uri;
+    };
+
+    /**
+     * Start the execution.
+     *
+     * @method start
+     * @return undefined
+     */
+    this.start = function() {
+        var uri = currentInstance.resolveURI(argv.uri);
+
+        winston.info('Start processing "' + uri.green + '"...');
+
+        client.send_command('FLUSHDB', []);
+
+        var username, password;
+        username = argv.credentials !== undefined ? argv.credentials.replace(/^([^:]+):.+/, '$1') : '';
+        password = argv.credentials !== undefined ? argv.credentials.replace(/^[^:]+:(.+)/, '$1') : '';
+
+        pool.size = argv.workers;
+        // TODO: Pass all the argv to pool and to parser. way easier and shorter!
+        pool.addToQueue(
+            {
+                timeStart:       Date.now(),
+                idRequest:       Date.now(),
+                username:        username,
+                password:        password,
+                url:             uri,
+                type:            'GET',
+                data:            {},
+                evt:             '',
+                xPath:           '',
+                storeDetails:    argv.details,
+                followRedirects: argv.follow,
+                proxy:           argv.proxy,
+                sanitise:        argv.sanitise,
+            },
+            {
+                exit: function () {
+                    process.exit();
+                }
+            }
+        );
+    };
+};
+
+module.exports = SalmonJS;

@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,16 +28,19 @@
  */
 
 /**
- * FS Wrapper Module
+ * FS Wrapper Class
+ *
  * It handles the differences between the Node.js module FS and the PhantomJS
  * module FS.
  *
- * @module FSWrapper
+ * @class FSWrapper
  */
 var FSWrapper = function (fs) {
     if (fs === undefined) {
         fs = require('fs');
     }
+
+    var currentFs = this;
 
     /**
      * Method to handle the differences between Node.js FS.readFileSync and
@@ -63,8 +66,31 @@ var FSWrapper = function (fs) {
      * @return {String}
      */
     this.writeFileSync = function (filename, data, options) {
-        var method = (fs.writeFileSync !== undefined) ? 'writeFileSync' : 'write';
-        return fs[method].call(fs, filename, data, options);
+        var nodeVer = parseFloat(('0' + process.version.node).replace(/^([0-9]+\.[0-9]+)\.?.*$/, '$1'));
+        if (nodeVer < 0.10) {
+            options = options !== undefined ? (options.encoding || 'utf8') : 'utf8';
+        }
+
+        if (fs.writeFileSync !== undefined) {
+            return fs.writeFileSync(filename, data, options);
+        }
+
+        return fs.write(filename, data, options);
+    };
+
+    /**
+     * Method to handle the differences between Node.js FS.writeFile and
+     * PhantomJS FS.write.
+     *
+     * @method writeFile
+     * @param {String}   filename The filename
+     * @param {String}   data     The data
+     * @param {Function} callback The callback
+     * @return {String}
+     */
+    this.writeFile = function (filename, data, callback) {
+        this.writeFileSync(filename, data);
+        callback();
     };
 
     /**
@@ -106,11 +132,21 @@ var FSWrapper = function (fs) {
      * @return {Array}
      */
     this.readdirSync = function (path) {
-        if (fs.readdirSync !== undefined) {
-            return fs.readdirSync.call(fs, path);
-        }
+        var method = (fs.readdirSync !== undefined) ? 'readdirSync' : 'list';
+        return fs[method].call(fs, path);
+    };
 
-        return fs.list.call(fs, path);
+    /**
+     * Method to handle the differences between Node.js FS.unlinkSync and
+     * PhantomJS FS.remove.
+     *
+     * @method unlinkSync
+     * @param {String} path The path
+     * @return {Array}
+     */
+    this.unlinkSync = function (path) {
+        var method = (fs.unlinkSync !== undefined) ? 'unlinkSync' : 'remove';
+        return fs[method].call(fs, path);
     };
 
     /**
@@ -127,6 +163,29 @@ var FSWrapper = function (fs) {
         }
 
         return fs.isDirectory.call(fs, path);
+    };
+
+    /**
+     * Remove recursively all the files inside a folder.
+     *
+     * @method deleteTree
+     * @param {String} path The folder to be removed.
+     * @return undefined
+     */
+    this.deleteTree = function(path) {
+        var files = [];
+        if (this.existsSync(path)) {
+            files = this.readdirSync(path);
+            files.forEach(function(file) {
+                var curPath = path + '/' + file;
+                if (currentFs.isDirectory(curPath)) {
+                    currentFs.deleteTree(curPath);
+                } else {
+                    currentFs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(path);
+        }
     };
 };
 

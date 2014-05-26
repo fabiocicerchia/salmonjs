@@ -6,7 +6,7 @@
  *
  * salmonJS v0.4.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,15 @@
  */
 
 /**
- * Crawler Module
+ * Crawler Class
  *
- * @module Crawler
+ * It call the parser (PhantomJS) to retrieve all the information from the URL,
+ * then process each URL found to check if it's already been processed, if not
+ * queue it in the pool.
+ *
+ * @class Crawler
  */
-var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimist, utils, pool) {
+var Crawler = function (config, spawn, test, client, winston, fs, optimist, utils) {
     /**
      * Number of tries before stop to execute the same request.
      *
@@ -131,15 +135,6 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.proxy = '';
 
     /**
-     * The report directory.
-     *
-     * @property REPORT_DIRECTORY
-     * @type {String}
-     * @default "/../report/"
-     */
-    this.REPORT_DIRECTORY = '/../report/';
-
-    /**
      * The output of the process.
      *
      * @property processOutput
@@ -196,6 +191,15 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.politeInterval = 1000;
 
     /**
+     * Sanitisation flag (in order to fix broken/invalid HTML).
+     *
+     * @property sanitise
+     * @type {Boolean}
+     * @default false
+     */
+    this.sanitise = false;
+
+    /**
      * Current instance.
      *
      * @property currentCrawler
@@ -205,7 +209,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     var currentCrawler = this;
 
     if (optimist !== undefined && winston !== undefined) {
-        if (optimist.argv.$0.indexOf('casperjs --cli test') !== -1) {
+        if (optimist.argv.$0.indexOf('jasmine-node') !== -1 && optimist.argv.$0.indexOf('grunt') !== -1) {
             try { winston.remove(winston.transports.Console); } catch (ignore) {}
         }
     }
@@ -222,8 +226,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
          */
         client.on('error', function (err) {
             winston.error('REDIS - %s'.red, err.toString());
-            // TODO: Is it really good to exit?
-            if (optimist.argv.$0.indexOf('casperjs --cli test') === -1) {
+            if (optimist.argv.$0.indexOf('jasmine-node') === -1 && optimist.argv.$0.indexOf('grunt') === -1) {
                 process.exit(1);
             }
         });
@@ -233,34 +236,36 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     };
 
     /**
-     * Execute PhantomJS.
+     * Execute sub-process
      *
-     * @method execPhantomjs
+     * @method execSubProcess
      * @return undefined
      */
-    this.execPhantomjs = function () {
+    this.execSubProcess = function () {
         var idRequest = utils.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath),
-            phantom,
-            params  = [
-                this.idUri,
-                this.timeStart,
-                idRequest,
-                this.username,
-                this.password,
-                this.url,
-                this.type,
-                this.data,
-                this.evt,
-                this.xPath,
-                this.storeDetails,
-                this.followRedirects,
-                this.proxy
-            ],
+            subprocess,
+            params  = {
+                idCrawler:       this.idUri,
+                execId:          this.timeStart,
+                idRequest:       idRequest,
+                username:        this.username,
+                password:        this.password,
+                url:             this.url,
+                type:            this.type,
+                data:            this.data,
+                evt:             this.evt,
+                xPath:           this.xPath,
+                storeDetails:    this.storeDetails,
+                followRedirects: this.followRedirects,
+                proxy:           this.proxy,
+                sanitise:        this.sanitise,
+                config:          config
+            },
             auth,
             host,
             settings = [];
 
-        if (this.proxy !== 'undefined') {
+        if (this.proxy !== null) {
             auth = this.proxy.replace(/^(.+):(.+)@(.+):(.+)$/, '$1:$2');
             host = this.proxy.replace(/^(.+):(.+)@(.+):(.+)$/, '$3:$4');
             if (auth !== this.proxy) {
@@ -272,11 +277,15 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         settings.push(JSON.stringify(params));
 
         try {
-            phantom = spawn(config.parser.cmd, settings);
+            subprocess = spawn(config.parser.cmd, settings);
 
-            phantom.stdout.on('data', this.onStdOut);
-            phantom.stderr.on('data', this.onStdErr);
-            phantom.on('exit', this.onExit);
+            subprocess.stdout.on('data', this.onStdOut);
+            subprocess.stderr.on('data', this.onStdErr);
+            subprocess.on('error', function (err) {
+                winston.error(err.red);
+                this.handleError();
+            });
+            subprocess.on('exit', this.onExit);
         } catch (err) {
             winston.error(err.message.red);
             this.handleError();
@@ -288,17 +297,13 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * web page data back as JSON.
      *
      * @method run
-     * @param {String} url   The URL to crawl.
-     * @param {String} type  The request type: GET or POST.
-     * @param {Object} data  The data to send for the request.
-     * @param {String} evt   The event to fire (optional).
-     * @param {String} xPath The XPath expression to identify the element to fire (optional).
+     * @param {Object} settings The information about url, request type, data to send, event and XPath.
      * @return undefined
      */
-    this.run = function (url, type, data, evt, xPath) {
-        this.url   = url;
-        this.type  = type || 'GET';
-        this.data  = data || {
+    this.run = function (settings) {
+        this.url   = settings.url;
+        this.type  = settings.type || 'GET';
+        this.data  = settings.data || {
             GET:     {},
             POST:    {},
             COOKIE:  {},
@@ -306,14 +311,14 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             CONFIRM: {},
             PROMPT:  {}
         };
-        this.evt   = evt || '';
-        this.xPath = xPath || '';
+        this.evt   = settings.evt || '';
+        this.xPath = settings.xPath || '';
 
         this.idUri = utils.sha1(this.url + this.type + JSON.stringify(this.data) + this.evt + this.xPath).substr(0, 8);
 
         var winstonCrawlerId = '[' + this.idUri.cyan + '-' + this.idCrawler.magenta + ']';
 
-        winston.info('Waiting %s seconds to be polite', this.politeInterval);
+        winston.debug('Waiting %s seconds to be polite', this.politeInterval);
         utils.sleep(this.politeInterval);
 
         winston.info(
@@ -325,7 +330,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         );
 
         if (config.parser.interface === 'phantom') {
-            return this.execPhantomjs();
+            return this.execSubProcess();
         }
 
         return undefined;
@@ -337,12 +342,11 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
      * @method analiseRedisResponse
      * @param {} err
      * @param {} reply
-     * @param {} redisId
-     * @param {} container
-     * @param {} spawn
+     * @param {String} redisId
+     * @param {Object} container
      * @return undefined
      */
-    this.analiseRedisResponse = function (err, reply, redisId, container, spawn) {
+    this.analiseRedisResponse = function (err, reply, redisId, container) {
         var id               = redisId.substr(0, 8),
             winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']',
             newId;
@@ -353,7 +357,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         // reply is null when the key is missing
         if (reply !== null) {
-            winston.info(
+            winston.debug(
                 '%s' + ' Match found in Redis for "%s" (event: "%s" - XPath: "%s"). Skip'.yellow,
                 winstonCrawlerId,
                 container.url,
@@ -367,60 +371,52 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         newId = utils.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath).substr(0, 8);
 
-        winston.info(
+        winston.debug(
             '%s' + ' Match not found in Redis. Continue (%s)'.grey,
             winstonCrawlerId,
             newId
         );
         client.hset(redisId, 'url', currentCrawler.url);
 
-        pool.addToQueue(
-            {
-                idUri:           1,
-                timeStart:       currentCrawler.timeStart,
-                idRequest:       Date.now(),
-                username:        currentCrawler.username,
-                password:        currentCrawler.password,
-                url:             container.url,
-                type:            container.type,
-                data:            container.container,
-                evt:             container.evt,
-                xPath:           container.xPath,
-                storeDetails:    currentCrawler.storeDetails,
-                followRedirects: currentCrawler.followRedirects,
-                proxy:           currentCrawler.proxy
-            },
-            {
-                stdout: spawnStdout,
-                stderr: spawnStderr,
-                exit:   function () {
-                    currentCrawler.possibleCrawlers--;
-                    currentCrawler.checkRunningCrawlers('No items left to be processed');
+        if (optimist.argv.$0.indexOf('jasmine-node') === -1 && optimist.argv.$0.indexOf('grunt') === -1) {
+            process.send({
+                queue: {
+                    idUri:           1,
+                    timeStart:       currentCrawler.timeStart,
+                    idRequest:       Date.now(),
+                    username:        currentCrawler.username,
+                    password:        currentCrawler.password,
+                    url:             container.url,
+                    type:            container.type,
+                    data:            container.container,
+                    evt:             container.evt,
+                    xPath:           container.xPath,
+                    storeDetails:    currentCrawler.storeDetails,
+                    followRedirects: currentCrawler.followRedirects,
+                    proxy:           currentCrawler.proxy
                 }
-            }
-        );
+            });
+        }
+        currentCrawler.possibleCrawlers--;
+        currentCrawler.checkRunningCrawlers('No items left to be processed');
     };
 
     /**
      * Check if already crawled, if not so launch a new crawler.
      *
      * @method checkAndRun
-     * @param {String} url   The URL to crawl.
-     * @param {String} type  The request type: GET or POST.
-     * @param {Object} data  The data to send for the request.
-     * @param {String} evt   The event to fire (optional).
-     * @param {String} xPath The XPath expression to identify the element to fire (optional).
+     * @param {Object} settings The information about url, request type, data to send, event and XPath.
      * @return undefined
      */
-    this.checkAndRun = function (url, type, data, evt, xPath) {
+    this.checkAndRun = function (settings) {
         var container   = {},
             redisId,
             id,
             winstonCrawlerId;
 
-        container.url   = url.action || url;
-        container.type  = type || 'GET';
-        container.data  = data || {
+        container.url   = settings.url.action || settings.url;
+        container.type  = settings.type || 'GET';
+        container.data  = settings.data || {
             GET:     {},
             POST:    {},
             COOKIE:  {},
@@ -428,14 +424,24 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             CONFIRM: {},
             PROMPT:  {}
         };
-        container.evt   = evt || '';
-        container.xPath = xPath || '';
+        container.evt   = settings.evt || '';
+        container.xPath = settings.xPath || '';
 
         redisId = utils.sha1(container.url + container.type + JSON.stringify(container.data) + container.evt + container.xPath);
         id      = redisId.substr(0, 8);
 
         winstonCrawlerId = '[' + id.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
-        winston.info(
+
+        var protocol = container.url.split(/:/)[0].toLowerCase();
+        if (protocol !== 'http' && protocol !== 'https' && protocol !== 'file') {
+            winston.warn('%s ' + 'Skipping not supported URL: %s'.yellow, winstonCrawlerId, container.url);
+
+            currentCrawler.possibleCrawlers--;
+            currentCrawler.checkRunningCrawlers('No items left to be processed');
+            return;
+        }
+
+        winston.debug(
             '%s Checking %s "%s" - %s on %s',
             winstonCrawlerId,
             container.type.blue,
@@ -445,7 +451,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         );
 
         client.hgetall(redisId, function (err, reply) {
-            return currentCrawler.analiseRedisResponse(err, reply, redisId, container, require('child_process').spawn);
+            return currentCrawler.analiseRedisResponse(err, reply, redisId, container);
         });
     };
 
@@ -461,7 +467,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
             winston.info('%s Exit: %s', winstonCrawlerId, reason);
 
-            if (optimist.argv.$0.indexOf('casperjs cli --test') === -1) {
+            if (optimist.argv.$0.indexOf('jasmine-node') === -1 && optimist.argv.$0.indexOf('grunt') === -1) {
                 process.exit();
             }
 
@@ -481,7 +487,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.onStdOut = function (data) {
         var strPrint, winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
-        winston.info(
+        winston.debug(
             '%s Retrieved %d bytes.',
             winstonCrawlerId,
             data.toString().length
@@ -490,7 +496,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         strPrint = data.toString().replace(/###.+/, '').replace(/[\r\n]/g, '');
         if (strPrint !== '') {
-            winston.info(
+            winston.debug(
                 'Output from %s: %s'.grey,
                 config.parser.interface.toUpperCase(),
                 strPrint
@@ -508,7 +514,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.onStdErr = function (data) {
         var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
-        winston.info('%s Retrieved response', winstonCrawlerId);
+        winston.debug('%s Retrieved response', winstonCrawlerId);
         winston.error(data.toString().red);
 
         currentCrawler.handleError();
@@ -537,11 +543,13 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 );
 
                 return currentCrawler.run(
-                    currentCrawler.url,
-                    currentCrawler.type,
-                    currentCrawler.data,
-                    currentCrawler.event,
-                    currentCrawler.xPath
+                    {
+                        url:   currentCrawler.url,
+                        type:  currentCrawler.type,
+                        data:  currentCrawler.data,
+                        evt:   currentCrawler.event,
+                        xPath: currentCrawler.xPath
+                    }
                 );
             }, config.crawler.delay);
         } else {
@@ -561,7 +569,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 data:       currentCrawler.data
             };
 
-            if (currentCrawler.storeDetails) {
+            if (currentCrawler.storeDetails && currentCrawler.storeDetails !== 'undefined') {
                 currentCrawler.storeDetailsToFile(report);
             }
         }
@@ -579,7 +587,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
     this.onExit = function (code) {
         var winstonCrawlerId = '[' + currentCrawler.idUri.cyan + '-' + currentCrawler.idCrawler.magenta + ']';
 
-        winston.info(
+        winston.debug(
             '%s Execution terminated with status: %s',
             winstonCrawlerId,
             code === null ? 'null' : code
@@ -604,16 +612,17 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
             reportFile,
             indexFile;
 
-        indexContent = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
-        indexContent    += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
-        indexContent    += ' XPath: ' + (currentCrawler.xPath === '' ? 'N/A' : currentCrawler.xPath) + '</a>\n';
+        indexContent  = '<a href="' + reportName + '.html">' + currentCrawler.type + ' ' + currentCrawler.url + ' Data: ';
+        indexContent += JSON.stringify(currentCrawler.data) + ' Event: ' + (currentCrawler.evt === '' ? 'N/A' : currentCrawler.evt);
+        indexContent += ' XPath: ' + (currentCrawler.xPath === '' ? 'N/A' : currentCrawler.xPath) + '</a>\n';
 
-        reportFile = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/' + reportName + '.html';
-        indexFile  = __dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/index.html';
-        fs.mkdir(__dirname + currentCrawler.REPORT_DIRECTORY + currentCrawler.timeStart + '/', '0777', function () {
-            fs.writeFileSync(reportFile, reportContent);
-            fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
-        });
+        reportFile = currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/' + reportName + '.html';
+        indexFile  = currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/index.html';
+        if (!fs.existsSync(currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/')) {
+            fs.mkdirSync(currentCrawler.storeDetails + '/' + currentCrawler.timeStart + '/', '0777');
+        }
+        fs.writeFileSync(reportFile, reportContent);
+        fs.appendFileSync(indexFile, indexContent, {flag: 'a+'});
     };
 
     /**
@@ -637,7 +646,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         try {
             result = JSON.parse(content.replace(/\n/g, '').replace(/.*###/m, ''));
 
-            winston.info('%s Response ready', winstonCrawlerId);
+            winston.debug('%s Response ready', winstonCrawlerId);
         } catch (err) {
             winston.error('%s %s', winstonCrawlerId, err.toString().red);
             this.handleError();
@@ -646,7 +655,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
         links = result.links;
 
-        if (currentCrawler.storeDetails) {
+        if (currentCrawler.storeDetails && currentCrawler.storeDetails !== 'undefined') {
             currentCrawler.storeDetailsToFile(result.report);
         }
 
@@ -659,37 +668,42 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
 
                             newId = utils.sha1(currentCrawler.url + currentCrawler.type + JSON.stringify(currentCrawler.data) + event + elementValue).substr(0, 8);
 
-                            winston.info(
+                            winston.debug(
                                 '%s Firing %s on "%s" (%s)...',
                                 winstonCrawlerId,
                                 event.toUpperCase().blue,
                                 elementValue.green,
                                 newId.cyan
                             );
-                            currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, currentCrawler.data, event, elementValue);
+                            currentCrawler.checkAndRun(
+                                {
+                                    url:   currentCrawler.url,
+                                    type:  currentCrawler.type,
+                                    data:  currentCrawler.data,
+                                    evt:   event,
+                                    xPath: elementValue
+                                }
+                            );
                         }
                     });
                 });
             });
 
-            currentCrawler.possibleCrawlers += links.a.length;
-            links.a.forEach(function (element) {
-                currentCrawler.checkAndRun(element, 'GET');
+            var unique_links = [];
+            utils.loopEach(links, function (tag, links_tag) {
+                if (tag !== 'form' && tag !== 'events') {
+                    utils.loopEach(links_tag, function (id, element) {
+                        unique_links.push(element);
+                    });
+                }
             });
 
-            currentCrawler.possibleCrawlers += links.link.length;
-            links.link.forEach(function (element) {
-                currentCrawler.checkAndRun(element, 'GET');
-            });
-
-            currentCrawler.possibleCrawlers += links.script.length;
-            links.script.forEach(function (element) {
-                currentCrawler.checkAndRun(element, 'GET');
-            });
-
-            currentCrawler.possibleCrawlers += links.meta.length;
-            links.meta.forEach(function (element) {
-                currentCrawler.checkAndRun(element, 'GET');
+            unique_links = unique_links.filter(utils.onlyUnique);
+            utils.loopEach(unique_links, function (id, element) {
+                if (element !== currentCrawler.url) {
+                    currentCrawler.possibleCrawlers++;
+                    currentCrawler.checkAndRun({ url: element, type: 'GET'});
+                }
             });
 
             links.form.forEach(function (element) {
@@ -710,7 +724,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     COOKIE:  {},
                     HEADERS: {},
                     CONFIRM: result.report.confirms.filter(utils.onlyUnique),
-                    PROMPT:  result.result.prompts.filter(utils.onlyUnique)
+                    PROMPT:  result.report.prompts.filter(utils.onlyUnique)
                 };
                 test.createNewCaseFile(element.action, element.type, data);
 
@@ -718,10 +732,10 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                 currentCrawler.possibleCrawlers += cases.length;
                 for (j in cases) {
                     if (cases.hasOwnProperty(j)) {
-                        currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), []);
+                        currentCrawler.checkAndRun({ url: element.action, type: element.type.toUpperCase(), data: []});
 
                         cases[j].POST = utils.normaliseData(cases[j].POST);
-                        currentCrawler.checkAndRun(element.action, element.type.toUpperCase(), cases[j]);
+                        currentCrawler.checkAndRun({ url: element.action, type: element.type.toUpperCase(), data: cases[j]});
                     }
                 }
             });
@@ -745,7 +759,7 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
                     cases[j].GET    = utils.normaliseData(cases[j].GET);
                     cases[j].POST   = utils.normaliseData(cases[j].POST);
                     cases[j].COOKIE = utils.normaliseData(cases[j].COOKIE);
-                    currentCrawler.checkAndRun(currentCrawler.url, currentCrawler.type, cases[j]);
+                    currentCrawler.checkAndRun({ url: currentCrawler.url, type: currentCrawler.type, data: cases[j]});
                 }
             }
         }
@@ -753,29 +767,5 @@ var Crawler = function (config, spawn, crypto, test, client, winston, fs, optimi
         return currentCrawler.checkRunningCrawlers('No links in the page');
     };
 };
-
-/**
- * The spawn's stdout callback.
- *
- * @method spawnStdout
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStdout(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1));
-}
-
-/**
- * The spawn's stderr callback.
- *
- * @method spawnStderr
- * @param {Object} data The data sent back from the worker.
- * @return undefined
- */
-function spawnStderr(data) {
-    data = data.toString();
-    console.log(data.substr(0, data.length - 1).red);
-}
 
 module.exports = Crawler;

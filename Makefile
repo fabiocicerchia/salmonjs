@@ -3,9 +3,9 @@
 # |__ --|  _  ||  ||        |  _  |     |       |__     |
 # |_____|___._||__||__|__|__|_____|__|__|_______|_______|
 #
-# salmonJS v0.3.0
+# salmonJS v0.5.0
 #
-# Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+# Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,42 +25,64 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-ECHO=echo
-RM=rm -rf
 GIT=git
 FIND=find
 PHANTOMJS=phantomjs
 NODE=node
 NPM=npm
-JSHINT=./node_modules/jshint/bin/jshint
-CASPERJS=./casperjs/bin/casperjs
+JASMINE=./node_modules/jasmine-node/bin/jasmine-node
+GRUNT=grunt
 JSCOVERAGE=./node_modules/visionmedia-jscoverage/jscoverage
-FILES=test/test.*.js test/*/test.*.js
+YUIDOC=node ./node_modules/yuidocjs/lib/cli.js
+YUIDOC=yuidoc
+FILES=test
 
-install-casper:
-	$(GIT) clone git://github.com/n1k0/casperjs.git
+install: install-yuidoc-theme install-npm
+
+install-yuidoc-theme:
+	$(GIT) clone https://github.com/Krxtopher/yuidoc-themes docs/theme
+
+install-npm:
+	$(NPM) install grunt-cli -g
+	$(NPM) install coveralls -g
 
 versions:
-	$(CASPERJS) --version
-	$(JSCOVERAGE) --version
-	$(PHANTOMJS) --version
+	$(GRUNT) --version
+	$(JASMINE) --version
 	$(NODE) --version
 	$(NPM) version
+	$(PHANTOMJS) --version
+	$(YUIDOC) --version || true
 
 test:
-	$(CASPERJS) test $(FILES)
+	$(JASMINE) $(FILES)
 
 coverage:
-	$(RM) src-cov 2> /dev/null
-	$(JSCOVERAGE) src src-cov
-	$(CASPERJS) test $(FILES) --post=src/reporter/coverage.js --coverage --concise
-	$(RM) src-cov
+	$(GRUNT) jasmine_node
+	cat build/reports/coverage/lcov.info | sed -r "s/SF:.+\/(src|test)\//SF:\1\//" | coveralls
+
+documentation:
+	$(YUIDOC) -o docs/api -t docs/theme/friendly-theme bin src test
 
 show-report:
 	cd /tmp && chmod 777 *.dmp && tar -pzcf phantomjs.tar.gz *.dmp
 	cat /tmp/phantomjs.tar.gz | base64
 
 lint:
-	$(FIND) bin src test -type f -name "*.js" | xargs $(JSHINT)
+	$(GRUNT) jshint:uses_defaults
+	$(GRUNT) jshint:with_overrides
+
+todo:
+	$(GRUNT) todo
+
+readme:
+	$(GRUNT) verb
+
+ci:
+	make install
+	make versions
+	make lint
+	make test
+	make coverage
 
 .PHONY: test

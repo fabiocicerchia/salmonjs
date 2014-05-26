@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -155,7 +155,7 @@ var reporter = function (utils) {
         html += '\n';
         html += '            <h2>Resources</h2>\n';
         html += '            <ul>\n';
-        if (report.resources.length > 0) {
+        if (Object.keys(report.resources).length > 0) {
             for (i in report.resources) {
                 if (report.resources.hasOwnProperty(i)) {
                     html += '                <li>\n';
@@ -180,7 +180,7 @@ var reporter = function (utils) {
         html += utils.htmlEscape(report.content);
         html += '</pre>\n';
         html += '        </div>\n';
-        html += '        <div class="footer">Generated using <a href="http://fabiocicerchia.github.io/salmonjs">salmonJS</a> version 0.4.0</div>\n';
+        html += '        <div class="footer">Generated using <a href="http://www.salmonjs.org">salmonJS</a> version 0.5.0</div>\n';
         html += '    </body>\n';
         html += '</html>\n';
 

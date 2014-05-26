@@ -4,9 +4,9 @@
  * |__ --|  _  ||  ||        |  _  |     |       |__     |
  * |_____|___._||__||__|__|__|_____|__|__|_______|_______|
  *
- * salmonJS v0.4.0
+ * salmonJS v0.5.0
  *
- * Copyright (C) 2013 Fabio Cicerchia <info@fabiocicerchia.it>
+ * Copyright (C) 2014 Fabio Cicerchia <info@fabiocicerchia.it>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +28,12 @@
  */
 
 /**
- * Parser Module
+ * Parser Class
  *
  * Base class for any kind of page parser. It provides a basic interface in
  * order to process the web page.
  *
- * @module Parser
+ * @class Parser
  */
 module.exports = function Parser() {
     /**
@@ -116,36 +116,27 @@ module.exports = function Parser() {
         // HTML 4
         a: 'href',
         area: 'href',
-        //applet: 'archive',
-        //applet: 'codebase',
+        applet: [ 'archive', 'codebase' ],
         base: 'href',
-        //blockquote: 'cite',
-        // frame.longdesc',
-        frame: 'src',
-        // iframe.longdesc',
-        iframe: 'src',
-        // img.longdesc',
-        img: 'src',
-        input: 'src', // Possible exception: only when type="image"
+        blockquote: 'cite',
+        frame: [ 'longdesc', 'src' ],
+        iframe: [ 'longdesc', 'src' ],
+        img: [ 'longdesc', 'src' ],
+        input: [ 'src', 'formaction' ], // Possible exception: only when type="image" / HTML5
         link: 'href',
-        // object.archive',
-        // object.classid',
-        // object.codebase',
-        // q.cite',
-        script: 'src'
+        object: [ 'archive', 'classid', 'codebase', 'data' ], // HTML: 4, 4, 4, 5
+        q: 'cite',
+        script: 'src',
         // HTML 5
-        // audio: 'src',
-        // button: 'formaction',
-        // del: 'cite',
-        // embed: 'src',
-        // html: 'manifest',
-        // input: 'formaction',
-        // ins: 'cite',
-        // object: 'data',
-        // source: 'src',
-        // track: 'src',
-        // video: 'poster',
-        // video: 'src'
+        audio: 'src',
+        button: 'formaction',
+        del: 'cite',
+        embed: 'src',
+        html: 'manifest',
+        ins: 'cite',
+        source: 'src',
+        track: 'src',
+        video: [ 'poster', 'src' ]
     };
 
     /**
