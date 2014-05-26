@@ -38,7 +38,7 @@ var args     = process.argv,
     },
     tidy     = require('htmltidy').tidy;
 
-process.on('uncaughtException', function (err) {
+process.on('uncaughtException', function () {
     //console.log('ERROR: ' + err);
     console.log(origHtml);
 });
