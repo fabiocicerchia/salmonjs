@@ -1,5 +1,10 @@
-## 0.5.0 / ?
+## 0.5.0 / 26 May 2014
 
+ * Improved documentation
+ * Fixed the pool system in order to make sure it doesn't fork too many process
+ * Fixed URL normalisation
+ * Fixed Redis port
+ * Fixed issue with sanitise & link extraction
  * Added few more examples
  * Added demo website for integration/functional testing
  * Added support to retrieve relative url as well
