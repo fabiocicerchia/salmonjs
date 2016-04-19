@@ -198,6 +198,10 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
      * @default false
      */
     this.sanitise = false;
+    
+    this.fireJsEvents = true;
+    
+    this.hooks = {};
 
     /**
      * Current instance.
@@ -259,6 +263,7 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
                 followRedirects: this.followRedirects,
                 proxy:           this.proxy,
                 sanitise:        this.sanitise,
+                fireJsEvents:    this.fireJsEvents,
                 config:          config
             },
             auth,
@@ -275,6 +280,9 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
         }
         settings.push('./src/parser/' + config.parser.interface + '.js');
         settings.push(JSON.stringify(params));
+        // console.log(JSON.stringify(params));
+        
+        currentCrawler.hooks.beforeRequest(params);
 
         try {
             subprocess = spawn(config.parser.cmd, settings);
@@ -282,7 +290,7 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
             subprocess.stdout.on('data', this.onStdOut);
             subprocess.stderr.on('data', this.onStdErr);
             subprocess.on('error', function (err) {
-                winston.error(err.red);
+                winston.error(err.toString().red);
                 this.handleError();
             });
             subprocess.on('exit', this.onExit);
@@ -377,8 +385,10 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
             newId
         );
         client.hset(redisId, 'url', currentCrawler.url);
+        
+        var isValid = currentCrawler.hooks.isURIValid(container.url);
 
-        if (optimist.argv.$0.indexOf('jasmine-node') === -1 && optimist.argv.$0.indexOf('grunt') === -1) {
+        if (isValid && optimist.argv.$0.indexOf('jasmine-node') === -1 && optimist.argv.$0.indexOf('grunt') === -1) {
             process.send({
                 queue: {
                     idUri:           1,
@@ -392,11 +402,21 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
                     evt:             container.evt,
                     xPath:           container.xPath,
                     storeDetails:    currentCrawler.storeDetails,
+                    sanitise:        currentCrawler.sanitise,
+                    fireJsEvents:    currentCrawler.fireJsEvents,
                     followRedirects: currentCrawler.followRedirects,
+                    hooks:           {
+                        isURIValid:    currentCrawler.hooks.isURIValid.toString(),
+                        beforeRequest: currentCrawler.hooks.beforeRequest.toString(),
+                        postFetching:  currentCrawler.hooks.postFetching.toString()
+                    },
                     proxy:           currentCrawler.proxy
                 }
             });
+        } else {
+            winston.warn('%s ' + 'Skipping conditionally URL: %s'.yellow, winstonCrawlerId, container.url);
         }
+        
         currentCrawler.possibleCrawlers--;
         currentCrawler.checkRunningCrawlers('No items left to be processed');
     };
@@ -492,16 +512,17 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
             winstonCrawlerId,
             data.toString().length
         );
-        currentCrawler.processOutput += data.toString();
 
-        strPrint = data.toString().replace(/###.+/, '').replace(/[\r\n]/g, '');
-        if (strPrint !== '') {
-            winston.debug(
-                'Output from %s: %s'.grey,
-                config.parser.interface.toUpperCase(),
-                strPrint
-            );
-        }
+        //strPrint = data.toString().replace(/###.+/, '').replace(/[\r\n]/g, '');
+        //if (strPrint !== '') {
+        //    winston.debug(
+        //        'Output from %s: %s'.grey,
+        //        config.parser.interface.toUpperCase(),
+        //        strPrint
+        //    );
+        //} else {
+            currentCrawler.processOutput += data.toString();
+        //}
     };
 
     /**
@@ -592,6 +613,8 @@ var Crawler = function (config, spawn, test, client, winston, fs, optimist, util
             winstonCrawlerId,
             code === null ? 'null' : code
         );
+        
+        currentCrawler.hooks.postFetching(currentCrawler.processOutput);
 
         return currentCrawler.processPage(currentCrawler.processOutput);
     };

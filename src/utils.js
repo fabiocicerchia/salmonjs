@@ -198,7 +198,7 @@ var Utils = function (crypto) {
      * @return {Boolean}
      */
     this.onlyUnique = function (value, index, self) {
-        return self.indexOf(value) === index && value !== undefined;
+        return self.indexOf(value) === index && value !== undefined && value !== null;
     };
 
     /**

@@ -144,8 +144,8 @@ var Pool = function (os, config, fork) {
         childProcess.send({
             settings: [
                 data.timeStart, data.username, data.password, data.storeDetails,
-                data.followRedirects, data.proxy, data.sanitise, data.url, data.type,
-                data.container, data.evt, data.xPath, config
+                data.followRedirects, data.proxy, data.sanitise, data.fireJsEvents, data.hooks,
+                data.url, data.type, data.container, data.evt, data.xPath, config
             ]
         });
 
@@ -155,7 +155,7 @@ var Pool = function (os, config, fork) {
             if (currentPool.queue.length > 0) {
                 currentPool.processQueue();
             } else if (currentPool.running === 0) {
-                if (process.argv.join('').indexOf('jasmine-node') !== -1 && process.argv.join('').indexOf('grunt') !== -1) {
+                if (process.argv.join('').indexOf('jasmine-node') === -1 && process.argv.join('').indexOf('grunt') === -1) {
                     process.exit();
                 }
             }

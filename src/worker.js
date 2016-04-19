@@ -52,12 +52,14 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
             followRedirects = m.settings[4],
             proxy           = m.settings[5],
             sanitise        = m.settings[6],
-            url             = m.settings[7],
-            type            = m.settings[8],
-            container       = m.settings[9],
-            evt             = m.settings[10],
-            xPath           = m.settings[11],
-            config          = m.settings[12],
+            fireJsEvents    = m.settings[7],
+            hooks           = m.settings[8],
+            url             = m.settings[9],
+            type            = m.settings[10],
+            container       = m.settings[11],
+            evt             = m.settings[12],
+            xPath           = m.settings[13],
+            config          = m.settings[14],
             client          = redis.createClient(config.redis.port, config.redis.hostname);
 
         winston.cli();
@@ -81,6 +83,12 @@ if (process.argv.join(' ').indexOf('worker.js') !== -1) {
         crawler.followRedirects = followRedirects;
         crawler.proxy           = proxy;
         crawler.sanitise        = sanitise;
+        crawler.fireJsEvents    = fireJsEvents;
+        crawler.hooks           = {
+            isURIValid:    new Function("return " + hooks.isURIValid)(),
+            beforeRequest: new Function("return " + hooks.beforeRequest)(),
+            postFetching:  new Function("return " + hooks.postFetching)()
+        };
         var data = ((container !== undefined && container !== 'undefined') ? JSON.parse(container) : undefined);
         crawler.run({url: url, type: type, data: data, evt: evt, xPath: xPath});
     });

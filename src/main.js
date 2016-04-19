@@ -61,6 +61,7 @@ var SalmonJS = function (redis, argv) {
             }
         },
         winston   = require('winston'),
+        colors    = require('colors'),
         fs        = require('fs'),
         path      = require('path'),
         crypto    = require('crypto'),
@@ -148,12 +149,9 @@ var SalmonJS = function (redis, argv) {
      * @return {String}
      */
     this.resolveURI = function (uri) {
-        uri = path.resolve(uri);
-        if (fs.existsSync(uri)) {
-            uri = 'file://' + encodeURI(uri);
+        if (fs.existsSync(path.resolve(uri))) {
+            uri = 'file://' + encodeURI(path.resolve(uri));
         } else {
-            uri = argv.uri;
-
             if (uri.indexOf('://') < 0) {
                 uri = 'http://' + uri;
             }
@@ -196,6 +194,12 @@ var SalmonJS = function (redis, argv) {
                 followRedirects: argv.follow,
                 proxy:           argv.proxy,
                 sanitise:        argv.sanitise,
+                fireJsEvents:    argv.fireJsEvents,
+                hooks:           {
+                    isURIValid:    argv.hooks.isURIValid.toString(),
+                    beforeRequest: argv.hooks.beforeRequest.toString(),
+                    postFetching:  argv.hooks.postFetching.toString()
+                }
             },
             {
                 exit: function () {

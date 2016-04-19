@@ -355,7 +355,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
         // TODO: Do I want to get a "snapshot" freezing the current instance? (page, url, content, type, event & xPath)
         id = evt + xPath;
 
-        if (currentParser.stepHashes.indexOf(id) === -1) {
+        if (settings.fireJsEvents && currentParser.stepHashes.indexOf(id) === -1) {
             currentParser.stepHashes.push(id);
             console.log('FIRE(' + evt + ', ' + xPath + ')');
 
@@ -540,6 +540,7 @@ var PhantomParser = function (utils, spawn, page, settings) {
      * @return undefined
      */
     this.onConsoleMessage = function (msg, lineNum, sourceId) {
+        // console.log(msg);
         currentParser.report.console.push({msg: msg, lineNum: lineNum, sourceId: sourceId});
     };
 
@@ -683,8 +684,8 @@ var PhantomParser = function (utils, spawn, page, settings) {
                 page.render(fs.absolute(settings.storeDetails) + '/' + settings.execId + '/' + settings.idRequest + '.png');
             }
 
-            links = page.evaluate(currentParser.onEvaluate, currentParser.tags);
-
+            links = JSON.parse(page.evaluate(currentParser.onEvaluate, currentParser.tags));
+        
             // TODO: What if an event will change url? will it be processed in here or just returned back to the crawler?
             events = page.evaluate(function () {
                 return window.eventContainer !== undefined ? window.eventContainer.getEvents() : [];
@@ -700,22 +701,26 @@ var PhantomParser = function (utils, spawn, page, settings) {
 
             for (var tag in links) {
                 if (links.hasOwnProperty(tag) && tag !== 'form') {
-                    currentParser.links[tag] = [].map.call(links[tag], function (item) {
-                        return utils.normaliseUrl(item, url);
-                    }).concat(currentParser.links[tag]).filter(utils.onlyUnique);
+                    currentParser.links[tag] = [];
+                    var allLinks = links[tag].concat(currentParser.links[tag]).filter(utils.onlyUnique);
+                    for (var k in allLinks) {
+                        if (typeof allLinks[k] === 'string') {
+                            currentParser.links[tag].push(utils.normaliseUrl(allLinks[k], url));
+                        }
+                    }
                 }
             }
+            
+            var formLinks = links.form.concat(currentParser.links.form).filter(utils.onlyUnique);
+            currentParser.links.form = [];
+            for (var k in formLinks) {
+                formLinks[k].action = formLinks[k].action || url;
+                formLinks[k].action = utils.normaliseUrl(formLinks[k].action, url);
 
-            currentParser.links.form = [].map.call(links.form, function (item) {
-                item.action = item.action || url;
-                item.action = utils.normaliseUrl(item.action, url);
-
-                if (item.action === undefined) {
-                    return undefined;
+                if (formLinks[k].action !== undefined) {
+                    currentParser.links.form.push(formLinks[k]);
                 }
-
-                return item;
-            }).concat(currentParser.links.form).filter(utils.onlyUnique);
+            }
 
             while (Object.keys(currentParser.stackPages).length !== 0) {
                 currentParser.parsePage(currentParser.stackPages.pop());
@@ -725,15 +730,19 @@ var PhantomParser = function (utils, spawn, page, settings) {
         links = page.evaluate(currentParser.onEvaluateNonHtml, page.content);
 
         if (links.hasOwnProperty('mixed_full')) {
-            currentParser.links.mixed_full = [].map.call(links.mixed_full, function (item) {
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.mixed_full).filter(utils.onlyUnique);
+            currentParser.links.mixed_full = [];
+            var mixedLinks = links.mixed_full.concat(currentParser.links.mixed_full).filter(utils.onlyUnique);
+            for (var k in mixedLinks) {
+                currentParser.links.mixed_full.push(utils.normaliseUrl(mixedLinks[k], url));
+            }
         }
         if (links.hasOwnProperty('mixed_rel')) {
-            currentParser.links.mixed_rel = [].map.call(links.mixed_rel, function (item) {
-                item = item.replace(/^['"](.+)['"]$/, '$1');
-                return utils.normaliseUrl(item, url);
-            }).concat(currentParser.links.mixed_rel).filter(utils.onlyUnique);
+            currentParser.links.mixed_rel = [];
+            var mixedRels = links.mixed_rel.concat(currentParser.links.mixed_rel).filter(utils.onlyUnique);
+            for (var k in mixedRels) {
+                mixedRels[k] = mixedRels[k].replace(/^['"](.+)['"]$/, '$1');
+                currentParser.links.mixed_full.push(utils.normaliseUrl(mixedRels[k], url));
+            }
         }
 
         currentParser.exit();
@@ -764,9 +773,9 @@ var PhantomParser = function (utils, spawn, page, settings) {
                             elements = document.querySelectorAll(tag);
                             links = [];
                             if (elements.length > 0) {
-                                links = [].map.call(elements, function (item) {
-                                    return item[attr];
-                                });
+                                for (var k in elements) {
+                                    links.push(elements[k][attribute]);
+                                }
                             }
                             if (links.length > 0) {
                                 urls[tag] = urls[tag].concat(links);
@@ -776,51 +785,66 @@ var PhantomParser = function (utils, spawn, page, settings) {
                 } else {
                     elements = document.querySelectorAll(tag);
                     if (elements.length > 0) {
-                        urls[tag] = [].map.call(elements, function (item) {
-                            return item[attribute];
-                        });
+                        urls[tag] = [];
+                        for (var k in elements) {
+                            urls[tag].push(elements[k][attribute]);
+                        }
                     }
                 }
             }
         }
 
         elements = document.querySelectorAll('meta');
+        urls.meta = [];
         if (elements.length > 0) {
-            urls.meta = [].map.call(elements, function (item) {
-                if (item.getAttribute('http-equiv') === 'refresh') {
-                    return item.getAttribute('content').split(/=/, 2)[1];
+            for (var k in elements) {
+                if (typeof elements[k] === 'object' && elements[k].getAttribute('http-equiv') === 'refresh') {
+                    urls.meta.push(elements[k].getAttribute('content').split(/=/, 2)[1]);
                 }
-
-                return undefined;
-            });
+            }
         }
 
         elements = document.querySelectorAll('form');
+        urls.form = [];
         if (elements.length > 0) {
-            urls.form = [].map.call(elements, function (item) {
+            for (var k in elements) {
                 var input, select, textarea;
-
-                input = [].map.call(item.getElementsByTagName('input'), function (item) {
-                    return item.getAttribute('name');
-                });
-
-                select = [].map.call(item.getElementsByTagName('select'), function (item) {
-                    return item.getAttribute('name');
-                });
-
-                textarea = [].map.call(item.getElementsByTagName('textarea'), function (item) {
-                    return item.getAttribute('name');
-                });
-
-                return {
-                    action: item.getAttribute('action') || currentUrl,
-                    type:   item.getAttribute('method') || 'get',
-                    fields: input.concat(select).concat(textarea)
-                };
-            });
+                
+                if (typeof elements[k] === 'object') {
+                    input = [];
+                    var inputs = elements[k].getElementsByTagName('input');
+                    for (var a in inputs) {
+                        if (typeof inputs[a] === 'object') {
+                            input.push(inputs[a].getAttribute('name'));
+                        }
+                    }
+    
+                    select = [];
+                    var selects = elements[k].getElementsByTagName('select');
+                    for (var b in selects) {
+                        if (typeof selects[b] === 'object') {
+                            select.push(selects[b].getAttribute('name'));
+                        }
+                    }
+    
+                    textarea = [];
+                    var textareas = elements[k].getElementsByTagName('textarea');
+                    for (var c in textarea) {
+                        if (typeof textareas[c] === 'object') {
+                            textarea.push(textareas[c].getAttribute('name'));
+                        }
+                    }
+    
+                    urls.form.push({
+                        action: elements[k].getAttribute('action') || currentUrl,
+                        type:   elements[k].getAttribute('method') || 'get',
+                        fields: input.concat(select).concat(textarea)
+                    });
+                }
+            }
         }
 
-        return urls;
+        return JSON.stringify(urls);
     };
 
     /**
