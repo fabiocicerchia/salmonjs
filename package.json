@@ -40,7 +40,7 @@
     "glob": "3.2.9",
     "winston": "0.7.3",
     "insight": "0.3.1",
-    "request": "2.34.0",
+    "request": "2.88.0",
     "htmltidy": "0.0.6",
     "URIjs": "1.13.1",
     "jsonfn": "0.31.0"
